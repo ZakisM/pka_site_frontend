@@ -1,10 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {Provider} from "react-redux";
+import store from "./redux/store";
+import {createMuiTheme, CssBaseline, MuiThemeProvider} from "@material-ui/core";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const darkTheme = createMuiTheme({
+    palette: {
+        type: 'dark',
+        background: {
+            default: '#1d1d1d',
+        },
+        primary: {
+            main: '#7a1d23',
+        }
+    },
+});
+
+ReactDOM.render(
+    <Provider store={store}>
+        <MuiThemeProvider theme={darkTheme}>
+            <CssBaseline/>
+            <App/>
+        </MuiThemeProvider>
+    </Provider>,
+    document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
