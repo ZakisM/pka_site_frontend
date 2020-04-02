@@ -81,7 +81,7 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
               className={`${classes.resultCard} ${isActive ? classes.active : null}`}
         >
             <Typography className={classes.title}>{title}</Typography>
-            <Typography className={classes.subtitle}>{`${moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}`}</Typography>
+            <Typography className={classes.subtitle}>{moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}</Typography>
         </Card>
     )
 };

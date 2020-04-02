@@ -1,5 +1,5 @@
 import React from "react";
-import {ListItem, ListItemIcon, ListItemText, SvgIcon} from "@material-ui/core";
+import {ListItem, ListItemIcon, ListItemText, SvgIcon, Typography} from "@material-ui/core";
 import {Link, useRouteMatch} from "react-router-dom";
 import {fade, makeStyles} from "@material-ui/core/styles";
 
@@ -14,12 +14,16 @@ const useStyles = makeStyles(theme => ({
         textDecoration: 'none',
     },
     item: {
+        height: '5.7ch',
         '&:hover': {
             backgroundColor: fade(theme.palette.common.white, 0.025),
         },
         '&:active': {
             backgroundColor: fade(theme.palette.common.white, 0.05),
         },
+    },
+    itemText: {
+        marginLeft: '-12.5px',
     },
     active: {
         borderLeft: '5px solid #7a1d23',
@@ -45,8 +49,8 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
                 <ListItemIcon>
                     <Icon/>
                 </ListItemIcon>
-                <ListItemText style={{marginLeft: '-10px'}}>
-                    {text}
+                <ListItemText>
+                    <Typography className={classes.itemText}>{text}</Typography>
                 </ListItemText>
             </ListItem>
         </Link>
