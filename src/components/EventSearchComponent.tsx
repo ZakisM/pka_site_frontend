@@ -11,7 +11,7 @@ import {SearchEventActionTypes} from "../redux/search/types";
 import {searchEventClearResults, searchPKAEvents} from "../redux/search/actions";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
-import {CircularProgress, Typography} from "@material-ui/core";
+import {Box, CircularProgress, Typography} from "@material-ui/core";
 import moment from "moment";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
@@ -37,7 +37,9 @@ type SearchComponentProps =
 
 const useStyles = makeStyles(theme => ({
     root: {
-        height: '90%',
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden'
     },
     search: {
         borderRadius: theme.spacing(1),
@@ -45,7 +47,6 @@ const useStyles = makeStyles(theme => ({
         '&:hover': {
             backgroundColor: fade(theme.palette.common.black, 0.25),
         },
-        width: '100%',
         marginBottom: '2ch',
         alignItems: 'center',
         display: 'flex',
@@ -66,9 +67,6 @@ const useStyles = makeStyles(theme => ({
         fontSize: '1.75ch',
         color: fade(theme.palette.common.white, 0.45),
         marginBottom: '1ch',
-    },
-    resultList: {
-        height: '90%',
     },
 }));
 
@@ -163,30 +161,32 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
     };
 
     return (
-        <div className={classes.root}>
-            <div className={classes.search}>
-                <div className={classes.iconButton}>
-                    <SearchIcon/>
+        <Box display='flex'
+             flex='1'
+             height='95%'>
+            <Box className={classes.root}>
+                <div className={classes.search}>
+                    <div className={classes.iconButton}>
+                        <SearchIcon/>
+                    </div>
+                    <InputBase
+                        error
+                        inputRef={inputRef}
+                        placeholder={`Search Events`}
+                        classes={{
+                            input: classes.inputInput,
+                        }}
+                        inputProps={{'aria-label': 'search'}}
+                        fullWidth={true}
+                        onChange={e => setInput(e.target.value)}
+                    />
+                    {searchState.isLoading && <div className={classes.iconButton}>
+                        <CircularProgress color="primary"
+                                          size={23}
+                                          thickness={5}/>
+                    </div>}
                 </div>
-                <InputBase
-                    error
-                    inputRef={inputRef}
-                    placeholder={`Search Events`}
-                    classes={{
-                        input: classes.inputInput,
-                    }}
-                    inputProps={{'aria-label': 'search'}}
-                    fullWidth={true}
-                    onChange={e => setInput(e.target.value)}
-                />
-                {searchState.isLoading && <div className={classes.iconButton}>
-                    <CircularProgress color="primary"
-                                      size={23}
-                                      thickness={5}/>
-                </div>}
-            </div>
 
-            <div className={classes.resultList}>
                 {!searchState.isLoading && <Typography variant="caption"
                                                        className={classes.subTitle}>
                     {`${searchState.searchResults.length} RESULTS`}
@@ -204,8 +204,8 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
                         </List>
                     )}
                 </AutoSizer>
-            </div>
-        </div>
+            </Box>
+        </Box>
     )
 };
 

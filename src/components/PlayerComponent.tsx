@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
 import ReactPlayer from "react-player";
-import {Card, CardContent, CardHeader, CardMedia, List} from "@material-ui/core";
+import {Box, Card, CardContent, CardHeader, List} from "@material-ui/core";
 import {ThunkDispatch} from "redux-thunk";
 import {saveTimestamp, setCurrentEventCard, watchPKAEpisode} from "../redux/watch-episode/actions";
 import {WatchEpisodeRootActionTypes} from "../redux/watch-episode/types";
@@ -27,16 +27,15 @@ const mapStateToProps = (state: RootState) => ({
 
 type PlayerComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
-const height = '77vh';
 
 const useStyles = makeStyles(() => ({
-    content: {
-        display: 'flex'
-    },
     videoCard: {
         width: '75%',
         backgroundColor: '#1f1f1f',
         marginRight: '2ch',
+        height: '100%',
+        display: 'flex',
+        flexFlow: 'column'
     },
     eventsCard: {
         width: '25%',
@@ -45,11 +44,6 @@ const useStyles = makeStyles(() => ({
     eventsHeader: {
         textAlign: 'center',
         backgroundColor: '#1b1b1b',
-    },
-    list: {
-        width: '100%',
-        maxHeight: height,
-        overflow: 'auto',
     },
     listItem: {
         marginBottom: '1ch',
@@ -114,9 +108,12 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
 
     if (watchEpisodeState.episode !== undefined && !watchEpisodeState.isLoading) {
         return (
-            <div className={classes.content}>
+            <Box display='flex'
+                 flex='1'
+                 height='95%'>
+
                 <Card className={classes.videoCard}>
-                    <CardMedia>
+                    <div style={{height: '100%'}}>
                         <ReactPlayer ref={playerRef}
                                      config={{
                                          youtube: {
@@ -125,52 +122,56 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                      }}
                                      url={getUrl()}
                                      width={'100%'}
-                                     height={height}
+                                     height={'100%'}
                                      controls={true}
                                      playing={true}
                                      onError={(e) => console.log(e)}
                                      onProgress={() => synchronizeTimestamp()}
                                      onPlay={() => handleInitial()}
                                      onReady={() => loadTimestamp()}/>
-                    </CardMedia>
-                    <CardHeader
-                        title={watchEpisodeState.youtubeDetails?.title}
-                        subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}
-                    />
+                    </div>
+                    <CardHeader title={watchEpisodeState.youtubeDetails?.title}
+                                subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>
                 </Card>
+
                 <Card className={classes.eventsCard}>
                     <CardHeader
                         className={classes.eventsHeader}
                         subheader="Events"
                     />
-                    <CardContent>
-                        <List className={classes.list}>
-                            {(watchEpisodeState.events!).map((event, i) => (
-                                <div className={classes.listItem}
-                                     key={i}
-                                     onClick={() => loadTimestamp(event.timestamp)}
-                                >
-                                    <PlayerEventCard
-                                        id={i}
-                                        title={event.description}
-                                        timestamp={event.timestamp}
-                                    />
-                                </div>
-                            ))}
-                        </List>
-                    </CardContent>
+                    <Box maxHeight='92.5%'
+                         style={{overflow: "auto"}}>
+                        <CardContent>
+                            <List>
+                                {(watchEpisodeState.events!).map((event, i) => (
+                                    <div className={classes.listItem}
+                                         key={i}
+                                         onClick={() => loadTimestamp(event.timestamp)}
+                                    >
+                                        <PlayerEventCard
+                                            id={i}
+                                            title={event.description}
+                                            timestamp={event.timestamp}
+                                        />
+                                    </div>
+                                ))}
+                            </List>
+                        </CardContent>
+                    </Box>
                 </Card>
-            </div>
+            </Box>
         )
     } else {
         return (
-            <div className={classes.content}>
+            <Box display='flex'
+                 flex='1'
+                 height='95%'>
                 <Card className={classes.videoCard}>
-                    <CardMedia>
+                    <div style={{height: '100%'}}>
                         <Skeleton variant="rect"
                                   width={"100%"}
-                                  height={height}/>
-                    </CardMedia>
+                                  height={"100%"}/>
+                    </div>
                     <CardHeader
                         title={<Skeleton/>}
                         subheader={<Skeleton width="40%"/>}
@@ -181,21 +182,24 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         className={classes.eventsHeader}
                         subheader="Events"
                     />
-                    <CardContent>
-                        <List className={classes.list}>
-                            {Array(7).fill(0).map((event, i) => (
-                                <div className={classes.listItem}
-                                     key={i}
-                                >
-                                    <Skeleton variant="rect"
-                                              width={"100%"}
-                                              height={"10vh"}/>
-                                </div>
-                            ))}
-                        </List>
-                    </CardContent>
+                    <Box maxHeight='92.5%'
+                         style={{overflow: "hidden"}}>
+                        <CardContent>
+                            <List>
+                                {Array(10).fill(0).map((event, i) => (
+                                    <div className={classes.listItem}
+                                         key={i}
+                                    >
+                                        <Skeleton variant="rect"
+                                                  width={"100%"}
+                                                  height={"10vh"}/>
+                                    </div>
+                                ))}
+                            </List>
+                        </CardContent>
+                    </Box>
                 </Card>
-            </div>
+            </Box>
         )
     }
 };
