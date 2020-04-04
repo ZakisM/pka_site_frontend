@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v2
-      - uses: borales/actions-yarn@v2.0.0
-      - name: Yarn install
-        with:
-          cmd: install
-      - uses: borales/actions-yarn@v2.0.0
-      - name: Yarn build
-        with:
-          cmd: build
+    - uses: actions/checkout@v1
+    - name: install
+    - uses: borales/actions-yarn@v2.0.0
+      with:
+        cmd: install
+    - name: build
+    - uses: borales/actions-yarn@v2.0.0
+      with:
+        cmd: build
