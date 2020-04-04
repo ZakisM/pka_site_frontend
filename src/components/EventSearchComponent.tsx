@@ -162,7 +162,7 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
     };
 
     return (
-        <Box height='95%'>
+        <Box height='97.5%'>
             <Box className={classes.root}>
                 <div className={classes.search}>
                     <div className={classes.iconButton}>
