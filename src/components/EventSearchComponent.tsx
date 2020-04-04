@@ -37,9 +37,10 @@ type SearchComponentProps =
 
 const useStyles = makeStyles(theme => ({
     root: {
-        height: '100%',
+        height: '95%',
         width: '100%',
-        overflow: 'hidden'
+        display: 'flex',
+        flexFlow: 'column'
     },
     search: {
         borderRadius: theme.spacing(1),
@@ -161,9 +162,7 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
     };
 
     return (
-        <Box display='flex'
-             flex='1'
-             height='95%'>
+        <Box height='95%'>
             <Box className={classes.root}>
                 <div className={classes.search}>
                     <div className={classes.iconButton}>
@@ -187,23 +186,26 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
                     </div>}
                 </div>
 
-                {!searchState.isLoading && <Typography variant="caption"
-                                                       className={classes.subTitle}>
-                    {`${searchState.searchResults.length} RESULTS`}
-                </Typography>}
-                <AutoSizer>
-                    {({height, width}) => (
-                        <List height={height}
-                              width={width}
-                              deferredMeasureMentCache={cellMeasurerCache}
-                              rowCount={searchState.searchResults.length}
-                              rowRenderer={renderRow}
-                              rowHeight={paddedRowHeight}
-                              overscanRowCount={10}
-                        >
-                        </List>
-                    )}
-                </AutoSizer>
+
+                <div style={{height: '100%'}}>
+                    {!searchState.isLoading && <Typography variant="caption"
+                                                           className={classes.subTitle}>
+                        {`${searchState.searchResults.length} RESULTS`}
+                    </Typography>}
+                    <AutoSizer>
+                        {({height, width}) => (
+                            <List height={height}
+                                  width={width}
+                                  deferredMeasureMentCache={cellMeasurerCache}
+                                  rowCount={searchState.searchResults.length}
+                                  rowRenderer={renderRow}
+                                  rowHeight={paddedRowHeight}
+                                  overscanRowCount={10}
+                            >
+                            </List>
+                        )}
+                    </AutoSizer>
+                </div>
             </Box>
         </Box>
     )
