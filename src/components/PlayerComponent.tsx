@@ -30,7 +30,7 @@ type PlayerComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<type
 const useStyles = makeStyles(() => ({
     videoCard: {
         width: '75%',
-        backgroundColor: '#1f1f1f',
+        backgroundColor: '#151515',
         marginRight: '2ch',
         height: '100%',
         display: 'flex',
@@ -38,11 +38,11 @@ const useStyles = makeStyles(() => ({
     },
     eventsCard: {
         width: '25%',
-        backgroundColor: '#191919',
+        backgroundColor: '#151515',
     },
     eventsHeader: {
         textAlign: 'center',
-        backgroundColor: '#1f1f1f',
+        backgroundColor: '#111111',
     },
     listItem: {
         marginBottom: '1ch',

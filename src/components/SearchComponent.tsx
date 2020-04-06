@@ -91,19 +91,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
     const history = useHistory();
 
-    useAsync(async () => {
-        const iRef = inputRef.current;
-
-        if (iRef) {
-            iRef.focus();
-        }
-       
-        if (pathname === "/episodes") {
-            setInput('');
-            await searchPKAItemDebounced(input, searchItemType);
-        }
-    }, [pathname]);
-
     useEffect(() => {
         const iRef = inputRef.current;
 
@@ -132,6 +119,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             }
         }
     }, []);
+
+    useAsync(async () => {
+        if (pathname === "/episodes") {
+            await searchPKAItemDebounced(input, searchItemType);
+        }
+    }, [pathname]);
 
     useAsync(async () => {
         const iRef = inputRef.current;
@@ -213,7 +206,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     </div>}
                 </div>
 
-
+                {searchState.searchType === searchItemType &&
                 <div style={{height: '100%'}}>
                     {!searchState.isLoading && <Typography variant="caption"
                                                            className={classes.subTitle}>
@@ -233,6 +226,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                         )}
                     </AutoSizer>
                 </div>
+                }
             </Box>
         </Box>
     )

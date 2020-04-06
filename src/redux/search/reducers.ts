@@ -36,16 +36,20 @@ export function searchReducer(
         case SearchEventTypes.CLEAR: {
             return {
                 ...state,
-                isLoading: false,
                 searchResults: [],
             };
         }
         case LOCATION_CHANGE: {
             return {
                 ...state,
-                isLoading: false,
                 searchQuery: "",
                 searchResults: []
+            }
+        }
+        case SearchEventTypes.SET_SEARCH_TYPE: {
+            return {
+                ...state,
+                searchType: action.payload
             }
         }
         default:
