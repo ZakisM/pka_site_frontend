@@ -2,17 +2,16 @@ import React, {useEffect, useRef, useState} from "react";
 import {fade, makeStyles} from '@material-ui/core/styles';
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import EventSearchResultCard from "./EventSearchResultCard";
+import SearchResultCard from "./SearchResultCard";
 import useConstant from "use-constant";
 import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {useAsync} from "react-async-hook";
 import {ThunkDispatch} from "redux-thunk";
-import {SearchEventActionTypes} from "../redux/search/types";
-import {searchEventClearResults, searchPKAEvents} from "../redux/search/actions";
+import {SearchEventActionTypes, SearchItemType} from "../redux/search/types";
+import {searchEventClearResults, searchPKAItem} from "../redux/search/actions";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
 import {Box, CircularProgress, Typography} from "@material-ui/core";
-import moment from "moment";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
 import {isMobile} from "react-device-detect";
@@ -21,19 +20,25 @@ import {useHistory} from "react-router-dom";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, SearchEventActionTypes>) => {
     return {
-        searchPKAEvents: (searchQuery: string) => dispatch(searchPKAEvents(searchQuery)),
+        searchPKAItem: (searchQuery: string, searchItemType: SearchItemType) => dispatch(searchPKAItem(searchQuery, searchItemType)),
         watchPKAEpisode: (number: number, timestamp: number) => dispatch(watchPKAEpisode(number, timestamp)),
-        searchEventClearResults: () => dispatch(searchEventClearResults())
+        searchEventClearResults: () => dispatch(searchEventClearResults()),
     }
 };
 
 const mapStateToProps = (state: RootState) => ({
     searchState: state.search,
+    pathname: state.router.location.pathname,
 });
+
+interface InputProps {
+    searchItemType: SearchItemType,
+}
 
 type SearchComponentProps =
     ReturnType<typeof mapStateToProps>
-    & ReturnType<typeof mapDispatchToProps>;
+    & ReturnType<typeof mapDispatchToProps>
+    & InputProps;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -71,13 +76,13 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
+const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const classes = useStyles();
 
-    const {watchPKAEpisode, searchPKAEvents, searchEventClearResults, searchState} = props;
+    const {watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, pathname, searchItemType} = props;
 
-    const searchPKAEventDebounced = useConstant(() =>
-        AwesomeDebouncePromise(searchPKAEvents, 300)
+    const searchPKAItemDebounced = useConstant(() =>
+        AwesomeDebouncePromise(searchPKAItem, 300)
     );
 
     const [input, setInput] = useState("");
@@ -86,8 +91,26 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
 
     const history = useHistory();
 
+    useAsync(async () => {
+        const iRef = inputRef.current;
+
+        if (iRef) {
+            iRef.focus();
+        }
+       
+        if (pathname === "/episodes") {
+            setInput('');
+            await searchPKAItemDebounced(input, searchItemType);
+        }
+    }, [pathname]);
+
     useEffect(() => {
         const iRef = inputRef.current;
+
+        if (iRef) {
+            iRef.focus();
+        }
+
         const resetInput = () => {
             if (iRef) {
                 setInput('');
@@ -117,11 +140,14 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
             iRef.focus();
         }
 
-        if (input.trim().length <= 2) {
+        if (searchItemType === SearchItemType.EPISODE) {
+            await searchEventClearResults();
+            await searchPKAItemDebounced(input, searchItemType);
+        } else if (input.trim().length <= 2) {
             await searchEventClearResults();
         } else {
             await searchEventClearResults();
-            await searchPKAEventDebounced(input);
+            await searchPKAItemDebounced(input, searchItemType);
         }
     }, [input]);
 
@@ -151,10 +177,10 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
                           rowIndex={index}>
                 <div style={style}
                      onClick={() => watch(searchResult.episodeNumber, searchResult.timestamp)}>
-                    <EventSearchResultCard
+                    <SearchResultCard
                         episodeNumber={searchResult.episodeNumber}
-                        title={searchResult.description}
-                        subtitle={`Starts at ${moment.utc(Number(searchResult.timestamp) * 1000).format("HH:mm:ss")}`}
+                        title={searchResult.cardTitle()}
+                        subtitle={searchResult.cardSubtitle()}
                     />
                 </div>
             </CellMeasurer>
@@ -162,7 +188,8 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
     };
 
     return (
-        <Box height='97.5%'>
+        <Box height='97.5%'
+             key={searchItemType}>
             <Box className={classes.root}>
                 <div className={classes.search}>
                     <div className={classes.iconButton}>
@@ -171,7 +198,7 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <InputBase
                         error
                         inputRef={inputRef}
-                        placeholder={`Search Events`}
+                        placeholder={`Search ${searchItemType}s`}
                         classes={{
                             input: classes.inputInput,
                         }}
@@ -214,4 +241,4 @@ const EventSearchComponent: React.FC<SearchComponentProps> = (props) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(EventSearchComponent)
+)(SearchComponent)

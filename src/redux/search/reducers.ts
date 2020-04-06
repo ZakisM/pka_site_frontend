@@ -1,4 +1,5 @@
 import {SearchEventActionTypes, SearchEventTypes, SearchState} from "./types";
+import {LOCATION_CHANGE} from "connected-react-router";
 
 const initialState: SearchState = {
     searchQuery: "",
@@ -38,6 +39,14 @@ export function searchReducer(
                 isLoading: false,
                 searchResults: [],
             };
+        }
+        case LOCATION_CHANGE: {
+            return {
+                ...state,
+                isLoading: false,
+                searchQuery: "",
+                searchResults: []
+            }
         }
         default:
             return state

@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const EventSearchResultCard: React.FC<Props> = (props) => {
+const SearchResultCard: React.FC<Props> = (props) => {
     const classes = useStyles();
     const {episodeNumber, title, subtitle} = props;
 
@@ -49,4 +49,4 @@ const EventSearchResultCard: React.FC<Props> = (props) => {
     )
 };
 
-export default EventSearchResultCard;
+export default SearchResultCard;

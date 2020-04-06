@@ -27,7 +27,6 @@ const mapStateToProps = (state: RootState) => ({
 
 type PlayerComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
-
 const useStyles = makeStyles(() => ({
     videoCard: {
         width: '75%',
@@ -43,7 +42,7 @@ const useStyles = makeStyles(() => ({
     },
     eventsHeader: {
         textAlign: 'center',
-        backgroundColor: '#1b1b1b',
+        backgroundColor: '#1f1f1f',
     },
     listItem: {
         marginBottom: '1ch',

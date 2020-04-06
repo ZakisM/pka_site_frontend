@@ -1,19 +1,53 @@
 import axios from "axios";
 import {Dispatch} from "redux";
 import {SERVER_IP} from "../../App";
-import {SearchEventActionTypes, SearchEventTypes, SearchState} from "./types";
+import {
+    EventSearchResult,
+    PkaSearchResult,
+    SearchEventActionTypes,
+    SearchEventTypes,
+    SearchItemType,
+    SearchState
+} from "./types";
 
-export const searchPKAEvents = (searchQuery: string) => (dispatch: Dispatch<SearchEventActionTypes>) => {
-    console.log(`Searching for PKA event: ${searchQuery}`);
+export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>) => {
     dispatch(searchEventStarted());
 
+    const getEndpoint = () => {
+        switch (searchItemType) {
+            case SearchItemType.EPISODE:
+                return 'search_pka_episode';
+            case SearchItemType.EVENT:
+                return 'search_pka_event';
+        }
+    };
+
+    let endpoint = getEndpoint();
+
     axios
-        .post(`http://${SERVER_IP}/v1/api/search_pka_event`, {query: searchQuery})
+        .post(`http://${SERVER_IP}/v1/api/${endpoint}`, {query: searchQuery})
         .then(res => {
+
+            let searchResults = [];
+
+            switch (searchItemType) {
+                case SearchItemType.EPISODE: {
+                    for (let sr of res.data.data) {
+                        searchResults.push(PkaSearchResult.Deserialize(sr))
+                    }
+                    break;
+                }
+                case SearchItemType.EVENT: {
+                    for (let sr of res.data.data) {
+                        searchResults.push(EventSearchResult.Deserialize(sr))
+                    }
+                    break;
+                }
+            }
 
             let searchResult: SearchState = {
                 searchQuery: searchQuery,
-                searchResults: res.data.data,
+                searchResults: searchResults,
             };
 
             return dispatch(searchEventSuccess(searchResult))

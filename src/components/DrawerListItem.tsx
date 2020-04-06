@@ -13,6 +13,10 @@ const useStyles = makeStyles(theme => ({
         color: 'white',
         textDecoration: 'none',
     },
+    linkDisabled: {
+        pointerEvents: 'none',
+        cursor: 'default',
+    },
     item: {
         height: '5.7ch',
         '&:hover': {
@@ -43,7 +47,7 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
 
     return (
         <Link to={path}
-              className={classes.link}>
+              className={`${classes.link} ${match ? classes.linkDisabled : null}`}>
             <ListItem className={`${classes.item} ${match ? classes.active : null}`}
                       key={text}>
                 <ListItemIcon>
