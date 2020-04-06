@@ -121,7 +121,14 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }, []);
 
     useAsync(async () => {
+        const iRef = inputRef.current;
+
+        if (iRef) {
+            iRef.focus();
+        }
+
         if (pathname === "/episodes") {
+            setInput('');
             await searchPKAItemDebounced(input, searchItemType);
         }
     }, [pathname]);
