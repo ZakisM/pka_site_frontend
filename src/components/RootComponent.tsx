@@ -1,9 +1,12 @@
 import React from "react";
 import {makeStyles} from '@material-ui/core/styles';
 import DrawerComponent from './DrawerComponent';
-import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
-import SearchComponent from "./EventSearchComponent";
+import {Redirect, Route, Switch} from "react-router-dom";
+import SearchComponent from "./SearchComponent";
 import PlayerComponent from "./PlayerComponent";
+import {SearchItemType} from "../redux/search/types";
+import {ConnectedRouter} from "connected-react-router";
+import {history} from "../redux/store"
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -22,7 +25,7 @@ const RootComponent: React.FC = () => {
     const classes = useStyles();
 
     return (
-        <Router>
+        <ConnectedRouter history={history}>
             <div className={classes.root}>
                 <DrawerComponent/>
                 <main className={classes.content}>
@@ -37,11 +40,11 @@ const RootComponent: React.FC = () => {
                         </Route>
                         <Route exact
                                path="/episodes">
-                            {/*<SearchComponent searchType={SearchTypes.EPISODES}/>*/}
+                            <SearchComponent searchItemType={SearchItemType.EPISODE}/>
                         </Route>
                         <Route exact
                                path="/events">
-                            <SearchComponent/>
+                            <SearchComponent searchItemType={SearchItemType.EVENT}/>
                         </Route>
                         <Route exact
                                path="/guests">
@@ -50,7 +53,7 @@ const RootComponent: React.FC = () => {
                     </Switch>
                 </main>
             </div>
-        </Router>
+        </ConnectedRouter>
     )
 };
 

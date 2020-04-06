@@ -1,14 +1,88 @@
+import moment from "moment";
+import {LOCATION_CHANGE} from "connected-react-router";
+
 export interface SearchState {
     searchQuery: string
-    searchResults: EventSearchResult[]
+    searchResults: SearchResult[]
     isLoading?: boolean
     errors?: string[]
 }
 
-export interface EventSearchResult {
+export enum SearchItemType {
+    EPISODE = 'Episode',
+    EVENT = 'Event',
+}
+
+export interface SearchResult {
+    episodeNumber: number,
+    timestamp: number,
+
+    cardTitle(): string,
+
+    cardSubtitle(): string,
+}
+
+export interface EventSearchResultFields extends SearchResult {
     episodeNumber: number,
     timestamp: number,
     description: string,
+}
+
+export class EventSearchResult implements EventSearchResultFields {
+    episodeNumber: number;
+    timestamp: number;
+    description: string;
+
+    constructor(episodeNumber: number, timestamp: number, description: string) {
+        this.episodeNumber = episodeNumber;
+        this.timestamp = timestamp;
+        this.description = description;
+    }
+
+    static Deserialize(input: any): EventSearchResult {
+        return new EventSearchResult(input.episodeNumber, input.timestamp, input.description)
+    }
+
+    cardTitle(): string {
+        return this.description;
+    }
+
+    cardSubtitle(): string {
+        return `Starts at ${moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss")}`;
+    }
+}
+
+export interface PkaSearchResultFields extends SearchResult {
+    episodeNumber: number,
+    uploadDate: number,
+    title: string,
+}
+
+export class PkaSearchResult implements PkaSearchResultFields {
+    episodeNumber: number;
+    uploadDate: number;
+    title: string;
+
+    timestamp = 0;
+
+    constructor(episodeNumber: number, uploadDate: number, title: string) {
+        this.episodeNumber = episodeNumber;
+        this.uploadDate = uploadDate;
+        this.title = title;
+    }
+
+    static Deserialize(input: PkaSearchResultFields): PkaSearchResult {
+        return new PkaSearchResult(input.episodeNumber, input.uploadDate, input.title)
+    }
+
+    cardTitle(): string {
+        return this.title;
+    }
+
+    cardSubtitle(): string {
+        return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
+    }
+
 }
 
 export enum SearchEventTypes {
@@ -38,6 +112,15 @@ interface SearchEventClearResults {
     type: SearchEventTypes.CLEAR
 }
 
-type SearchActionTypes = SearchEventStarted | SearchEventFailure | SearchEventSuccess | SearchEventClearResults
+interface LocationChange {
+    type: typeof LOCATION_CHANGE
+}
+
+type SearchActionTypes =
+    SearchEventStarted
+    | SearchEventFailure
+    | SearchEventSuccess
+    | SearchEventClearResults
+    | LocationChange
 
 export type SearchEventActionTypes = SearchActionTypes
