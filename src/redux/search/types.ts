@@ -4,6 +4,7 @@ import {LOCATION_CHANGE} from "connected-react-router";
 export interface SearchState {
     searchQuery: string
     searchResults: SearchResult[]
+    searchType?: SearchItemType,
     isLoading?: boolean
     errors?: string[]
 }
@@ -90,6 +91,7 @@ export enum SearchEventTypes {
     FAILURE = 'SEARCH_EVENT_FAILURE',
     SUCCESS = 'SEARCH_EVENT_SUCCESS',
     CLEAR = 'SEARCH_EVENT_CLEAR',
+    SET_SEARCH_TYPE = 'SET_SEARCH_TYPE',
 }
 
 interface SearchEventSuccess {
@@ -116,11 +118,17 @@ interface LocationChange {
     type: typeof LOCATION_CHANGE
 }
 
+interface SetSearchType {
+    type: SearchEventTypes.SET_SEARCH_TYPE,
+    payload: SearchItemType
+}
+
 type SearchActionTypes =
     SearchEventStarted
     | SearchEventFailure
     | SearchEventSuccess
     | SearchEventClearResults
     | LocationChange
+    | SetSearchType
 
 export type SearchEventActionTypes = SearchActionTypes

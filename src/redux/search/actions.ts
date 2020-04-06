@@ -12,6 +12,7 @@ import {
 
 export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>) => {
     dispatch(searchEventStarted());
+    dispatch(setSearchType(searchItemType));
 
     const getEndpoint = () => {
         switch (searchItemType) {
@@ -79,6 +80,11 @@ const searchEventFailure = (err: string): SearchEventActionTypes => ({
     meta: {
         error: err
     }
+});
+
+const setSearchType = (searchType: SearchItemType): SearchEventActionTypes => ({
+    type: SearchEventTypes.SET_SEARCH_TYPE,
+    payload: searchType
 });
 
 export const searchEventClearResults = (): SearchEventActionTypes => ({
