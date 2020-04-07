@@ -7,7 +7,6 @@ import DrawerListItem from "./DrawerListItem";
 import TheatersIcon from "@material-ui/icons/Theaters";
 import LiveTvIcon from "@material-ui/icons/LiveTv";
 import EventIcon from "@material-ui/icons/Event";
-import PeopleIcon from "@material-ui/icons/PeopleAlt";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 
 export const drawerWidth = 220;
@@ -64,8 +63,6 @@ const DrawerComponent: React.FC = () => {
                                 Icon={TheatersIcon}/>
                 <DrawerListItem text={"Events"}
                                 Icon={EventIcon}/>
-                <DrawerListItem text={"Guests"}
-                                Icon={PeopleIcon}/>
             </List>
             <Divider/>
         </div>
