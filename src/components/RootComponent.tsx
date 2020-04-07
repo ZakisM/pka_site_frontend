@@ -46,10 +46,6 @@ const RootComponent: React.FC = () => {
                                path="/events">
                             <SearchComponent searchItemType={SearchItemType.EVENT}/>
                         </Route>
-                        <Route exact
-                               path="/guests">
-                            {/*<SearchComponent searchType={SearchTypes.GUESTS}/>*/}
-                        </Route>
                     </Switch>
                 </main>
             </div>

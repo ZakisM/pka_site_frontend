@@ -82,7 +82,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const {watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, pathname, searchItemType} = props;
 
     const searchPKAItemDebounced = useConstant(() =>
-        AwesomeDebouncePromise(searchPKAItem, 300)
+        AwesomeDebouncePromise(searchPKAItem, 250)
     );
 
     const [input, setInput] = useState("");
@@ -100,7 +100,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
         const resetInput = () => {
             if (iRef) {
-                setInput('');
+                if (input === '') {
+                    setInput(' ');
+                } else {
+                    setInput('')
+                }
                 setInput(iRef.value);
             }
         };
@@ -118,7 +122,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 window.removeEventListener('resize', resetInput);
             }
         }
-    }, []);
+    }, [input]);
 
     useAsync(async () => {
         const iRef = inputRef.current;
