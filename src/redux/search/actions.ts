@@ -1,6 +1,5 @@
 import axios from "axios";
 import {Dispatch} from "redux";
-import {SERVER_IP} from "../../App";
 import {
     EventSearchResult,
     PkaSearchResult,
@@ -26,7 +25,7 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
     let endpoint = getEndpoint();
 
     axios
-        .post(`http://${SERVER_IP}/v1/api/${endpoint}`, {query: searchQuery})
+        .post(`/v1/api/${endpoint}`, {query: searchQuery})
         .then(res => {
 
             let searchResults = [];
