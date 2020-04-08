@@ -1,13 +1,12 @@
 import axios from "axios";
 import {Dispatch} from "redux";
-import {SERVER_IP} from "../../App";
 import {WatchEpisodeRootActionTypes, WatchEpisodeState, WatchEpisodeTypes} from "./types";
 
 export const watchPKAEpisode = (episodeNumber: number | "latest", timestamp: number) => (dispatch: Dispatch<WatchEpisodeRootActionTypes>) => {
     dispatch(watchEpisodeStarted());
 
     axios
-        .get(`http://${SERVER_IP}/v1/api/pka_episode/watch/${episodeNumber}`)
+        .get(`/v1/api/pka_episode/watch/${episodeNumber}`)
         .then(res => {
 
             let watchEpisodeResult: WatchEpisodeState = {
