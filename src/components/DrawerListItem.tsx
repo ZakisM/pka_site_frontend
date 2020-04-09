@@ -46,7 +46,7 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
     });
 
     return (
-        <Link to={path}
+        <Link to={match ? '' : path}
               className={`${classes.link} ${match ? classes.linkDisabled : null}`}>
             <ListItem className={`${classes.item} ${match ? classes.active : null}`}
                       key={text}>
