@@ -10,6 +10,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import moment from "moment";
 import PlayerEventCard from "./PlayerEventCard";
 import Skeleton from '@material-ui/lab/Skeleton';
+import {isMobile} from "react-device-detect";
 
 const YOUTUBE_BASE_URL = 'https://www.youtube.com/watch?v=';
 
@@ -29,16 +30,34 @@ type PlayerComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<type
 
 const useStyles = makeStyles(() => ({
     videoCard: {
-        width: '75%',
+        height: '100%',
         backgroundColor: '#151515',
         marginRight: '2ch',
-        height: '100%',
         display: 'flex',
+        flexFlow: 'column',
+        width: '75%',
+    },
+    fullWidth: {
+        width: '100%',
+    },
+    halfHeight: {
+        marginTop: '2ch',
+        height: '80%',
+        width: '100%'
+    },
+    fullHeight: {
+        height: '100%',
+    },
+    flexColumn: {
         flexFlow: 'column'
     },
-    eventsCard: {
+    eventsWidth: {
         width: '25%',
+    },
+    eventsCard: {
         backgroundColor: '#151515',
+        display: 'flex',
+        flexFlow: 'column',
     },
     eventsHeader: {
         textAlign: 'center',
@@ -105,13 +124,34 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
         }
     };
 
+    const isPortrait = () => {
+        return window.outerHeight >= window.outerWidth;
+    };
+
+    const hasEvents = () => {
+        return watchEpisodeState.events && watchEpisodeState.events.length > 0;
+    };
+
+    const isMobilePortrait = () => {
+        return isMobile && isPortrait();
+    };
+
+    const videoIsFullWidth = () => {
+        if (isMobilePortrait()) {
+            return true;
+        } else {
+            return !hasEvents();
+        }
+    };
+
     if (watchEpisodeState.episode !== undefined && !watchEpisodeState.isLoading) {
         return (
             <Box display='flex'
-                 flex='1'
-                 height='95%'>
+                 height='95%'
+                 className={isMobilePortrait() ? classes.flexColumn : ''}
+            >
 
-                <Card className={classes.videoCard}>
+                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
                     <div style={{height: '100%'}}>
                         <ReactPlayer ref={playerRef}
                                      config={{
@@ -133,13 +173,14 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                 subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>
                 </Card>
 
-                <Card className={classes.eventsCard}>
+                {hasEvents() &&
+                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
                     <CardHeader
                         className={classes.eventsHeader}
                         subheader="Events"
                     />
                     <Box maxHeight='92.5%'
-                         style={{overflow: "auto"}}>
+                         style={{overflow: "scroll"}}>
                         <CardContent>
                             <List>
                                 {(watchEpisodeState.events!).map((event, i) => (
@@ -158,6 +199,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         </CardContent>
                     </Box>
                 </Card>
+                }
             </Box>
         )
     } else {

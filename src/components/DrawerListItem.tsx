@@ -54,7 +54,8 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
                     <Icon/>
                 </ListItemIcon>
                 <ListItemText>
-                    <Typography className={classes.itemText}>{text}</Typography>
+                    <Typography variant="button"
+                                className={classes.itemText}>{text}</Typography>
                 </ListItemText>
             </ListItem>
         </Link>

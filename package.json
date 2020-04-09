@@ -21,6 +21,7 @@
     "axios": "^0.19.2",
     "connected-react-router": "^6.8.0",
     "moment": "^2.24.0",
+    "raleway-webfont": "^3.0.1",
     "react": "^16.13.0",
     "react-async-hook": "^3.6.1",
     "react-device-detect": "^1.11.14",
@@ -33,6 +34,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "typeface-roboto": "^0.0.75",
     "typescript": "~3.7.2",
     "use-constant": "^1.0.0"
   },
