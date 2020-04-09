@@ -8,6 +8,7 @@ import TheatersIcon from "@material-ui/icons/Theaters";
 import LiveTvIcon from "@material-ui/icons/LiveTv";
 import EventIcon from "@material-ui/icons/Event";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
+import 'raleway-webfont';
 
 export const drawerWidth = 220;
 
@@ -25,9 +26,9 @@ const useStyles = makeStyles(theme => ({
         zIndex: theme.zIndex.drawer + 1,
     },
     appBarTitle: {
-        fontSize: '2.75ch',
-        letterSpacing: '0.001ch',
-        fontWeight: 600,
+        fontFamily: 'Raleway',
+        fontSize: '1.5rem',
+        fontWeight: 800,
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -86,12 +87,12 @@ const DrawerComponent: React.FC = () => {
                         noWrap
                         className={classes.appBarTitle}
                     >
-                        Painkiller Already Index
+                        PKA INDEX
                     </Typography>
                 </Toolbar>
             </AppBar>
             <nav className={classes.drawer}
-                 aria-label="mailbox folders">
+                 aria-label="All links">
                 <Hidden smUp
                         implementation="js">
                     <Drawer

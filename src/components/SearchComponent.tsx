@@ -219,9 +219,9 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
                 {searchState.searchType === searchItemType &&
                 <div style={{height: '100%'}}>
-                    {!searchState.isLoading && <Typography variant="caption"
+                    {!searchState.isLoading && <Typography variant="overline"
                                                            className={classes.subTitle}>
-                        {`${searchState.searchResults.length} RESULTS`}
+                        {`${searchState.searchResults.length} Results`}
                     </Typography>}
                     <AutoSizer>
                         {({height, width}) => (
