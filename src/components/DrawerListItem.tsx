@@ -13,10 +13,6 @@ const useStyles = makeStyles(theme => ({
         color: 'white',
         textDecoration: 'none',
     },
-    linkDisabled: {
-        pointerEvents: 'none',
-        cursor: 'default',
-    },
     item: {
         height: '5.7ch',
         '&:hover': {
@@ -32,6 +28,8 @@ const useStyles = makeStyles(theme => ({
     active: {
         borderLeft: '5px solid #7a1d23',
         backgroundColor: fade(theme.palette.common.white, 0.05),
+        pointerEvents: 'none',
+        cursor: 'default',
     }
 }));
 
@@ -45,21 +43,31 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
         path: path,
     });
 
-    return (
-        <Link to={match ? '' : path}
-              className={`${classes.link} ${match ? classes.linkDisabled : null}`}>
-            <ListItem className={`${classes.item} ${match ? classes.active : null}`}
-                      key={text}>
-                <ListItemIcon>
-                    <Icon/>
-                </ListItemIcon>
-                <ListItemText>
-                    <Typography variant="button"
-                                className={classes.itemText}>{text}</Typography>
-                </ListItemText>
-            </ListItem>
-        </Link>
-    )
+    const inner = (
+        <ListItem className={`${classes.item} ${match ? classes.active : null}`}
+                  key={text}>
+            <ListItemIcon>
+                <Icon/>
+            </ListItemIcon>
+            <ListItemText>
+                <Typography variant="button"
+                            className={classes.itemText}>{text}</Typography>
+            </ListItemText>
+        </ListItem>
+    );
+
+    if (match) {
+        return (
+            inner
+        )
+    } else {
+        return (
+            <Link to={path}
+                  className={classes.link}>
+                {inner}
+            </Link>
+        )
+    }
 };
 
 export default DrawerListItem;
