@@ -5,6 +5,8 @@ import * as serviceWorker from './serviceWorker';
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import {createMuiTheme, CssBaseline, MuiThemeProvider} from "@material-ui/core";
+import 'typeface-roboto';
+import 'raleway-webfont';
 
 const darkTheme = createMuiTheme({
     palette: {
