@@ -8,7 +8,6 @@ import TheatersIcon from "@material-ui/icons/Theaters";
 import LiveTvIcon from "@material-ui/icons/LiveTv";
 import EventIcon from "@material-ui/icons/Event";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
-import 'raleway-webfont';
 
 export const drawerWidth = 220;
 

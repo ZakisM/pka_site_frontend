@@ -1,7 +1,7 @@
 import React from "react";
 import {makeStyles} from '@material-ui/core/styles';
 import DrawerComponent from './DrawerComponent';
-import {Redirect, Route, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import SearchComponent from "./SearchComponent";
 import PlayerComponent from "./PlayerComponent";
 import {SearchItemType} from "../redux/search/types";
@@ -31,9 +31,10 @@ const RootComponent: React.FC = () => {
                 <main className={classes.content}>
                     <div className={classes.toolbar}/>
                     <Switch>
-                        <Redirect exact
-                                  from="/"
-                                  to="watch"/>
+                        <Route exact
+                               path="/">
+                            <PlayerComponent/>
+                        </Route>
                         <Route exact
                                path="/watch">
                             <PlayerComponent/>
