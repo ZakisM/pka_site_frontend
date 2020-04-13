@@ -180,7 +180,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         subheader="Events"
                     />
                     <Box maxHeight='92.5%'
-                         style={{overflow: "scroll"}}>
+                         style={{overflow: "auto"}}>
                         <CardContent>
                             <List>
                                 {(watchEpisodeState.events!).map((event, i) => (
