@@ -3,7 +3,7 @@ Note: When running locally will return errors as cannot find API endpoints.
 To fix: 
 
 1. Modify redux/search/actions.ts: axios.post line: ".post(`/v1/api/${endpoint}`," to ".post(`http://localhost:1234/v1/api/${endpoint}`,"
-2. Modify redux/watch-episode/actions.ts: axios.get line: ".get(`/v1/api/pka_episode/watch/" to ".get(`http://localhost:1234/v1/api/pka_episode/watch/"
+2. Modify redux/watch-episode/actions.ts: axios.get line: ".get(`/v1/api/pka_episode/watch/" to ".get(`http://localhost:1234/v1/api/pka_episode/watch/".
 
 Obviously this is a terrible way of doing it but I have been too lazy to fix.
 
