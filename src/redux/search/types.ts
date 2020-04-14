@@ -5,6 +5,7 @@ export interface SearchState {
     searchQuery: string
     searchResults: SearchResult[]
     searchType?: SearchItemType,
+    reverseResults?: boolean,
     isLoading?: boolean
     errors?: string[]
 }
@@ -92,6 +93,7 @@ export enum SearchEventTypes {
     SUCCESS = 'SEARCH_EVENT_SUCCESS',
     CLEAR = 'SEARCH_EVENT_CLEAR',
     SET_SEARCH_TYPE = 'SET_SEARCH_TYPE',
+    REVERSE_RESULTS_TOGGLE = 'REVERSE_RESULTS_TOGGLE',
 }
 
 interface SearchEventSuccess {
@@ -123,6 +125,10 @@ interface SetSearchType {
     payload: SearchItemType
 }
 
+interface ReverseResultsToggle {
+    type: SearchEventTypes.REVERSE_RESULTS_TOGGLE,
+}
+
 type SearchActionTypes =
     SearchEventStarted
     | SearchEventFailure
@@ -130,5 +136,6 @@ type SearchActionTypes =
     | SearchEventClearResults
     | LocationChange
     | SetSearchType
+    | ReverseResultsToggle
 
 export type SearchEventActionTypes = SearchActionTypes

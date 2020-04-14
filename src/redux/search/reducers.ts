@@ -4,6 +4,7 @@ import {LOCATION_CHANGE} from "connected-react-router";
 const initialState: SearchState = {
     searchQuery: "",
     searchResults: [],
+    reverseResults: false,
     isLoading: false,
     errors: []
 };
@@ -50,6 +51,12 @@ export function searchReducer(
             return {
                 ...state,
                 searchType: action.payload
+            }
+        }
+        case SearchEventTypes.REVERSE_RESULTS_TOGGLE: {
+            return {
+                ...state,
+                reverseResults: state.reverseResults !== true,
             }
         }
         default:

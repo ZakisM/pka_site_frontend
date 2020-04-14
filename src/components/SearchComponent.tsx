@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
 import {fade, makeStyles} from '@material-ui/core/styles';
 import SearchIcon from "@material-ui/icons/Search";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import InputBase from "@material-ui/core/InputBase";
 import SearchResultCard from "./SearchResultCard";
 import useConstant from "use-constant";
@@ -8,21 +10,22 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {useAsync} from "react-async-hook";
 import {ThunkDispatch} from "redux-thunk";
 import {SearchEventActionTypes, SearchItemType} from "../redux/search/types";
-import {searchEventClearResults, searchPKAItem} from "../redux/search/actions";
+import {reverseResultsToggle, searchEventClearResults, searchPKAItem} from "../redux/search/actions";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
-import {Box, CircularProgress, Typography} from "@material-ui/core";
+import {Box, CircularProgress, Fab, Tooltip, Typography} from "@material-ui/core";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
 import {isMobile} from "react-device-detect";
 import {watchPKAEpisode} from "../redux/watch-episode/actions";
 import {useHistory} from "react-router-dom";
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, SearchEventActionTypes>) => {
+const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchEventActionTypes>) => {
     return {
         searchPKAItem: (searchQuery: string, searchItemType: SearchItemType) => dispatch(searchPKAItem(searchQuery, searchItemType)),
         watchPKAEpisode: (number: number, timestamp: number) => dispatch(watchPKAEpisode(number, timestamp)),
         searchEventClearResults: () => dispatch(searchEventClearResults()),
+        reverseResultsToggle: () => dispatch(reverseResultsToggle()),
     }
 };
 
@@ -53,10 +56,9 @@ const useStyles = makeStyles(theme => ({
         '&:hover': {
             backgroundColor: fade(theme.palette.common.black, 0.25),
         },
-        marginBottom: '2ch',
-        alignItems: 'center',
         display: 'flex',
         padding: theme.spacing(1),
+        flexGrow: 1,
     },
     iconButton: {
         padding: 10,
@@ -74,12 +76,29 @@ const useStyles = makeStyles(theme => ({
         color: fade(theme.palette.common.white, 0.45),
         marginBottom: '1ch',
     },
+    searchRow: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '1ch',
+    },
+    reverseButton: {
+        flexShrink: 0,
+        marginLeft: '2ch',
+        boxShadow: "none",
+        '&:hover': {
+            backgroundColor: fade(theme.palette.common.white, 0.1),
+        },
+        '&:active': {
+            boxShadow: "none",
+            backgroundColor: fade(theme.palette.common.white, 0.025),
+        },
+    }
 }));
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const classes = useStyles();
 
-    const {watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, pathname, searchItemType} = props;
+    const {reverseResultsToggle, watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, pathname, searchItemType} = props;
 
     const searchPKAItemDebounced = useConstant(() =>
         AwesomeDebouncePromise(searchPKAItem, 250)
@@ -153,7 +172,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             await searchEventClearResults();
             await searchPKAItemDebounced(input, searchItemType);
         }
-    }, [input]);
+    }, [input, searchState.reverseResults]);
 
     const cellMeasurerCache = new CellMeasurerCache({
         fixedWidth: true,
@@ -191,31 +210,51 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         );
     };
 
+    const handleReverseOrder = () => {
+        reverseResultsToggle();
+    };
+
     return (
         <Box height='97.5%'
              key={searchItemType}>
             <Box className={classes.root}>
-                <div className={classes.search}>
-                    <div className={classes.iconButton}>
-                        <SearchIcon/>
+                <Box className={classes.searchRow}>
+                    <div className={classes.search}>
+                        <div className={classes.iconButton}>
+                            <SearchIcon/>
+                        </div>
+                        <InputBase
+                            error
+                            inputRef={inputRef}
+                            placeholder={`Search ${searchItemType}s`}
+                            classes={{
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{'aria-label': 'search'}}
+                            fullWidth={true}
+                            onChange={e => setInput(e.target.value)}
+                        />
+                        {searchState.isLoading && <div className={classes.iconButton}>
+                            <CircularProgress color="primary"
+                                              size={23}
+                                              thickness={5}/>
+                        </div>}
                     </div>
-                    <InputBase
-                        error
-                        inputRef={inputRef}
-                        placeholder={`Search ${searchItemType}s`}
-                        classes={{
-                            input: classes.inputInput,
-                        }}
-                        inputProps={{'aria-label': 'search'}}
-                        fullWidth={true}
-                        onChange={e => setInput(e.target.value)}
-                    />
-                    {searchState.isLoading && <div className={classes.iconButton}>
-                        <CircularProgress color="primary"
-                                          size={23}
-                                          thickness={5}/>
-                    </div>}
-                </div>
+                    {searchItemType === SearchItemType.EVENT && <Tooltip title="Reverse Order">
+                        <Fab className={classes.reverseButton}
+                             disableRipple={true}
+                             disableTouchRipple={true}
+                             disableFocusRipple={true}
+                             onClick={() => handleReverseOrder()}
+                             size="large"
+                             color="secondary"
+                             aria-label="Reverse Order">
+                            {searchState.reverseResults === true ? <ArrowUpwardIcon fontSize="default"/> :
+                                <ArrowDownwardIcon fontSize="default"/>}
+                        </Fab>
+                    </Tooltip>}
+                </Box>
+
 
                 {searchState.searchType === searchItemType &&
                 <div style={{height: '100%'}}>

@@ -8,8 +8,9 @@ import {
     SearchItemType,
     SearchState
 } from "./types";
+import {RootState} from "../index";
 
-export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>) => {
+export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>, getState: () => RootState) => {
     dispatch(searchEventStarted());
     dispatch(setSearchType(searchItemType));
 
@@ -40,6 +41,9 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
                 case SearchItemType.EVENT: {
                     for (let sr of res.data.data) {
                         searchResults.push(EventSearchResult.Deserialize(sr))
+                    }
+                    if (getState().search.reverseResults && searchResults) {
+                        searchResults = [...searchResults].reverse();
                     }
                     break;
                 }
@@ -88,4 +92,8 @@ const setSearchType = (searchType: SearchItemType): SearchEventActionTypes => ({
 
 export const searchEventClearResults = (): SearchEventActionTypes => ({
     type: SearchEventTypes.CLEAR,
+});
+
+export const reverseResultsToggle = (): SearchEventActionTypes => ({
+    type: SearchEventTypes.REVERSE_RESULTS_TOGGLE,
 });
