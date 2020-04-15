@@ -17,4 +17,6 @@ Setup https://github.com/ZakisM/pka_site_backend/ first.
 3. Change your `nginx.conf` file so that `proxy_pass http://0.0.0.0:3000` is commented out and `proxy_pass http://0.0.0.0:5678` is uncommented i.e:
      `# proxy_pass http://0.0.0.0:3000;
      proxy_pass http://0.0.0.0:5678;`
-4. Visit https://pkaindextest.com in your browser.
+     
+4. Restart Nginx
+5. Visit https://pkaindextest.com in your browser.
