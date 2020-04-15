@@ -14,4 +14,7 @@ Setup https://github.com/ZakisM/pka_site_backend/ first.
 #### Test With Docker - Note this is creating an optimized build so not suitable for development.
 1. `docker build -t zakism/pka-site-frontend:latest .`
 2. `docker run -p 5678:5678 zakism/pka-site-frontend:latest`
-3. Visit https://pkaindextest.com in your browser.
+3. Change your `nginx.conf` file so that `proxy_pass http://0.0.0.0:3000` is commented out and `proxy_pass http://0.0.0.0:5678` is uncommented i.e:
+     `# proxy_pass http://0.0.0.0:3000;
+     proxy_pass http://0.0.0.0:5678;`
+4. Visit https://pkaindextest.com in your browser.
