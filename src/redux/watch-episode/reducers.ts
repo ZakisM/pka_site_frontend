@@ -7,7 +7,8 @@ const initialState: WatchEpisodeState = {
     timestamp: 0,
     currentEventCard: 0,
     isLoading: false,
-    errors: []
+    errors: [],
+    numberOfRetries: 0,
 };
 
 export function watchEpisodeReducer(
@@ -46,6 +47,12 @@ export function watchEpisodeReducer(
                 ...state,
                 currentEventCard: action.payload,
             };
+        }
+        case WatchEpisodeTypes.PLAYER_INCREMENT_REQ_RETRY: {
+            return {
+                ...state,
+                numberOfRetries: state.numberOfRetries + 1
+            }
         }
         default:
             return state

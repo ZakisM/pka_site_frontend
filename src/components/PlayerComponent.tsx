@@ -11,6 +11,7 @@ import moment from "moment";
 import PlayerEventCard from "./PlayerEventCard";
 import Skeleton from '@material-ui/lab/Skeleton';
 import {isMobile} from "react-device-detect";
+import {Alert} from "@material-ui/lab";
 
 const YOUTUBE_BASE_URL = 'https://www.youtube.com/watch?v=';
 
@@ -36,6 +37,10 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexFlow: 'column',
         width: '75%',
+        flexShrink: 0,
+    },
+    fullHeight: {
+        width: '100%',
     },
     fullWidth: {
         width: '100%',
@@ -43,21 +48,15 @@ const useStyles = makeStyles(() => ({
     halfHeight: {
         marginTop: '2ch',
         height: '80%',
-        width: '100%'
-    },
-    fullHeight: {
-        height: '100%',
     },
     flexColumn: {
         flexFlow: 'column'
-    },
-    eventsWidth: {
-        width: '25%',
     },
     eventsCard: {
         backgroundColor: '#151515',
         display: 'flex',
         flexFlow: 'column',
+        width: '100%',
     },
     eventsHeader: {
         textAlign: 'center',
@@ -65,8 +64,19 @@ const useStyles = makeStyles(() => ({
     },
     listItem: {
         marginBottom: '1ch',
+    },
+    rootLoading: {
+        height: '100%',
+    },
+    errorMessage: {
+        height: '10%',
+    },
+    errorBodyHeight: {
+        height: '90%',
     }
 }));
+
+const RETRY_AMOUNT = 5;
 
 const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const classes = useStyles();
@@ -80,8 +90,14 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     useEffect(() => {
         if (!watchEpisodeState.isLoading) {
             if (watchEpisodeState.episode === undefined) {
-                watchPKAEpisode("latest", 0);
                 setInitial(true);
+
+                setTimeout(() => {
+                    if (watchEpisodeState.numberOfRetries < RETRY_AMOUNT) {
+                        watchPKAEpisode("latest", 0);
+                    }
+                }, 250)
+
             } else {
                 watchEpisodeState.events!.forEach((event, index) => {
                     if (watchEpisodeState.timestamp >= event.timestamp) {
@@ -91,9 +107,10 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 });
             }
         }
-    }, [setCurrentEventCard, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.isLoading, watchEpisodeState.timestamp, watchPKAEpisode]);
+    }, [setCurrentEventCard, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.isLoading, watchEpisodeState.numberOfRetries, watchEpisodeState.timestamp, watchPKAEpisode]);
 
     const loadTimestamp = (timestamp?: number) => {
+        // For some reason if timestamp is 0, watching the timestamp doesn't seem to work.
         if (timestamp === 0) {
             timestamp = 1
         }
@@ -139,9 +156,15 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const videoIsFullWidth = () => {
         if (isMobilePortrait()) {
             return true;
+        } else if (watchEpisodeState.events === undefined) {
+            return false;
         } else {
             return !hasEvents();
         }
+    };
+
+    const hasFailedToLoad = (): boolean => {
+        return watchEpisodeState.numberOfRetries >= RETRY_AMOUNT;
     };
 
     if (watchEpisodeState.episode !== undefined && !watchEpisodeState.isLoading) {
@@ -174,7 +197,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 </Card>
 
                 {hasEvents() &&
-                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
+                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.fullWidth}`}>
                     <CardHeader
                         className={classes.eventsHeader}
                         subheader="Events"
@@ -204,43 +227,52 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
         )
     } else {
         return (
-            <Box display='flex'
-                 flex='1'
-                 height='95%'>
-                <Card className={classes.videoCard}>
-                    <div style={{height: '100%'}}>
-                        <Skeleton variant="rect"
-                                  width={"100%"}
-                                  height={"100%"}/>
-                    </div>
-                    <CardHeader
-                        title={<Skeleton/>}
-                        subheader={<Skeleton width="40%"/>}
-                    />
-                </Card>
-                <Card className={classes.eventsCard}>
-                    <CardHeader
-                        className={classes.eventsHeader}
-                        subheader="Events"
-                    />
-                    <Box maxHeight='92.5%'
-                         style={{overflow: "hidden"}}>
-                        <CardContent>
-                            <List>
-                                {Array(10).fill(0).map((event, i) => (
-                                    <div className={classes.listItem}
-                                         key={i}
-                                    >
-                                        <Skeleton variant="rect"
-                                                  width={"100%"}
-                                                  height={"10vh"}/>
-                                    </div>
-                                ))}
-                            </List>
-                        </CardContent>
-                    </Box>
-                </Card>
-            </Box>
+            <div className={`${classes.rootLoading} ${hasFailedToLoad() ? classes.errorBodyHeight : classes.fullHeight}`}>
+                {hasFailedToLoad() && <Box className={classes.errorMessage}>
+                    <Alert variant={"filled"}
+                           severity="error">{watchEpisodeState.errors![watchEpisodeState.errors!.length - 1]}</Alert>
+                </Box>}
+
+                <Box display='flex'
+                     height='95%'
+                     className={isMobilePortrait() ? classes.flexColumn : ''}
+                >
+                    <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
+                        <div style={{height: '100%'}}>
+                            <Skeleton variant="rect"
+                                      width={"100%"}
+                                      height={"100%"}/>
+                        </div>
+                        <CardHeader
+                            title={<Skeleton/>}
+                            subheader={<Skeleton width="40%"/>}
+                        />
+                    </Card>
+
+                    <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : null}`}>
+                        <CardHeader
+                            className={classes.eventsHeader}
+                            subheader="Events"
+                        />
+                        <Box maxHeight='92.5%'
+                             style={{overflow: "hidden"}}>
+                            <CardContent>
+                                <List>
+                                    {Array(10).fill(0).map((event, i) => (
+                                        <div className={classes.listItem}
+                                             key={i}
+                                        >
+                                            <Skeleton variant="rect"
+                                                      width={"100%"}
+                                                      height={"10vh"}/>
+                                        </div>
+                                    ))}
+                                </List>
+                            </CardContent>
+                        </Box>
+                    </Card>
+                </Box>
+            </div>
         )
     }
 };
