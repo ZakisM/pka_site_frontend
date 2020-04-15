@@ -26,7 +26,7 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
     let endpoint = getEndpoint();
 
     axios
-        .post(`http://0.0.0.0:1234/v1/api/${endpoint}`, {query: searchQuery})
+        .post(`/v1/api/${endpoint}`, {query: searchQuery})
         .then(res => {
 
             let searchResults = [];
@@ -59,8 +59,6 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
         .catch(err => {
             if (err.message === "Network Error") {
                 err = "Server appears to be offline. Please refresh in a few minutes.";
-            } else if (err.response.data.message) {
-                err = err.response.data.message;
             } else {
                 err = err.message;
             }

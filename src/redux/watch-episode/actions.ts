@@ -6,7 +6,7 @@ export const watchPKAEpisode = (episodeNumber: number | "latest", timestamp: num
     dispatch(watchEpisodeStarted());
 
     axios
-        .get(`http://0.0.0.0:1234/v1/api/pka_episode/watch/${episodeNumber}`)
+        .get(`/v1/api/pka_episode/watch/${episodeNumber}`)
         .then(res => {
 
             let watchEpisodeResult: WatchEpisodeState = {
@@ -22,8 +22,6 @@ export const watchPKAEpisode = (episodeNumber: number | "latest", timestamp: num
         .catch(err => {
             if (err.message === "Network Error") {
                 err = "Server appears to be offline. Please refresh in a few minutes.";
-            } else if (err.response && err.response.data.message) {
-                err = err.response.data.message;
             } else {
                 err = err.message;
             }
