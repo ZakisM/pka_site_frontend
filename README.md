@@ -22,3 +22,9 @@ Setup https://github.com/ZakisM/pka_site_backend/ first.
      
 4. Restart Nginx
 5. Visit https://pkaindextest.com in your browser.
+
+
+Some requests from the subreddit:
+
+1. Add a shuffle button to randomly pick an episode to watch.
+2. Find a way to have videos open in a new tab when you right/middle click them.
