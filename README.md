@@ -1,3 +1,5 @@
+![Build](https://github.com/ZakisM/pka_site_frontend/workflows/Build/badge.svg)
+
 # PKA Index Frontend
 
 This repo holds the frontend code for https://www.pkaindex.com.
