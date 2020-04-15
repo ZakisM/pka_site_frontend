@@ -37,10 +37,9 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexFlow: 'column',
         width: '75%',
-        flexShrink: 0,
     },
     fullHeight: {
-        width: '100%',
+        height: '100%',
     },
     fullWidth: {
         width: '100%',
@@ -48,6 +47,7 @@ const useStyles = makeStyles(() => ({
     halfHeight: {
         marginTop: '2ch',
         height: '80%',
+        width: '100%',
     },
     flexColumn: {
         flexFlow: 'column'
@@ -56,11 +56,13 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#151515',
         display: 'flex',
         flexFlow: 'column',
-        width: '100%',
     },
     eventsHeader: {
         textAlign: 'center',
         backgroundColor: '#111111',
+    },
+    eventsWidth: {
+        width: '25%',
     },
     listItem: {
         marginBottom: '1ch',
@@ -197,7 +199,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 </Card>
 
                 {hasEvents() &&
-                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.fullWidth}`}>
+                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
                     <CardHeader
                         className={classes.eventsHeader}
                         subheader="Events"
@@ -249,7 +251,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         />
                     </Card>
 
-                    <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : null}`}>
+                    <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
                         <CardHeader
                             className={classes.eventsHeader}
                             subheader="Events"
