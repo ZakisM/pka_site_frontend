@@ -2,7 +2,7 @@ import axios from "axios";
 import {Dispatch} from "redux";
 import {WatchEpisodeRootActionTypes, WatchEpisodeState, WatchEpisodeTypes} from "./types";
 
-export const watchPKAEpisode = (episodeNumber: number | "latest", timestamp: number) => (dispatch: Dispatch<WatchEpisodeRootActionTypes>) => {
+export const watchPKAEpisode = (episodeNumber: number | "latest" | "random", timestamp: number) => (dispatch: Dispatch<WatchEpisodeRootActionTypes>) => {
     dispatch(watchEpisodeStarted());
 
     axios

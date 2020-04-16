@@ -39,17 +39,12 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
 
     const path = `/${text.toLowerCase()}`;
 
-    let defaultMatch = useRouteMatch({
-        exact: true,
-        path: '/',
-    });
-
     let match = useRouteMatch({
         path: path,
     });
 
     const inner = (
-        <ListItem className={`${classes.item} ${match || (defaultMatch && text === "Watch") ? classes.active : null}`}
+        <ListItem className={`${classes.item} ${match ? classes.active : null}`}
                   key={text}>
             <ListItemIcon>
                 <Icon/>
@@ -61,11 +56,7 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
         </ListItem>
     );
 
-    if (defaultMatch && text === "Watch") {
-        return (
-            inner
-        )
-    } else if (match) {
+    if (match) {
         return (
             inner
         )
