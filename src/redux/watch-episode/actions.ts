@@ -32,6 +32,26 @@ export const watchPKAEpisode = (episodeNumber: number | "latest", timestamp: num
         })
 };
 
+export const getPKAEpisodeYoutubeLink = (episodeNumber: number): Promise<string> => {
+    return axios
+        .get(`/v1/api/pka_episode/youtube_link/${episodeNumber}`)
+        .then(res => {
+
+            return res.data.data;
+        })
+        .catch(err => {
+            if (err.message === "Network Error") {
+                err = "Server appears to be offline. Please refresh in a few minutes.";
+            } else {
+                err = err.message;
+            }
+
+            console.log(err);
+
+            return "";
+        })
+}
+
 export const saveTimestamp = (timestamp: number): WatchEpisodeRootActionTypes => ({
     type: WatchEpisodeTypes.SAVE_TIMESTAMP,
     payload: timestamp,

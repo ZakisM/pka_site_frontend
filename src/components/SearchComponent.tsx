@@ -17,8 +17,9 @@ import {Box, CircularProgress, Fab, Tooltip, Typography} from "@material-ui/core
 import AutoSizer from "react-virtualized-auto-sizer";
 import {CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
 import {isMobile} from "react-device-detect";
-import {watchPKAEpisode} from "../redux/watch-episode/actions";
+import {getPKAEpisodeYoutubeLink, watchPKAEpisode} from "../redux/watch-episode/actions";
 import {useHistory} from "react-router-dom";
+import {YOUTUBE_BASE_URL} from "./PlayerComponent";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchEventActionTypes>) => {
     return {
@@ -184,9 +185,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         return height + 5
     };
 
-    const watch = (number: number, timestamp: number) => {
+    const handleClickEventCard = (number: number, timestamp: number) => {
         watchPKAEpisode(number, timestamp);
         history.push("/watch");
+    };
+
+    const handleRightClickEventCard = async (e: React.MouseEvent<HTMLDivElement>, number: number, timestamp: number) => {
+        e.preventDefault();
+        let youtube_link = await getPKAEpisodeYoutubeLink(number);
+        if (youtube_link !== "") {
+            window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
+        }
     };
 
     const renderRow = (props: any) => {
@@ -199,7 +208,9 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                           parent={parent}
                           rowIndex={index}>
                 <div style={style}
-                     onClick={() => watch(searchResult.episodeNumber, searchResult.timestamp)}>
+                     onClick={() => handleClickEventCard(searchResult.episodeNumber, searchResult.timestamp)}
+                     onContextMenu={(e) => handleRightClickEventCard(e, searchResult.episodeNumber, searchResult.timestamp)}
+                >
                     <SearchResultCard
                         episodeNumber={searchResult.episodeNumber}
                         title={searchResult.cardTitle()}
