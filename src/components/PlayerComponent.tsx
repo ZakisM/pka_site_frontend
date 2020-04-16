@@ -13,7 +13,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import {isMobile} from "react-device-detect";
 import {Alert} from "@material-ui/lab";
 
-const YOUTUBE_BASE_URL = 'https://www.youtube.com/watch?v=';
+export const YOUTUBE_BASE_URL = 'https://www.youtube.com/watch?v=';
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, WatchEpisodeRootActionTypes>) => {
     return {
