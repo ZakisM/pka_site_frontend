@@ -1,5 +1,5 @@
 import React from "react";
-import {AppBar, Divider, Hidden, IconButton, List, Typography} from "@material-ui/core";
+import {AppBar, Divider, Hidden, IconButton, List, Tooltip, Typography} from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
@@ -8,8 +8,22 @@ import TheatersIcon from "@material-ui/icons/Theaters";
 import LiveTvIcon from "@material-ui/icons/LiveTv";
 import EventIcon from "@material-ui/icons/Event";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
+import ShuffleIcon from '@material-ui/icons/Shuffle';
+import {ThunkDispatch} from "redux-thunk";
+import {WatchEpisodeRootActionTypes} from "../redux/watch-episode/types";
+import {watchPKAEpisode} from "../redux/watch-episode/actions";
+import {connect} from "react-redux";
+import {useHistory} from "react-router-dom";
 
 export const drawerWidth = 220;
+
+const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, WatchEpisodeRootActionTypes>) => {
+    return {
+        watchRandomPKAEpisode: () => dispatch(watchPKAEpisode("random", 0)),
+    }
+};
+
+type DrawerComponentProps = ReturnType<typeof mapDispatchToProps>;
 
 const useStyles = makeStyles(theme => ({
     drawer: {
@@ -28,6 +42,7 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'Raleway',
         fontSize: '1.5rem',
         fontWeight: 800,
+        flexGrow: 1,
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -42,14 +57,23 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const DrawerComponent: React.FC = () => {
+const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
     const theme = useTheme();
     const classes = useStyles();
+
+    const {watchRandomPKAEpisode} = props;
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
+    };
+
+    const history = useHistory();
+
+    const watchRandomEpisode = () => {
+        watchRandomPKAEpisode();
+        history.push("/watch");
     };
 
     const drawer = (
@@ -88,6 +112,15 @@ const DrawerComponent: React.FC = () => {
                     >
                         PKA INDEX
                     </Typography>
+                    <Tooltip title="Watch Random Episode">
+                        <IconButton
+                            color="inherit"
+                            onClick={watchRandomEpisode}
+                            aria-label="Watch Random Episode"
+                        >
+                            <ShuffleIcon/>
+                        </IconButton>
+                    </Tooltip>
                 </Toolbar>
             </AppBar>
             <nav className={classes.drawer}
@@ -126,4 +159,7 @@ const DrawerComponent: React.FC = () => {
     )
 };
 
-export default DrawerComponent;
+export default connect(
+    null,
+    mapDispatchToProps,
+)(DrawerComponent)
