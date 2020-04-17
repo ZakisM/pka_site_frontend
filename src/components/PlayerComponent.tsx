@@ -88,6 +88,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const playerRef = useRef<ReactPlayer>(null);
 
     const [isInitial, setInitial] = useState(false);
+    const [isBuffering, setIsBuffering] = useState(false);
 
     useEffect(() => {
         if (!watchEpisodeState.isLoading) {
@@ -101,12 +102,18 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 }, 250)
 
             } else {
-                watchEpisodeState.events!.forEach((event, index) => {
-                    if (watchEpisodeState.timestamp >= event.timestamp) {
-                        setCurrentEventCard(index);
-                        return;
+                if (watchEpisodeState.events) {
+                    if (watchEpisodeState.timestamp !== 0) {
+                        watchEpisodeState.events.forEach((event, index) => {
+                            if (watchEpisodeState.timestamp >= event.timestamp) {
+                                setCurrentEventCard(index);
+                                return;
+                            }
+                        });
+                    } else {
+                        setCurrentEventCard(0);
                     }
-                });
+                }
             }
         }
     }, [setCurrentEventCard, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.isLoading, watchEpisodeState.numberOfRetries, watchEpisodeState.timestamp, watchPKAEpisode]);
@@ -127,8 +134,10 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const synchronizeTimestamp = () => {
         const pRef = playerRef.current;
 
-        if (pRef) {
-            saveTimestamp(pRef.getCurrentTime());
+        if (pRef && !isBuffering) {
+            setTimeout(() => {
+                saveTimestamp(pRef.getCurrentTime());
+            }, 2500);
         }
     };
 
@@ -192,7 +201,9 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                      onError={(e) => console.log(e)}
                                      onProgress={() => synchronizeTimestamp()}
                                      onPlay={() => handleInitial()}
-                                     onReady={() => loadTimestamp()}/>
+                                     onReady={() => loadTimestamp()}
+                                     onBuffer={() => setIsBuffering(true)}
+                                     onBufferEnd={() => setIsBuffering(false)}/>
                     </div>
                     <CardHeader title={watchEpisodeState.youtubeDetails?.title}
                                 subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>
