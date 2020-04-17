@@ -136,8 +136,11 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
 
         if (pRef && !isBuffering) {
             setTimeout(() => {
-                saveTimestamp(pRef.getCurrentTime());
-            }, 2500);
+                let currentTimeStamp = pRef.getCurrentTime();
+                if (currentTimeStamp != null) {
+                    saveTimestamp(currentTimeStamp);
+                }
+            }, 2000);
         }
     };
 
