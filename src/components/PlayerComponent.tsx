@@ -86,6 +86,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const {setCurrentEventCard, saveTimestamp, watchPKAEpisode, watchEpisodeState} = props;
 
     const playerRef = useRef<ReactPlayer>(null);
+    const eventsCardRef = useRef<any>(null);
 
     const [isInitial, setInitial] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
@@ -218,8 +219,10 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         className={classes.eventsHeader}
                         subheader="Events"
                     />
-                    <Box maxHeight='92.5%'
-                         style={{overflow: "auto"}}>
+                    <div
+                        style={{overflow: "auto", maxHeight: '92.5%'}}
+                        ref={eventsCardRef}
+                    >
                         <CardContent>
                             <List>
                                 {(watchEpisodeState.events!).map((event, i) => (
@@ -228,6 +231,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                          onClick={() => loadTimestamp(event.timestamp)}
                                     >
                                         <PlayerEventCard
+                                            parentRef={eventsCardRef}
                                             id={i}
                                             title={event.description}
                                             timestamp={event.timestamp}
@@ -236,7 +240,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                 ))}
                             </List>
                         </CardContent>
-                    </Box>
+                    </div>
                 </Card>
                 }
             </Box>

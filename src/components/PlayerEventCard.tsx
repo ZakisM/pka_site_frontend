@@ -1,11 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {RefObject, useRef, useState} from "react";
 import {fade, makeStyles} from '@material-ui/core/styles';
 import {Card, Typography} from "@material-ui/core";
 import {RootState} from "../redux";
 import {connect} from "react-redux";
 import moment from "moment";
+import {scrollIntoView} from "scroll-js";
+import {useAsync} from "react-async-hook";
 
 interface Props {
+    parentRef: RefObject<any>,
     id: number,
     title: string,
     timestamp: number,
@@ -49,13 +52,13 @@ const useStyles = makeStyles(theme => ({
 
 const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
     const classes = useStyles();
-    const {id, title, timestamp, watchEpisodeState} = props;
+    const {parentRef, id, title, timestamp, watchEpisodeState} = props;
 
-    const cardRef = useRef<any>(null);
+    const cardRef = useRef<HTMLUListElement>(null);
 
     const [isActive, setActive] = useState(false);
 
-    useEffect(() => {
+    useAsync(async () => {
         const cRef = cardRef.current;
 
         if (watchEpisodeState.events !== undefined) {
@@ -69,10 +72,7 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
         }
 
         if (cRef && isActive) {
-            cRef.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            })
+            await scrollIntoView(cRef, parentRef.current!, {behavior: 'smooth', block: 'center'});
         }
     }, [watchEpisodeState.events, watchEpisodeState.currentEventCard, id, isActive]);
 

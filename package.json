@@ -34,6 +34,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "scroll-js": "^3.2.0",
     "typeface-roboto": "^0.0.75",
     "typescript": "~3.7.2",
     "use-constant": "^1.0.0"
