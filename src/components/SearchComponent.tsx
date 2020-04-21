@@ -32,7 +32,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchEventAc
 
 const mapStateToProps = (state: RootState) => ({
     searchState: state.search,
-    pathname: state.router.location.pathname,
 });
 
 interface InputProps {
@@ -99,7 +98,7 @@ const useStyles = makeStyles(theme => ({
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const classes = useStyles();
 
-    const {reverseResultsToggle, watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, pathname, searchItemType} = props;
+    const {reverseResultsToggle, watchPKAEpisode, searchPKAItem, searchEventClearResults, searchState, searchItemType} = props;
 
     const searchPKAItemDebounced = useConstant(() =>
         AwesomeDebouncePromise(searchPKAItem, 250)
@@ -151,11 +150,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             iRef.focus();
         }
 
-        if (pathname === "/episodes") {
+        if (searchItemType === SearchItemType.EPISODE) {
             setInput('');
             await searchPKAItemDebounced(input, searchItemType);
         }
-    }, [pathname]);
+    }, [searchItemType]);
 
     useAsync(async () => {
         const iRef = inputRef.current;
