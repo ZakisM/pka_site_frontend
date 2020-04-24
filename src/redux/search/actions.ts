@@ -9,6 +9,8 @@ import {
     SearchState
 } from "./types";
 import {RootState} from "../index";
+import {AllPkaEventSearchResultsFb} from "../../flatbuffers/pka_event_search_results_generated";
+import {flatbuffers} from "flatbuffers";
 
 export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>, getState: () => RootState) => {
     dispatch(searchEventStarted());
@@ -26,9 +28,8 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
     let endpoint = getEndpoint();
 
     axios
-        .post(`/v1/api/${endpoint}`, {query: searchQuery})
+        .post(`/v1/api/${endpoint}`, {query: searchQuery}, searchItemType === SearchItemType.EVENT ? {responseType: "arraybuffer"} : {})
         .then(res => {
-
             let searchResults = [];
 
             switch (searchItemType) {
@@ -39,9 +40,17 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
                     break;
                 }
                 case SearchItemType.EVENT: {
-                    for (let sr of res.data.data) {
-                        searchResults.push(EventSearchResult.Deserialize(sr))
+                    let data = new Uint8Array(res.data);
+
+                    let buf = new flatbuffers.ByteBuffer(data);
+
+                    let all_events = AllPkaEventSearchResultsFb.getRootAsAllPkaEventSearchResultsFb(buf);
+
+                    for (let i = 0; i < all_events.resultsLength(); i++) {
+                        let event = all_events.results(i);
+                        searchResults.push(EventSearchResult.Deserialize(event));
                     }
+
                     if (getState().search.reverseResults && searchResults) {
                         searchResults = [...searchResults].reverse();
                     }
