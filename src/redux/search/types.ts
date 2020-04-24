@@ -42,7 +42,7 @@ export class EventSearchResult implements EventSearchResultFields {
     }
 
     static Deserialize(input: any): EventSearchResult {
-        return new EventSearchResult(input.episodeNumber, input.timestamp, input.description)
+        return new EventSearchResult(input.episodeNumber(), input.timestamp().low, input.description())
     }
 
     cardTitle(): string {
