@@ -190,7 +190,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
             >
 
                 <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
-                    <div style={{flex: '9.25'}}>
+                    <div style={{flex: '1'}}>
                         <ReactPlayer ref={playerRef}
                                      config={{
                                          youtube: {
@@ -209,7 +209,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                      onBuffer={() => setIsBuffering(true)}
                                      onBufferEnd={() => setIsBuffering(false)}/>
                     </div>
-                    <CardHeader style={{flex: '0.75'}}
+                    <CardHeader style={{height: 'auto'}}
                                 title={watchEpisodeState.youtubeDetails?.title}
                                 subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>
                 </Card>
