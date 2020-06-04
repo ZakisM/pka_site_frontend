@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     },
     appBarTitle: {
         fontFamily: 'Raleway',
-        fontSize: '1.5rem',
+        fontSize: '24px',
         fontWeight: 800,
         flexGrow: 1,
     },

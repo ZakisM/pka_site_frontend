@@ -41,11 +41,11 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.common.white,
     },
     title: {
-        fontSize: '0.9rem',
+        fontSize: '15px',
         marginBottom: '0.75ch',
     },
     subtitle: {
-        fontSize: '0.875rem',
+        fontSize: '14px',
         color: fade(theme.palette.common.white, 0.6),
     },
 }));

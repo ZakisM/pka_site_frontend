@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
     },
     subTitle: {
         display: 'flex',
-        fontSize: '1.75ch',
+        fontSize: '14px',
         color: fade(theme.palette.common.white, 0.45),
         marginBottom: '1ch',
     },
