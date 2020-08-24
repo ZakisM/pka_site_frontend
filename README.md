@@ -16,6 +16,4 @@ Setup https://github.com/ZakisM/pka_site_backend/ first.
 #### Test With Docker - Note this is creating an optimized build so not suitable for development.
 1. `docker build -t zakism/pka-site-frontend:latest .`
 2. `docker run -p 5678:5678 zakism/pka-site-frontend:latest`
-     
-4. Restart Nginx
-5. Visit https://pkaindextest.com in your browser.
+3. Visit https://pkaindextest.com in your browser.

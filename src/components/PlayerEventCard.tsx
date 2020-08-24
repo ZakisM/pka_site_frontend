@@ -23,30 +23,29 @@ type PlayerEventCardProps = ReturnType<typeof mapStateToProps> & Props;
 const useStyles = makeStyles(theme => ({
     resultCard: {
         padding: '2ch',
-        backgroundColor: fade('#7a1d23', 0.15),
-        color: fade(theme.palette.common.white, 0.6),
+        backgroundColor: '#151515',
+        color: fade(theme.palette.common.white, 0.3),
         '&:hover': {
-            backgroundColor: fade('#7a1d23', 0.5),
+            backgroundColor: '#6c181e',
             color: theme.palette.common.white,
             cursor: 'pointer',
         },
         '&:active': {
-            backgroundColor: fade('#7a1d23', 0.2),
-            color: fade(theme.palette.common.white, 0.6),
+            backgroundColor: fade('#cd2d37', 0.4),
             cursor: 'pointer',
         },
+        boxShadow: 'none',
     },
     active: {
-        backgroundColor: fade('#7a1d23', 0.5),
+        backgroundColor: '#6c181e',
         color: theme.palette.common.white,
     },
     title: {
-        fontSize: '15px',
+        fontSize: '14.5px',
         marginBottom: '0.75ch',
     },
     subtitle: {
-        fontSize: '14px',
-        color: fade(theme.palette.common.white, 0.6),
+        fontSize: '13px',
     },
 }));
 
@@ -79,6 +78,7 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
     return (
         <Card ref={cardRef}
               className={`${classes.resultCard} ${isActive ? classes.active : null}`}
+              square
         >
             <Typography className={classes.title}>{title}</Typography>
             <Typography className={classes.subtitle}>{moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}</Typography>

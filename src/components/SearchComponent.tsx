@@ -51,16 +51,16 @@ const useStyles = makeStyles(theme => ({
         flexFlow: 'column'
     },
     search: {
-        borderRadius: theme.spacing(1),
-        backgroundColor: fade(theme.palette.common.black, 0.15),
+        backgroundColor: '#151515',
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.black, 0.25),
+            backgroundColor: fade(theme.palette.common.white, 0.05),
         },
         display: 'flex',
         padding: theme.spacing(1),
         flexGrow: 1,
     },
     iconButton: {
+        color: fade(theme.palette.common.white, 0.9),
         padding: 10,
         pointerEvents: 'none',
         display: 'flex',
@@ -72,18 +72,19 @@ const useStyles = makeStyles(theme => ({
     },
     subTitle: {
         display: 'flex',
-        fontSize: '14px',
+        fontSize: '14.5px',
         color: fade(theme.palette.common.white, 0.45),
-        marginBottom: '1ch',
+        marginBottom: '1.5ch',
     },
     searchRow: {
         display: 'flex',
         alignItems: 'center',
-        marginBottom: '1ch',
+        marginBottom: '1.5ch',
     },
     reverseButton: {
         flexShrink: 0,
         marginLeft: '2ch',
+        borderRadius: '0',
         boxShadow: "none",
         '&:hover': {
             backgroundColor: fade(theme.palette.common.white, 0.1),
@@ -245,7 +246,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                             onChange={e => setInput(e.target.value)}
                         />
                         {searchState.isLoading && <div className={classes.iconButton}>
-                            <CircularProgress color="primary"
+                            <CircularProgress style={{color: '#a3252e'}}
                                               size={23}
                                               thickness={5}/>
                         </div>}
@@ -268,7 +269,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
                 {searchState.searchType === searchItemType &&
                 <div style={{height: '100%'}}>
-                    {!searchState.isLoading && <Typography variant="overline"
+                    {!searchState.isLoading && <Typography variant="button"
                                                            className={classes.subTitle}>
                         {`${searchState.searchResults.length} Results`}
                     </Typography>}

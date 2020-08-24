@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
 import ReactPlayer from "react-player";
-import {Box, Card, CardContent, CardHeader, List} from "@material-ui/core";
+import {Box, Card, CardContent, CardHeader, fade, List, Typography} from "@material-ui/core";
 import {ThunkDispatch} from "redux-thunk";
 import {saveTimestamp, setCurrentEventCard, watchPKAEpisode} from "../redux/watch-episode/actions";
 import {WatchEpisodeRootActionTypes} from "../redux/watch-episode/types";
@@ -29,7 +29,7 @@ const mapStateToProps = (state: RootState) => ({
 
 type PlayerComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     videoCard: {
         height: '100%',
         backgroundColor: '#151515',
@@ -37,6 +37,20 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexFlow: 'column',
         width: '75%',
+        boxShadow: 'none'
+    },
+    videoHeader: {
+        padding: '2ch',
+        display: 'flex',
+        flexFlow: 'column'
+    },
+    videoTitle: {
+        fontSize: '20px',
+        color: fade(theme.palette.common.white, 0.9),
+    },
+    videoSubtitle: {
+        fontSize: '15px',
+        color: fade(theme.palette.common.white, 0.5),
     },
     fullHeight: {
         height: '100%',
@@ -56,10 +70,16 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#151515',
         display: 'flex',
         flexFlow: 'column',
+        boxShadow: 'none'
     },
     eventsHeader: {
         textAlign: 'center',
-        backgroundColor: '#111111',
+        padding: '2ch',
+        backgroundColor: '#151515',
+    },
+    eventsHeaderText: {
+        fontSize: '15px',
+        color: fade(theme.palette.common.white, 0.8),
     },
     eventsWidth: {
         width: '25%',
@@ -189,7 +209,8 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                  className={isMobilePortrait() ? classes.flexColumn : ''}
             >
 
-                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
+                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}
+                      square>
                     <div style={{flex: '1'}}>
                         <ReactPlayer ref={playerRef}
                                      config={{
@@ -209,17 +230,24 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                      onBuffer={() => setIsBuffering(true)}
                                      onBufferEnd={() => setIsBuffering(false)}/>
                     </div>
-                    <CardHeader style={{height: 'auto'}}
-                                title={watchEpisodeState.youtubeDetails?.title}
-                                subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>
+                    <div className={classes.videoHeader}>
+                        <Typography className={classes.videoTitle}
+                                    variant="button">{watchEpisodeState.youtubeDetails?.title}</Typography>
+                        <Typography className={classes.videoSubtitle}
+                                    variant="button">{moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}</Typography>
+                    </div>
+                    {/*<CardHeader style={{height: 'auto'}}*/}
+                    {/*            title={watchEpisodeState.youtubeDetails?.title}*/}
+                    {/*            subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>*/}
                 </Card>
 
                 {hasEvents() &&
-                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
-                    <CardHeader
-                        className={classes.eventsHeader}
-                        subheader="Events"
-                    />
+                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}
+                      square>
+                    <div className={classes.eventsHeader}>
+                        <Typography className={classes.eventsHeaderText}
+                                    variant="button">Timeline</Typography>
+                    </div>
                     <div
                         style={{overflow: "auto", maxHeight: '92.5%'}}
                         ref={eventsCardRef}
@@ -271,10 +299,10 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                     </Card>
 
                     <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
-                        <CardHeader
-                            className={classes.eventsHeader}
-                            subheader="Events"
-                        />
+                        <div className={classes.eventsHeader}>
+                            <Typography className={classes.eventsHeaderText}
+                                        variant="button">Timeline</Typography>
+                        </div>
                         <Box maxHeight='92.5%'
                              style={{overflow: "hidden"}}>
                             <CardContent>
