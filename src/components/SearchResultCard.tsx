@@ -1,6 +1,6 @@
 import React from "react";
 import {fade, makeStyles} from '@material-ui/core/styles';
-import {Avatar, Card, CardHeader} from "@material-ui/core";
+import {Avatar, Card, Typography} from "@material-ui/core";
 
 interface Props {
     episodeNumber: number,
@@ -8,22 +8,45 @@ interface Props {
     subtitle: string,
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     avatar: {
-        backgroundColor: '#7a1d23',
+        backgroundColor: '#a3252e',
         color: 'white',
         width: '5ch',
+        marginRight: '2ch',
     },
     resultCard: {
-        backgroundColor: fade('#7a1d23', 0.35),
+        backgroundColor: '#151515',
+        color: theme.palette.common.white,
         '&:hover': {
-            backgroundColor: fade('#7a1d23', 0.5),
+            backgroundColor: fade(theme.palette.common.white, 0.05),
             cursor: 'pointer',
         },
         '&:active': {
-            backgroundColor: fade('#7a1d23', 0.2),
+            backgroundColor: fade(theme.palette.common.white, 0.075),
             cursor: 'pointer',
         },
+        boxShadow: 'none',
+    },
+    cardHeader: {
+        padding: '2ch',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    cardDetails: {
+        display: 'flex',
+        flexFlow: 'column'
+    },
+    episodeNumber: {
+        fontSize: '17px'
+    },
+    title: {
+        fontSize: '15px',
+        color: fade(theme.palette.common.white, 0.9),
+    },
+    subtitle: {
+        fontSize: '12px',
+        color: fade(theme.palette.common.white, 0.5),
     },
 }));
 
@@ -33,18 +56,22 @@ const SearchResultCard: React.FC<Props> = (props) => {
 
     return (
         <Card className={classes.resultCard}
+              square
         >
-            <CardHeader
-                avatar={
-                    <Avatar variant="rounded"
-                            aria-label="recipe"
-                            className={classes.avatar}>
-                        {episodeNumber}
-                    </Avatar>
-                }
-                title={title}
-                subheader={subtitle}
-            />
+            <div className={classes.cardHeader}>
+                <Avatar variant="rounded"
+                        className={classes.avatar}
+                >
+                    <Typography className={classes.episodeNumber}
+                                variant="button">{episodeNumber}</Typography>
+                </Avatar>
+                <div className={classes.cardDetails}>
+                    <Typography className={classes.title}
+                                variant="button">{title}</Typography>
+                    <Typography className={classes.subtitle}
+                                variant="button">{subtitle}</Typography>
+                </div>
+            </div>
         </Card>
     )
 };

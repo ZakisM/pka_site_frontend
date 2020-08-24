@@ -22,6 +22,7 @@
     "axios": "^0.19.2",
     "connected-react-router": "^6.8.0",
     "flatbuffers": "^1.12.0",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "raleway-webfont": "^3.0.1",
     "react": "^16.13.0",
@@ -37,6 +38,7 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "scroll-js": "^3.2.0",
+    "serialize-javascript": "^3.1.0",
     "typeface-roboto": "^0.0.75",
     "typescript": "~3.7.2",
     "use-constant": "^1.0.0"

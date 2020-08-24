@@ -10,24 +10,27 @@ interface DrawerListItemProps {
 
 const useStyles = makeStyles(theme => ({
     link: {
-        color: 'white',
+        color: fade(theme.palette.common.white, 0.5),
         textDecoration: 'none',
     },
     item: {
         height: '5.7ch',
         '&:hover': {
-            backgroundColor: fade(theme.palette.common.white, 0.025),
+            backgroundColor: fade(theme.palette.common.white, 0.0125),
         },
         '&:active': {
-            backgroundColor: fade(theme.palette.common.white, 0.05),
+            backgroundColor: fade(theme.palette.common.white, 0.025),
         },
     },
     itemText: {
-        marginLeft: '-12.5px',
+        marginLeft: '-10px',
+    },
+    itemIconInactive: {
+        color: fade(theme.palette.common.white, 0.5),
     },
     active: {
-        borderLeft: '5px solid #7a1d23',
-        backgroundColor: fade(theme.palette.common.white, 0.05),
+        color: theme.palette.common.white,
+        borderLeft: '5px solid #cd2d37',
         pointerEvents: 'none',
         cursor: 'default',
     }
@@ -46,7 +49,7 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
     const inner = (
         <ListItem className={`${classes.item} ${match ? classes.active : null}`}
                   key={text}>
-            <ListItemIcon>
+            <ListItemIcon className={`${match ? null : classes.itemIconInactive}`}>
                 <Icon/>
             </ListItemIcon>
             <ListItemText>

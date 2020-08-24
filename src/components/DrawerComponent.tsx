@@ -1,12 +1,9 @@
 import React from "react";
-import {AppBar, Divider, Hidden, IconButton, List, Tooltip, Typography} from "@material-ui/core";
+import {AppBar, fade, Hidden, IconButton, List, Tooltip, Typography} from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerListItem from "./DrawerListItem";
-import TheatersIcon from "@material-ui/icons/Theaters";
-import LiveTvIcon from "@material-ui/icons/LiveTv";
-import EventIcon from "@material-ui/icons/Event";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import {ThunkDispatch} from "redux-thunk";
@@ -14,6 +11,7 @@ import {WatchEpisodeRootActionTypes} from "../redux/watch-episode/types";
 import {watchPKAEpisode} from "../redux/watch-episode/actions";
 import {connect} from "react-redux";
 import {useHistory} from "react-router-dom";
+import {PlayCircleOutline, Timeline, VideoLibrary} from "@material-ui/icons";
 
 export const drawerWidth = 220;
 
@@ -37,8 +35,10 @@ const useStyles = makeStyles(theme => ({
             marginLeft: drawerWidth,
         },
         zIndex: theme.zIndex.drawer + 1,
+        boxShadow: 'none'
     },
     appBarTitle: {
+        color: '#cd2d37',
         fontFamily: 'Raleway',
         fontSize: '24px',
         fontWeight: 800,
@@ -53,8 +53,12 @@ const useStyles = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
-        backgroundColor: '#0b0b0b',
+        backgroundColor: '#151515',
+        border: 0,
     },
+    shuffleIcon: {
+        color: fade(theme.palette.common.white, 0.8)
+    }
 }));
 
 const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
@@ -79,16 +83,14 @@ const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
     const drawer = (
         <div>
             <div className={classes.toolbar}/>
-            <Divider/>
             <List>
                 <DrawerListItem text={"Watch"}
-                                Icon={LiveTvIcon}/>
+                                Icon={PlayCircleOutline}/>
                 <DrawerListItem text={"Episodes"}
-                                Icon={TheatersIcon}/>
+                                Icon={VideoLibrary}/>
                 <DrawerListItem text={"Events"}
-                                Icon={EventIcon}/>
+                                Icon={Timeline}/>
             </List>
-            <Divider/>
         </div>
     );
 
@@ -114,7 +116,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
                     </Typography>
                     <Tooltip title="Watch Random Episode">
                         <IconButton
-                            color="inherit"
+                            className={classes.shuffleIcon}
                             onClick={watchRandomEpisode}
                             aria-label="Watch Random Episode"
                         >
