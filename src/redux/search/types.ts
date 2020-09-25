@@ -22,27 +22,36 @@ export interface SearchResult {
     cardTitle(): string,
 
     cardSubtitle(): string,
+
+    duration(): string,
 }
 
-export interface EventSearchResultFields extends SearchResult {
+export interface EventWithAllFields extends SearchResult {
     episodeNumber: number,
     timestamp: number,
     description: string,
+    lengthSeconds: number,
 }
 
-export class EventSearchResult implements EventSearchResultFields {
+export class EventWithAllFieldsClass implements EventWithAllFields {
     episodeNumber: number;
     timestamp: number;
     description: string;
+    lengthSeconds: number;
 
-    constructor(episodeNumber: number, timestamp: number, description: string) {
+    constructor(episodeNumber: number, timestamp: number, description: string, lengthSeconds: number) {
         this.episodeNumber = episodeNumber;
         this.timestamp = timestamp;
         this.description = description;
+        this.lengthSeconds = lengthSeconds;
     }
 
-    static Deserialize(input: any): EventSearchResult {
-        return new EventSearchResult(input.episodeNumber(), input.timestamp().low, input.description())
+    static Deserialize(input: any): EventWithAllFieldsClass {
+        return new EventWithAllFieldsClass(input.episodeNumber(), input.timestamp(), input.description(), input.lengthSeconds())
+    }
+
+    static DeserializeNormalArr(input: EventWithAllFields[]) {
+        return input.map((event) => new EventWithAllFieldsClass(event.episodeNumber, event.timestamp, event.description, event.lengthSeconds));
     }
 
     cardTitle(): string {
@@ -52,29 +61,42 @@ export class EventSearchResult implements EventSearchResultFields {
     cardSubtitle(): string {
         return `Starts at ${moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss")}`;
     }
+
+    duration(): string {
+        const d = moment.utc(this.lengthSeconds * 1000);
+
+        if (d.hours() > 0) {
+            return `${d.hours()}h ${d.minutes()}m ${d.seconds()}s`
+        } else {
+            return `${d.minutes()}m ${d.seconds()}s`
+        }
+    }
 }
 
-export interface PkaSearchResultFields extends SearchResult {
+export interface EpisodeWithAllFields extends SearchResult {
     episodeNumber: number,
     uploadDate: number,
     title: string,
+    lengthSeconds: number,
 }
 
-export class PkaSearchResult implements PkaSearchResultFields {
+export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
     episodeNumber: number;
     uploadDate: number;
     title: string;
+    lengthSeconds: number;
 
     timestamp = 0;
 
-    constructor(episodeNumber: number, uploadDate: number, title: string) {
+    constructor(episodeNumber: number, uploadDate: number, title: string, lengthSeconds: number) {
         this.episodeNumber = episodeNumber;
         this.uploadDate = uploadDate;
         this.title = title;
+        this.lengthSeconds = lengthSeconds;
     }
 
-    static Deserialize(input: PkaSearchResultFields): PkaSearchResult {
-        return new PkaSearchResult(input.episodeNumber, input.uploadDate, input.title)
+    static Deserialize(input: EpisodeWithAllFields): EpisodeWithAllFieldsClass {
+        return new EpisodeWithAllFieldsClass(input.episodeNumber, input.uploadDate, input.title, input.lengthSeconds)
     }
 
     cardTitle(): string {
@@ -85,35 +107,41 @@ export class PkaSearchResult implements PkaSearchResultFields {
         return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
     }
 
+    duration(): string {
+        const d = moment.utc(this.lengthSeconds * 1000);
+
+        return `${d.hours()}h ${d.minutes()}m`
+    }
+
 }
 
-export enum SearchEventTypes {
-    STARTED = 'SEARCH_EVENT_STARTED',
-    FAILURE = 'SEARCH_EVENT_FAILURE',
-    SUCCESS = 'SEARCH_EVENT_SUCCESS',
-    CLEAR = 'SEARCH_EVENT_CLEAR',
-    SET_SEARCH_TYPE = 'SET_SEARCH_TYPE',
-    REVERSE_RESULTS_TOGGLE = 'REVERSE_RESULTS_TOGGLE',
+export enum SearchTypes {
+    STARTED = 'SEARCH_STARTED',
+    FAILURE = 'SEARCH_FAILURE',
+    SUCCESS = 'SEARCH_SUCCESS',
+    CLEAR = 'SEARCH_CLEAR',
+    SET_SEARCH_TYPE = 'SEARCH_SET_SEARCH_TYPE',
+    REVERSE_RESULTS_TOGGLE = 'SEARCH_REVERSE_RESULTS_TOGGLE',
 }
 
-interface SearchEventSuccess {
-    type: SearchEventTypes.SUCCESS,
+interface SearchSuccess {
+    type: SearchTypes.SUCCESS,
     payload: SearchState
 }
 
-interface SearchEventFailure {
-    type: SearchEventTypes.FAILURE
+interface SearchFailure {
+    type: SearchTypes.FAILURE
     meta: {
         error: string
     }
 }
 
-interface SearchEventStarted {
-    type: SearchEventTypes.STARTED
+interface SearchStarted {
+    type: SearchTypes.STARTED
 }
 
-interface SearchEventClearResults {
-    type: SearchEventTypes.CLEAR
+interface SearchClearResults {
+    type: SearchTypes.CLEAR
 }
 
 interface LocationChange {
@@ -121,21 +149,21 @@ interface LocationChange {
 }
 
 interface SetSearchType {
-    type: SearchEventTypes.SET_SEARCH_TYPE,
+    type: SearchTypes.SET_SEARCH_TYPE,
     payload: SearchItemType
 }
 
 interface ReverseResultsToggle {
-    type: SearchEventTypes.REVERSE_RESULTS_TOGGLE,
+    type: SearchTypes.REVERSE_RESULTS_TOGGLE,
 }
 
 type SearchActionTypes =
-    SearchEventStarted
-    | SearchEventFailure
-    | SearchEventSuccess
-    | SearchEventClearResults
+    SearchStarted
+    | SearchFailure
+    | SearchSuccess
+    | SearchClearResults
     | LocationChange
     | SetSearchType
     | ReverseResultsToggle
 
-export type SearchEventActionTypes = SearchActionTypes
+export type SearchRootActionTypes = SearchActionTypes

@@ -6,13 +6,13 @@ export interface WatchEpisodeState {
     currentEventCard?: number,
     isLoading?: boolean,
     errors?: string[],
-    numberOfRetries: number,
 }
 
 export interface Episode {
     number: number,
     name: string,
     uploadDate: number,
+    lengthSeconds: number,
 }
 
 export interface YoutubeDetails {
@@ -25,15 +25,16 @@ export interface YoutubeDetails {
 export interface Event {
     timestamp: number,
     description: string,
+    lengthSeconds: number,
 }
 
 export enum WatchEpisodeTypes {
-    STARTED = 'PLAYER_STARTED',
-    FAILURE = 'PLAYER_FAILURE',
-    SUCCESS = 'PLAYER_SUCCESS',
-    PLAYER_INCREMENT_REQ_RETRY = 'PLAYER_INCREMENT_REQ_RETRY',
-    SAVE_TIMESTAMP = 'PLAYER_SAVE_TIMESTAMP',
-    SET_EVENT_CARD = 'PLAYER_SET_EVENT_CARD',
+    STARTED = 'WATCH_EPISODE_EVENT_STARTED',
+    FAILURE = 'WATCH_EPISODE_EVENT_FAILURE',
+    SUCCESS = 'WATCH_EPISODE_EVENT_SUCCESS',
+    SAVE_TIMESTAMP = 'WATCH_EPISODE_EVENT_SAVE_TIMESTAMP',
+    SET_EVENT_CARD = 'WATCH_EPISODE_EVENT_SET_EVENT_CARD',
+    CLEAR_WATCH_STATE = 'WATCH_EPISODE_EVENT_CLEAR_WATCH_STATE',
 }
 
 interface WatchEpisodeSuccess {
@@ -62,8 +63,8 @@ interface WatchEpisodeSetEventCard {
     payload: number
 }
 
-interface WatchEpisodeIncrementRetry {
-    type: WatchEpisodeTypes.PLAYER_INCREMENT_REQ_RETRY
+interface WatchEpisodeClearWatchState {
+    type: WatchEpisodeTypes.CLEAR_WATCH_STATE
 }
 
 type WatchEpisodeActionTypes =
@@ -72,6 +73,6 @@ type WatchEpisodeActionTypes =
     | WatchEpisodeSuccess
     | WatchEpisodeSaveTimestamp
     | WatchEpisodeSetEventCard
-    | WatchEpisodeIncrementRetry
+    | WatchEpisodeClearWatchState
 
 export type WatchEpisodeRootActionTypes = WatchEpisodeActionTypes
