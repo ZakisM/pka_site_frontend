@@ -10,14 +10,15 @@ import {makeStyles} from "@material-ui/core/styles";
 import moment from "moment";
 import PlayerEventCard from "./PlayerEventCard";
 import Skeleton from '@material-ui/lab/Skeleton';
-import {isMobile} from "react-device-detect";
 import {Alert} from "@material-ui/lab";
+import {useHistory, useParams} from "react-router-dom";
+import {useQuery} from "../util";
 
 export const YOUTUBE_BASE_URL = 'https://www.youtube.com/watch?v=';
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, WatchEpisodeRootActionTypes>) => {
     return {
-        watchPKAEpisode: (number: number | "latest", timestamp: number) => dispatch(watchPKAEpisode(number, timestamp)),
+        watchPKAEpisode: (number: number | "latest" | "random", timestamp: number) => dispatch(watchPKAEpisode(number, timestamp)),
         saveTimestamp: (timestamp: number) => dispatch(saveTimestamp(timestamp)),
         setCurrentEventCard: (id: number) => dispatch(setCurrentEventCard(id)),
     }
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
     videoTitle: {
         fontSize: '20px',
+        fontWeight: 500,
         color: fade(theme.palette.common.white, 0.9),
     },
     videoSubtitle: {
@@ -98,9 +100,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RETRY_AMOUNT = 5;
-
 const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
+    const history = useHistory();
     const classes = useStyles();
 
     const {setCurrentEventCard, saveTimestamp, watchPKAEpisode, watchEpisodeState} = props;
@@ -108,36 +109,63 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     const playerRef = useRef<ReactPlayer>(null);
     const eventsCardRef = useRef<any>(null);
 
-    const [isInitial, setInitial] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
+    const [isPortrait, setIsPortrait] = useState(false);
+
+    let {episodeNumber} = useParams<any>();
+
+    let query = useQuery();
+    let timestampQuery = query.get("timestamp");
+
+    useEffect(() => {
+        if (watchEpisodeState.episode === undefined) {
+            if (episodeNumber) {
+                if (episodeNumber !== 'random') {
+                    watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
+                } else {
+                    watchPKAEpisode("random", 0);
+                }
+            } else {
+                watchPKAEpisode("latest", 0);
+            }
+        } else {
+            if (episodeNumber && episodeNumber !== 'random' && episodeNumber !== 'latest' && watchEpisodeState.episode?.number.toString() !== episodeNumber) {
+                watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
+            } else {
+                history.replace(`/watch/${watchEpisodeState.episode.number}`);
+            }
+        }
+    }, [episodeNumber, history, timestampQuery, watchEpisodeState.episode, watchPKAEpisode])
 
     useEffect(() => {
         if (!watchEpisodeState.isLoading) {
-            if (watchEpisodeState.episode === undefined) {
-                setInitial(true);
-
-                setTimeout(() => {
-                    if (watchEpisodeState.numberOfRetries < RETRY_AMOUNT) {
-                        watchPKAEpisode("latest", 0);
-                    }
-                }, 250)
-
-            } else {
-                if (watchEpisodeState.events) {
-                    if (watchEpisodeState.timestamp !== 0) {
-                        watchEpisodeState.events.forEach((event, index) => {
-                            if (watchEpisodeState.timestamp >= event.timestamp) {
-                                setCurrentEventCard(index);
-                                return;
-                            }
-                        });
-                    } else {
-                        setCurrentEventCard(0);
-                    }
+            if (watchEpisodeState.events) {
+                if (watchEpisodeState.timestamp !== 0) {
+                    watchEpisodeState.events.forEach((event, index) => {
+                        if (watchEpisodeState.timestamp >= event.timestamp) {
+                            setCurrentEventCard(index);
+                            return;
+                        }
+                    });
+                } else {
+                    setCurrentEventCard(0);
                 }
             }
         }
-    }, [setCurrentEventCard, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.isLoading, watchEpisodeState.numberOfRetries, watchEpisodeState.timestamp, watchPKAEpisode]);
+    }, [setCurrentEventCard, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.isLoading, watchEpisodeState.timestamp, watchPKAEpisode]);
+
+    useEffect(() => {
+        const checkIfPortrait = () => {
+            setIsPortrait(window.outerHeight >= window.outerWidth);
+        };
+
+        checkIfPortrait();
+        window.addEventListener('resize', checkIfPortrait);
+
+        return function cleanup() {
+            window.removeEventListener('resize', checkIfPortrait);
+        }
+    }, []);
 
     const loadTimestamp = (timestamp?: number) => {
         // For some reason if timestamp is 0, watching the timestamp doesn't seem to work.
@@ -147,7 +175,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
 
         const pRef = playerRef.current;
 
-        if (pRef && !isInitial) {
+        if (pRef) {
             pRef.seekTo(timestamp ? timestamp : watchEpisodeState.timestamp, "seconds");
         }
     };
@@ -161,7 +189,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 if (currentTimeStamp != null) {
                     saveTimestamp(currentTimeStamp);
                 }
-            }, 2000);
+            }, 1000);
         }
     };
 
@@ -170,26 +198,12 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
         return `${YOUTUBE_BASE_URL}${videoId}&origin=${window.location.origin}&enablejsapi=1`;
     };
 
-    const handleInitial = () => {
-        if (isInitial) {
-            setInitial(false);
-        }
-    };
-
-    const isPortrait = () => {
-        return window.outerHeight >= window.outerWidth;
-    };
-
     const hasEvents = () => {
         return watchEpisodeState.events && watchEpisodeState.events.length > 0;
     };
 
-    const isMobilePortrait = () => {
-        return isMobile && isPortrait();
-    };
-
     const videoIsFullWidth = () => {
-        if (isMobilePortrait()) {
+        if (isPortrait) {
             return true;
         } else if (watchEpisodeState.events === undefined) {
             return false;
@@ -199,25 +213,23 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     };
 
     const hasFailedToLoad = (): boolean => {
-        return watchEpisodeState.numberOfRetries >= RETRY_AMOUNT;
+        if (watchEpisodeState.errors) {
+            return watchEpisodeState.errors && watchEpisodeState.errors![watchEpisodeState.errors!.length - 1] !== undefined;
+        } else {
+            return false;
+        }
     };
 
     if (watchEpisodeState.episode !== undefined && !watchEpisodeState.isLoading) {
         return (
             <Box display='flex'
                  height='95%'
-                 className={isMobilePortrait() ? classes.flexColumn : ''}
+                 className={isPortrait ? classes.flexColumn : ''}
             >
 
-                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}
-                      square>
+                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
                     <div style={{flex: '1'}}>
                         <ReactPlayer ref={playerRef}
-                                     config={{
-                                         youtube: {
-                                             preload: true,
-                                         }
-                                     }}
                                      url={getUrl()}
                                      width={'100%'}
                                      height={'100%'}
@@ -225,25 +237,18 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                                      playing={true}
                                      onError={(e) => console.log(e)}
                                      onProgress={() => synchronizeTimestamp()}
-                                     onPlay={() => handleInitial()}
                                      onReady={() => loadTimestamp()}
                                      onBuffer={() => setIsBuffering(true)}
                                      onBufferEnd={() => setIsBuffering(false)}/>
                     </div>
                     <div className={classes.videoHeader}>
-                        <Typography className={classes.videoTitle}
-                                    variant="button">{watchEpisodeState.youtubeDetails?.title}</Typography>
-                        <Typography className={classes.videoSubtitle}
-                                    variant="button">{moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}</Typography>
+                        <Typography className={classes.videoTitle}>{watchEpisodeState.youtubeDetails?.title}</Typography>
+                        <Typography className={classes.videoSubtitle}>{moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}</Typography>
                     </div>
-                    {/*<CardHeader style={{height: 'auto'}}*/}
-                    {/*            title={watchEpisodeState.youtubeDetails?.title}*/}
-                    {/*            subheader={moment.utc(Number(watchEpisodeState.episode?.uploadDate) * 1000).format("dddd Do MMMM YYYY")}/>*/}
                 </Card>
 
                 {hasEvents() &&
-                <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}
-                      square>
+                <Card className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
                     <div className={classes.eventsHeader}>
                         <Typography className={classes.eventsHeaderText}
                                     variant="button">Timeline</Typography>
@@ -284,7 +289,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
 
                 <Box display='flex'
                      height='95%'
-                     className={isMobilePortrait() ? classes.flexColumn : ''}
+                     className={isPortrait ? classes.flexColumn : ''}
                 >
                     <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
                         <div style={{height: '100%'}}>
@@ -298,7 +303,7 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                         />
                     </Card>
 
-                    <Card className={`${classes.eventsCard} ${isMobilePortrait() ? classes.halfHeight : classes.eventsWidth}`}>
+                    <Card className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
                         <div className={classes.eventsHeader}>
                             <Typography className={classes.eventsHeaderText}
                                         variant="button">Timeline</Typography>

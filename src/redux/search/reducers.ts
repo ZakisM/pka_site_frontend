@@ -1,4 +1,4 @@
-import {SearchEventActionTypes, SearchEventTypes, SearchState} from "./types";
+import {SearchRootActionTypes, SearchState, SearchTypes} from "./types";
 import {LOCATION_CHANGE} from "connected-react-router";
 
 const initialState: SearchState = {
@@ -11,30 +11,30 @@ const initialState: SearchState = {
 
 export function searchReducer(
     state = initialState,
-    action: SearchEventActionTypes
+    action: SearchRootActionTypes
 ): SearchState {
     switch (action.type) {
-        case SearchEventTypes.STARTED: {
+        case SearchTypes.STARTED: {
             return {
                 ...state,
                 isLoading: true,
             };
         }
-        case SearchEventTypes.FAILURE: {
+        case SearchTypes.FAILURE: {
             return {
                 ...state,
                 isLoading: false,
                 errors: [...state.errors!, action.meta.error],
             };
         }
-        case SearchEventTypes.SUCCESS: {
+        case SearchTypes.SUCCESS: {
             return {
                 ...state,
                 isLoading: false,
                 ...action.payload,
             };
         }
-        case SearchEventTypes.CLEAR: {
+        case SearchTypes.CLEAR: {
             return {
                 ...state,
                 searchResults: [],
@@ -47,13 +47,13 @@ export function searchReducer(
                 searchResults: []
             }
         }
-        case SearchEventTypes.SET_SEARCH_TYPE: {
+        case SearchTypes.SET_SEARCH_TYPE: {
             return {
                 ...state,
                 searchType: action.payload
             }
         }
-        case SearchEventTypes.REVERSE_RESULTS_TOGGLE: {
+        case SearchTypes.REVERSE_RESULTS_TOGGLE: {
             return {
                 ...state,
                 reverseResults: state.reverseResults !== true,

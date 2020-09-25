@@ -6,7 +6,7 @@ import SearchComponent from "./SearchComponent";
 import PlayerComponent from "./PlayerComponent";
 import {SearchItemType} from "../redux/search/types";
 import {ConnectedRouter} from "connected-react-router";
-import {history} from "../redux/store"
+import {history} from "../redux/store";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -33,21 +33,19 @@ const RootComponent: React.FC = () => {
                     <Switch>
                         <Route exact
                                path="/">
-                            <Redirect
-                                to="/watch"/>
+                            <Redirect to={"/watch"}/>
                         </Route>
-                        <Route exact
-                               path="/watch">
+                        <Route path={["/watch/:episodeNumber", "/watch"]}>
                             <PlayerComponent/>
                         </Route>
-                        <Route exact
-                               path="/episodes">
+                        <Route path="/episodes">
                             <SearchComponent searchItemType={SearchItemType.EPISODE}/>
                         </Route>
-                        <Route exact
-                               path="/events">
+                        <Route path="/events">
                             <SearchComponent searchItemType={SearchItemType.EVENT}/>
                         </Route>
+                        <Redirect from="*"
+                                  to="/"/>
                     </Switch>
                 </main>
             </div>

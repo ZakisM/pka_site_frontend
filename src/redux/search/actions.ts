@@ -1,27 +1,28 @@
 import axios from "axios";
 import {Dispatch} from "redux";
 import {
-    EventSearchResult,
-    PkaSearchResult,
-    SearchEventActionTypes,
-    SearchEventTypes,
+    EpisodeWithAllFieldsClass,
+    EventWithAllFieldsClass,
     SearchItemType,
-    SearchState
+    SearchRootActionTypes,
+    SearchState,
+    SearchTypes
 } from "./types";
 import {RootState} from "../index";
 import {AllPkaEventSearchResultsFb} from "../../flatbuffers/pka_event_search_results_generated";
 import {flatbuffers} from "flatbuffers";
+import handleError from "../../util";
 
-export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchEventActionTypes>, getState: () => RootState) => {
+export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemType) => (dispatch: Dispatch<SearchRootActionTypes>, getState: () => RootState) => {
     dispatch(searchEventStarted());
     dispatch(setSearchType(searchItemType));
 
     const getEndpoint = () => {
         switch (searchItemType) {
             case SearchItemType.EPISODE:
-                return 'search_pka_episode';
+                return 'search/search_pka_episode';
             case SearchItemType.EVENT:
-                return 'search_pka_event';
+                return 'search/search_pka_event';
         }
     };
 
@@ -35,7 +36,7 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
             switch (searchItemType) {
                 case SearchItemType.EPISODE: {
                     for (let sr of res.data.data) {
-                        searchResults.push(PkaSearchResult.Deserialize(sr))
+                        searchResults.push(EpisodeWithAllFieldsClass.Deserialize(sr))
                     }
                     break;
                 }
@@ -48,7 +49,7 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
 
                     for (let i = 0; i < all_events.resultsLength(); i++) {
                         let event = all_events.results(i);
-                        searchResults.push(EventSearchResult.Deserialize(event));
+                        searchResults.push(EventWithAllFieldsClass.Deserialize(event));
                     }
 
                     if (getState().search.reverseResults && searchResults) {
@@ -66,41 +67,37 @@ export const searchPKAItem = (searchQuery: string, searchItemType: SearchItemTyp
             return dispatch(searchEventSuccess(searchResult))
         })
         .catch(err => {
-            if (err.message === "Network Error") {
-                err = "Server appears to be offline. Please refresh in a few minutes.";
-            } else {
-                err = err.message;
-            }
+            err = handleError(err);
 
             return dispatch(searchEventFailure(err))
         })
 };
 
-const searchEventStarted = (): SearchEventActionTypes => ({
-    type: SearchEventTypes.STARTED,
+const searchEventStarted = (): SearchRootActionTypes => ({
+    type: SearchTypes.STARTED,
 });
 
-const searchEventSuccess = (searchResult: SearchState): SearchEventActionTypes => ({
-    type: SearchEventTypes.SUCCESS,
+const searchEventSuccess = (searchResult: SearchState): SearchRootActionTypes => ({
+    type: SearchTypes.SUCCESS,
     payload: searchResult
 });
 
-const searchEventFailure = (err: string): SearchEventActionTypes => ({
-    type: SearchEventTypes.FAILURE,
+const searchEventFailure = (err: string): SearchRootActionTypes => ({
+    type: SearchTypes.FAILURE,
     meta: {
         error: err
     }
 });
 
-const setSearchType = (searchType: SearchItemType): SearchEventActionTypes => ({
-    type: SearchEventTypes.SET_SEARCH_TYPE,
+const setSearchType = (searchType: SearchItemType): SearchRootActionTypes => ({
+    type: SearchTypes.SET_SEARCH_TYPE,
     payload: searchType
 });
 
-export const searchEventClearResults = (): SearchEventActionTypes => ({
-    type: SearchEventTypes.CLEAR,
+export const searchEventClearResults = (): SearchRootActionTypes => ({
+    type: SearchTypes.CLEAR,
 });
 
-export const reverseResultsToggle = (): SearchEventActionTypes => ({
-    type: SearchEventTypes.REVERSE_RESULTS_TOGGLE,
+export const reverseResultsToggle = (): SearchRootActionTypes => ({
+    type: SearchTypes.REVERSE_RESULTS_TOGGLE,
 });

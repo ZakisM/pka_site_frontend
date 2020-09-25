@@ -1,6 +1,6 @@
-import React, {RefObject, useRef, useState} from "react";
-import {fade, makeStyles} from '@material-ui/core/styles';
-import {Card, Typography} from "@material-ui/core";
+import React, {RefObject, useEffect, useRef, useState} from "react";
+import {createStyles, fade, makeStyles, Theme, withStyles} from '@material-ui/core/styles';
+import {Card, LinearProgress, Typography} from "@material-ui/core";
 import {RootState} from "../redux";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -49,6 +49,22 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+const CurrentEventProgressBar = withStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            marginTop: theme.spacing(1.75),
+            height: 5,
+        },
+        colorPrimary: {
+            backgroundColor: '#111010',
+        },
+        bar: {
+            backgroundColor: '#c7c7c7',
+        },
+    }),
+)(LinearProgress);
+
+
 const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
     const classes = useStyles();
     const {parentRef, id, title, timestamp, watchEpisodeState} = props;
@@ -56,6 +72,8 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
     const cardRef = useRef<HTMLUListElement>(null);
 
     const [isActive, setActive] = useState(false);
+
+    const [progress, setProgress] = useState(25);
 
     useAsync(async () => {
         const cRef = cardRef.current;
@@ -75,13 +93,27 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
         }
     }, [watchEpisodeState.events, watchEpisodeState.currentEventCard, id, isActive]);
 
+    useEffect(() => {
+        if (isActive && watchEpisodeState.events && watchEpisodeState.episode) {
+            const currentEvent = watchEpisodeState.events[id];
+
+            if (currentEvent) {
+                setProgress(((watchEpisodeState.timestamp - currentEvent.timestamp) / currentEvent.lengthSeconds) * 100);
+            }
+        }
+    }, [id, isActive, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.timestamp])
+
     return (
         <Card ref={cardRef}
               className={`${classes.resultCard} ${isActive ? classes.active : null}`}
-              square
         >
             <Typography className={classes.title}>{title}</Typography>
             <Typography className={classes.subtitle}>{moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}</Typography>
+
+            {isActive ?
+                <CurrentEventProgressBar variant="determinate"
+                                         value={progress}/> : null
+            }
         </Card>
     )
 };

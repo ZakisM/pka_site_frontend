@@ -8,16 +8,16 @@ import {makeStyles, useTheme} from "@material-ui/core/styles";
 import ShuffleIcon from '@material-ui/icons/Shuffle';
 import {ThunkDispatch} from "redux-thunk";
 import {WatchEpisodeRootActionTypes} from "../redux/watch-episode/types";
-import {watchPKAEpisode} from "../redux/watch-episode/actions";
 import {connect} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {PlayCircleOutline, Timeline, VideoLibrary} from "@material-ui/icons";
+import {clearWatchState} from "../redux/watch-episode/actions";
 
-export const drawerWidth = 220;
+export const drawerWidth = '220px';
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, {}, WatchEpisodeRootActionTypes>) => {
     return {
-        watchRandomPKAEpisode: () => dispatch(watchPKAEpisode("random", 0)),
+        clearWatchState: () => dispatch(clearWatchState()),
     }
 };
 
@@ -65,7 +65,7 @@ const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
     const theme = useTheme();
     const classes = useStyles();
 
-    const {watchRandomPKAEpisode} = props;
+    const {clearWatchState} = props;
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -76,8 +76,8 @@ const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
     const history = useHistory();
 
     const watchRandomEpisode = () => {
-        watchRandomPKAEpisode();
-        history.push("/watch");
+        clearWatchState();
+        history.push(`/watch/random`);
     };
 
     const drawer = (
@@ -85,10 +85,13 @@ const DrawerComponent: React.FC<DrawerComponentProps> = (props) => {
             <div className={classes.toolbar}/>
             <List>
                 <DrawerListItem text={"Watch"}
+                                onClick={handleDrawerToggle}
                                 Icon={PlayCircleOutline}/>
                 <DrawerListItem text={"Episodes"}
+                                onClick={handleDrawerToggle}
                                 Icon={VideoLibrary}/>
                 <DrawerListItem text={"Events"}
+                                onClick={handleDrawerToggle}
                                 Icon={Timeline}/>
             </List>
         </div>

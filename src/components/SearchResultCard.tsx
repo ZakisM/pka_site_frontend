@@ -1,21 +1,19 @@
 import React from "react";
 import {fade, makeStyles} from '@material-ui/core/styles';
-import {Avatar, Card, Typography} from "@material-ui/core";
+import {Card} from "@material-ui/core";
 
 interface Props {
+    customClassName?: string,
     episodeNumber: number,
     title: string,
     subtitle: string,
+    duration: string,
 }
 
 const useStyles = makeStyles((theme) => ({
-    avatar: {
-        backgroundColor: '#a3252e',
-        color: 'white',
-        width: '5ch',
-        marginRight: '2ch',
-    },
     resultCard: {
+        display: 'flex',
+        padding: theme.spacing(2),
         backgroundColor: '#151515',
         color: theme.palette.common.white,
         '&:hover': {
@@ -28,48 +26,68 @@ const useStyles = makeStyles((theme) => ({
         },
         boxShadow: 'none',
     },
-    cardHeader: {
-        padding: '2ch',
-        display: 'flex',
-        alignItems: 'center',
+    avatar: {
+        backgroundColor: '#a3252e',
+        color: 'white',
+        width: '5ch',
+        marginRight: theme.spacing(2),
     },
     cardDetails: {
         display: 'flex',
-        flexFlow: 'column'
+        flexFlow: 'column',
+        alignItems: 'flex-start',
     },
     episodeNumber: {
         fontSize: '17px'
     },
     title: {
         fontSize: '15px',
+        fontWeight: 500,
         color: fade(theme.palette.common.white, 0.9),
+        marginBottom: theme.spacing(0.5)
     },
     subtitle: {
-        fontSize: '12px',
+        fontSize: '13px',
         color: fade(theme.palette.common.white, 0.5),
     },
+    infoCard: {
+        fontWeight: 600,
+        fontSize: '14px',
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        borderRadius: '3px',
+        color: theme.palette.common.white,
+        backgroundColor: '#ab1029',
+        marginRight: theme.spacing(1),
+    },
+    cardInfo: {
+        flex: 1,
+        marginBottom: theme.spacing(1.25)
+    },
+    metaData: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 }));
 
 const SearchResultCard: React.FC<Props> = (props) => {
     const classes = useStyles();
-    const {episodeNumber, title, subtitle} = props;
+    const {customClassName, episodeNumber, title, subtitle, duration} = props;
 
     return (
-        <Card className={classes.resultCard}
-              square
+        <Card className={`${classes.resultCard} ${customClassName}`}
         >
-            <div className={classes.cardHeader}>
-                <Avatar variant="rounded"
-                        className={classes.avatar}
-                >
-                    <Typography className={classes.episodeNumber}
-                                variant="button">{episodeNumber}</Typography>
-                </Avatar>
-                <div className={classes.cardDetails}>
-                    <Typography className={classes.title}
-                                variant="button">{title}</Typography>
-                    <Typography className={classes.subtitle}
-                                variant="button">{subtitle}</Typography>
+            <div className={classes.cardDetails}>
+                <div className={classes.cardInfo}>
+                    <div className={classes.title}>{title}</div>
+                    <div className={classes.subtitle}>{subtitle}</div>
+                </div>
+                <div className={classes.metaData}>
+                    <div className={classes.infoCard}>Episode {episodeNumber}</div>
+                    <div className={classes.infoCard}>{duration}</div>
                 </div>
             </div>
         </Card>

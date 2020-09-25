@@ -4,6 +4,7 @@ import {Link, useRouteMatch} from "react-router-dom";
 import {fade, makeStyles} from "@material-ui/core/styles";
 
 interface DrawerListItemProps {
+    onClick: () => void,
     text: string,
     Icon: typeof SvgIcon,
 }
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
-    const {text, Icon} = props;
+    const {text, Icon, onClick} = props;
     const classes = useStyles();
 
     const path = `/${text.toLowerCase()}`;
@@ -48,6 +49,7 @@ const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
 
     const inner = (
         <ListItem className={`${classes.item} ${match ? classes.active : null}`}
+                  onClick={onClick}
                   key={text}>
             <ListItemIcon className={`${match ? null : classes.itemIconInactive}`}>
                 <Icon/>
