@@ -52,13 +52,16 @@ const useStyles = makeStyles(theme => ({
 const CurrentEventProgressBar = withStyles((theme: Theme) =>
     createStyles({
         root: {
+            borderRadius: 5,
             marginTop: theme.spacing(1.75),
             height: 5,
         },
         colorPrimary: {
+            borderRadius: 5,
             backgroundColor: '#111010',
         },
         bar: {
+            borderRadius: 5,
             backgroundColor: '#c7c7c7',
         },
     }),
@@ -73,7 +76,7 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
 
     const [isActive, setActive] = useState(false);
 
-    const [progress, setProgress] = useState(25);
+    const [progress, setProgress] = useState(0);
 
     useAsync(async () => {
         const cRef = cardRef.current;
@@ -111,7 +114,8 @@ const PlayerEventCard: React.FC<PlayerEventCardProps> = (props) => {
             <Typography className={classes.subtitle}>{moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}</Typography>
 
             {isActive ?
-                <CurrentEventProgressBar variant="determinate"
+                <CurrentEventProgressBar key={progress}
+                                         variant="determinate"
                                          value={progress}/> : null
             }
         </Card>
