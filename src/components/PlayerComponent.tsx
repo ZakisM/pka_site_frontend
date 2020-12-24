@@ -129,13 +129,18 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
                 watchPKAEpisode("latest", 0);
             }
         } else {
-            if (episodeNumber && episodeNumber !== 'random' && episodeNumber !== 'latest' && watchEpisodeState.episode?.number.toString() !== episodeNumber) {
+            if (episodeNumber
+                && episodeNumber !== 'random'
+                && episodeNumber !== 'latest'
+                && (timestampQuery != null || watchEpisodeState.episode?.number.toString() !== episodeNumber)) {
+
                 watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
             } else {
                 history.replace(`/watch/${watchEpisodeState.episode.number}`);
             }
         }
-    }, [episodeNumber, history, timestampQuery, watchEpisodeState.episode, watchPKAEpisode])
+        // eslint-disable-next-line
+    }, [episodeNumber, history, timestampQuery, watchPKAEpisode])
 
     useEffect(() => {
         if (!watchEpisodeState.isLoading) {
