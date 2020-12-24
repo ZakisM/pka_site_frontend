@@ -120,27 +120,25 @@ const PlayerComponent: React.FC<PlayerComponentProps> = (props) => {
     useEffect(() => {
         if (watchEpisodeState.episode === undefined) {
             if (episodeNumber) {
-                if (episodeNumber !== 'random') {
-                    watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
-                } else {
+                if (episodeNumber === "random") {
                     watchPKAEpisode("random", 0);
+                } else {
+                    watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
                 }
             } else {
                 watchPKAEpisode("latest", 0);
             }
         } else {
-            if (episodeNumber
-                && episodeNumber !== 'random'
-                && episodeNumber !== 'latest'
-                && (timestampQuery != null || watchEpisodeState.episode?.number.toString() !== episodeNumber)) {
-
-                watchPKAEpisode(episodeNumber, timestampQuery ? parseInt(timestampQuery) : 0);
-            } else {
-                history.replace(`/watch/${watchEpisodeState.episode.number}`);
+            if (episodeNumber) {
+                if (timestampQuery) {
+                    watchPKAEpisode(episodeNumber, parseInt(timestampQuery));
+                }
             }
+
+            history.replace(`/watch/${watchEpisodeState.episode.number}`);
+
         }
-        // eslint-disable-next-line
-    }, [episodeNumber, history, timestampQuery, watchPKAEpisode])
+    }, [episodeNumber, history, timestampQuery, watchEpisodeState.episode, watchPKAEpisode])
 
     useEffect(() => {
         if (!watchEpisodeState.isLoading) {
