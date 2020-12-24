@@ -119,7 +119,6 @@ export enum SearchTypes {
     STARTED = 'SEARCH_STARTED',
     FAILURE = 'SEARCH_FAILURE',
     SUCCESS = 'SEARCH_SUCCESS',
-    CLEAR = 'SEARCH_CLEAR',
     SET_SEARCH_TYPE = 'SEARCH_SET_SEARCH_TYPE',
     REVERSE_RESULTS_TOGGLE = 'SEARCH_REVERSE_RESULTS_TOGGLE',
 }
@@ -140,10 +139,6 @@ interface SearchStarted {
     type: SearchTypes.STARTED
 }
 
-interface SearchClearResults {
-    type: SearchTypes.CLEAR
-}
-
 interface LocationChange {
     type: typeof LOCATION_CHANGE
 }
@@ -161,7 +156,6 @@ type SearchActionTypes =
     SearchStarted
     | SearchFailure
     | SearchSuccess
-    | SearchClearResults
     | LocationChange
     | SetSearchType
     | ReverseResultsToggle

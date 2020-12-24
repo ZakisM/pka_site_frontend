@@ -1,5 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
-import {fade, makeStyles} from '@material-ui/core/styles';
+import React, {useEffect, useState} from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
@@ -19,13 +18,13 @@ import {getPKAEpisodeYoutubeLink} from "../redux/watch-episode/actions";
 import {useHistory} from "react-router-dom";
 import {YOUTUBE_BASE_URL} from "./PlayerComponent";
 import LoadingSpinner from "./LoadingSpinner";
-import {reverseResultsToggle, searchEventClearResults, searchPKAItem} from "../redux/search/actions";
+import {reverseResultsToggle, searchPKAItem} from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
+import {fade, makeStyles} from "@material-ui/core/styles";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchRootActionTypes>) => {
     return {
         searchPKAItem: (searchQuery: string, searchItemType: SearchItemType) => dispatch(searchPKAItem(searchQuery, searchItemType)),
-        searchEventClearResults: () => dispatch(searchEventClearResults()),
         reverseResultsToggle: () => dispatch(reverseResultsToggle()),
     }
 };
@@ -107,7 +106,7 @@ const useStyles = makeStyles(theme => ({
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const classes = useStyles();
 
-    const {reverseResultsToggle, searchPKAItem, searchEventClearResults, searchState, searchItemType} = props;
+    const {reverseResultsToggle, searchPKAItem, searchState, searchItemType} = props;
 
     const searchPKAItemDebounced = useConstant(() =>
         AwesomeDebouncePromise(searchPKAItem, 250)
@@ -115,26 +114,23 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
     const [input, setInput] = useState("");
 
-    const inputRef = useRef<HTMLInputElement>(null);
-
     const history = useHistory();
 
     useEffect(() => {
-        const iRef = inputRef.current;
+        setInput(searchState.searchQuery);
+    }, [searchState.searchQuery]);
 
-        if (iRef) {
-            iRef.focus();
-        }
-
+    useEffect(() => {
         const resetInput = () => {
-            if (iRef) {
-                if (input === '') {
-                    setInput(' ');
-                } else {
-                    setInput('')
-                }
-                setInput(iRef.value);
+            let previousInput = input;
+
+            if (input === '') {
+                setInput(' ');
+            } else {
+                setInput('');
             }
+
+            setInput(previousInput);
         };
 
         if (isMobile) {
@@ -153,12 +149,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }, [input]);
 
     useAsync(async () => {
-        const iRef = inputRef.current;
-
-        if (iRef) {
-            iRef.focus();
-        }
-
         //handle initial loading of episodes
         if (searchItemType === SearchItemType.EPISODE) {
             setInput('');
@@ -167,15 +157,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }, [searchItemType]);
 
     useAsync(async () => {
-        const iRef = inputRef.current;
-
-        if (iRef) {
-            iRef.focus();
-        }
-
-        await searchEventClearResults();
         await searchPKAItemDebounced(input, searchItemType);
-    }, [input, searchState.reverseResults]);
+    }, [input]);
 
     const cellMeasurerCache = new CellMeasurerCache({
         fixedWidth: true,
@@ -209,6 +192,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                           parent={parent}
                           rowIndex={index}>
                 <div style={style}
+                     key={key}
                      onClick={() => handleClickEventCard(searchResult.episodeNumber, searchResult.timestamp)}
                      onContextMenu={(e) => handleRightClickEventCard(e, searchResult.episodeNumber, searchResult.timestamp)}
                 >
@@ -223,10 +207,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         );
     };
 
-    const handleReverseOrder = () => {
-        reverseResultsToggle();
-    };
-
     return (
         <div className={classes.root}
              key={searchItemType}>
@@ -237,8 +217,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                         <SearchIcon/>
                     </div>
                     <InputBase
-                        error
-                        inputRef={inputRef}
+                        autoFocus={true}
+                        value={input}
                         placeholder={`Search ${searchItemType}s`}
                         classes={{
                             input: classes.inputInput,
@@ -253,7 +233,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 </div>
                 {searchItemType === SearchItemType.EVENT &&
                 <div className={classes.reverseButton}
-                     onClick={() => handleReverseOrder()}
+                     onClick={() => reverseResultsToggle()}
                      aria-label="Reverse Order">
                     <Tooltip title="Reverse Order">
                         {searchState.reverseResults === true ? <ArrowUpwardIcon/> :
