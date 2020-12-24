@@ -1,4 +1,4 @@
-import {SearchRootActionTypes, SearchState, SearchTypes} from "./types";
+import {SearchItemType, SearchRootActionTypes, SearchState, SearchTypes} from "./types";
 import {LOCATION_CHANGE} from "connected-react-router";
 
 const initialState: SearchState = {
@@ -34,17 +34,11 @@ export function searchReducer(
                 ...action.payload,
             };
         }
-        case SearchTypes.CLEAR: {
-            return {
-                ...state,
-                searchResults: [],
-            };
-        }
         case LOCATION_CHANGE: {
             return {
                 ...state,
-                searchQuery: "",
-                searchResults: []
+                searchQuery: state.searchType === SearchItemType.EPISODE ? "" : state.searchQuery,
+                searchResults: [],
             }
         }
         case SearchTypes.SET_SEARCH_TYPE: {
@@ -56,6 +50,7 @@ export function searchReducer(
         case SearchTypes.REVERSE_RESULTS_TOGGLE: {
             return {
                 ...state,
+                searchResults: [...state.searchResults].reverse(),
                 reverseResults: state.reverseResults !== true,
             }
         }

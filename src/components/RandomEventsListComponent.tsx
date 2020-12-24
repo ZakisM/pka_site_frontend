@@ -103,8 +103,10 @@ const RandomEventsListComponent: React.FC<RandomEventsListComponentProps> = (pro
     const [drawerIsVisible, setDrawerIsVisible] = useState(true);
 
     useEffect(() => {
-        loadRandomEvents();
-    }, [loadRandomEvents])
+        if (pkaEventsState.randomEvents.length === 0) {
+            loadRandomEvents();
+        }
+    }, [loadRandomEvents, pkaEventsState.randomEvents.length])
 
     useEffect(() => {
         const checkIfDrawerVisible = () => {

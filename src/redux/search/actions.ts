@@ -94,9 +94,6 @@ const setSearchType = (searchType: SearchItemType): SearchRootActionTypes => ({
     payload: searchType
 });
 
-export const searchEventClearResults = (): SearchRootActionTypes => ({
-    type: SearchTypes.CLEAR,
-});
 
 export const reverseResultsToggle = (): SearchRootActionTypes => ({
     type: SearchTypes.REVERSE_RESULTS_TOGGLE,
