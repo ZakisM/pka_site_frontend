@@ -39,10 +39,12 @@ const RootComponent: React.FC = () => {
                             <PlayerComponent/>
                         </Route>
                         <Route path="/episodes">
-                            <SearchComponent searchItemType={SearchItemType.EPISODE}/>
+                            <SearchComponent key={SearchItemType.EPISODE}
+                                             searchItemType={SearchItemType.EPISODE}/>
                         </Route>
                         <Route path="/events">
-                            <SearchComponent searchItemType={SearchItemType.EVENT}/>
+                            <SearchComponent key={SearchItemType.EVENT}
+                                             searchItemType={SearchItemType.EVENT}/>
                         </Route>
                         <Redirect from="*"
                                   to="/"/>

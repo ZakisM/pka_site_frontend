@@ -37,6 +37,7 @@ export function searchReducer(
         case LOCATION_CHANGE: {
             return {
                 ...state,
+                // Don't remember the search query for Episodes when switching between pages
                 searchQuery: state.searchType === SearchItemType.EPISODE ? "" : state.searchQuery,
                 searchResults: [],
             }
