@@ -112,13 +112,18 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         AwesomeDebouncePromise(searchPKAItem, 250)
     );
 
+    const [initial, setInitial] = useState(true);
+
     const [input, setInput] = useState("");
 
     const history = useHistory();
 
     useEffect(() => {
-        setInput(searchState.searchQuery);
-    }, [searchState.searchQuery]);
+        if (initial) {
+            setInput(searchState.searchQuery);
+            setInitial(false);
+        }
+    }, [initial, searchState.searchQuery]);
 
     useEffect(() => {
         const resetInput = () => {
