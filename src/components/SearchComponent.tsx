@@ -119,11 +119,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     const history = useHistory();
 
     useEffect(() => {
-        if (initial) {
+        // If initial load and search type == Event then load the previously used query
+        if (initial && searchItemType === SearchItemType.EVENT) {
             setInput(searchState.searchQuery);
             setInitial(false);
         }
-    }, [initial, searchState.searchQuery]);
+    }, [initial, searchItemType, searchState.searchQuery])
 
     useEffect(() => {
         const resetInput = () => {
@@ -156,7 +157,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     useAsync(async () => {
         //handle initial loading of episodes
         if (searchItemType === SearchItemType.EPISODE) {
-            setInput('');
             await searchPKAItemDebounced(input, searchItemType);
         }
     }, [searchItemType]);
