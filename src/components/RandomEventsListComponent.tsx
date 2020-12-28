@@ -155,6 +155,7 @@ const RandomEventsListComponent: React.FC<RandomEventsListComponentProps> = (pro
                                 title={event.cardTitle()}
                                 subtitle={event.cardSubtitle()}
                                 duration={event.duration()}
+                                extraInfo={event.extraInfo()}
                             />
                         </div>
                     ))}

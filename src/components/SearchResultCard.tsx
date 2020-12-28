@@ -8,6 +8,7 @@ interface Props {
     title: string,
     subtitle: string,
     duration: string,
+    extraInfo?: string,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchResultCard: React.FC<Props> = (props) => {
     const classes = useStyles();
-    const {customClassName, episodeNumber, title, subtitle, duration} = props;
+    const {customClassName, episodeNumber, title, subtitle, duration, extraInfo} = props;
 
     return (
         <Card className={`${classes.resultCard} ${customClassName}`}
@@ -88,6 +89,9 @@ const SearchResultCard: React.FC<Props> = (props) => {
                 <div className={classes.metaData}>
                     <div className={classes.infoCard}>Episode {episodeNumber}</div>
                     <div className={classes.infoCard}>{duration}</div>
+                    {extraInfo &&
+                    <div className={classes.infoCard}>{extraInfo}</div>
+                    }
                 </div>
             </div>
         </Card>

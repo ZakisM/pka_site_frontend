@@ -30,7 +30,7 @@ export class PkaEventSearchResultFb {
     /**
      */
     static startPkaEventSearchResultFb(builder: flatbuffers.Builder) {
-        builder.startObject(4);
+        builder.startObject(5);
     };
 
     /**
@@ -64,18 +64,25 @@ export class PkaEventSearchResultFb {
     };
 
     /**
+     */
+    static addUploadDate(builder: flatbuffers.Builder, uploadDate: flatbuffers.Long) {
+        builder.addFieldInt64(4, uploadDate, builder.createLong(0, 0));
+    };
+
+    /**
      * @returns flatbuffers.Offset
      */
     static endPkaEventSearchResultFb(builder: flatbuffers.Builder): flatbuffers.Offset {
         return builder.endObject();
     };
 
-    static createPkaEventSearchResultFb(builder: flatbuffers.Builder, episodeNumber: number, timestamp: number, descriptionOffset: flatbuffers.Offset, lengthSeconds: number): flatbuffers.Offset {
+    static createPkaEventSearchResultFb(builder: flatbuffers.Builder, episodeNumber: number, timestamp: number, descriptionOffset: flatbuffers.Offset, lengthSeconds: number, uploadDate: flatbuffers.Long): flatbuffers.Offset {
         PkaEventSearchResultFb.startPkaEventSearchResultFb(builder);
         PkaEventSearchResultFb.addEpisodeNumber(builder, episodeNumber);
         PkaEventSearchResultFb.addTimestamp(builder, timestamp);
         PkaEventSearchResultFb.addDescription(builder, descriptionOffset);
         PkaEventSearchResultFb.addLengthSeconds(builder, lengthSeconds);
+        PkaEventSearchResultFb.addUploadDate(builder, uploadDate);
         return PkaEventSearchResultFb.endPkaEventSearchResultFb(builder);
     }
 
@@ -124,6 +131,14 @@ export class PkaEventSearchResultFb {
     lengthSeconds(): number {
         let offset = this.bb!.__offset(this.bb_pos, 10);
         return offset ? this.bb!.readInt32(this.bb_pos + offset) : 0;
+    };
+
+    /**
+     * @returns flatbuffers.Long
+     */
+    uploadDate(): flatbuffers.Long {
+        let offset = this.bb!.__offset(this.bb_pos, 12);
+        return offset ? this.bb!.readInt64(this.bb_pos + offset) : this.bb!.createLong(0, 0);
     };
 }
 
@@ -180,8 +195,6 @@ export class AllPkaEventSearchResultsFb {
     };
 
     /**
-     * @param builder
-     * @param numElems
      */
     static startResultsVector(builder: flatbuffers.Builder, numElems: number) {
         builder.startVector(4, numElems, 4);
