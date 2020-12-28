@@ -8,7 +8,7 @@ import {SearchRootActionTypes} from "../redux/search/types";
 import {loadRandomEvents} from "../redux/events/actions";
 import LoadingSpinner from "./LoadingSpinner";
 import {useHistory} from "react-router-dom";
-import {Tooltip} from "@material-ui/core";
+import {Tooltip, Typography} from "@material-ui/core";
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchRootActionTypes>) => {
@@ -32,12 +32,13 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    title: {
+    titleContainer: {
         color: fade(theme.palette.common.white, 0.8),
-        fontSize: '18px',
-        fontWeight: 500,
         flexGrow: 1,
         marginLeft: theme.spacing(2)
+    },
+    title: {
+        fontSize: '16px'
     },
     list: {
         display: 'flex',
@@ -53,8 +54,8 @@ const useStyles = makeStyles(theme => ({
     },
     listItem: {
         flex: 1,
-        minWidth: '250px',
-        marginRight: theme.spacing(1)
+        minWidth: '280px',
+        marginRight: theme.spacing(1),
     },
     loadingSpinner: {
         display: 'flex',
@@ -128,7 +129,10 @@ const RandomEventsListComponent: React.FC<RandomEventsListComponentProps> = (pro
     return (
         <div className={classes.root}>
             <div className={classes.toolbar}>
-                <div className={classes.title}>Random Events</div>
+                <div className={classes.titleContainer}>
+                    <Typography className={classes.title}
+                                variant={"button"}>Random Events</Typography>
+                </div>
                 <div className={classes.refreshButton}
                      onClick={() => loadRandomEvents()}
                      aria-label="Refresh">

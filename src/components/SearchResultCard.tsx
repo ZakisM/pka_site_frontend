@@ -87,7 +87,7 @@ const SearchResultCard: React.FC<Props> = (props) => {
                     <div className={classes.subtitle}>{subtitle}</div>
                 </div>
                 <div className={classes.metaData}>
-                    <div className={classes.infoCard}>Episode {episodeNumber}</div>
+                    <div className={classes.infoCard}>PKA {episodeNumber}</div>
                     <div className={classes.infoCard}>{duration}</div>
                     {extraInfo &&
                     <div className={classes.infoCard}>{extraInfo}</div>
