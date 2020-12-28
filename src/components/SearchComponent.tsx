@@ -12,7 +12,7 @@ import {SearchItemType, SearchRootActionTypes} from "../redux/search/types";
 import {connect} from "react-redux";
 import {RootState} from "../redux";
 import {Tooltip} from "@material-ui/core";
-import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
+import {CellMeasurer, CellMeasurerCache, List, WindowScroller} from "react-virtualized";
 import {isMobile} from "react-device-detect";
 import {getPKAEpisodeYoutubeLink} from "../redux/watch-episode/actions";
 import {useHistory} from "react-router-dom";
@@ -98,9 +98,6 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: fade(theme.palette.common.white, 0.025),
         },
     },
-    resultListParent: {
-        height: '100%'
-    }
 }));
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
@@ -254,21 +251,25 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             </div>
 
             {searchState.searchType === searchItemType &&
-            <div className={classes.resultListParent}>
-                <AutoSizer>
-                    {({height, width}) => (
-                        <List height={height}
-                              width={width}
-                              deferredMeasureMentCache={cellMeasurerCache}
-                              rowCount={searchState.searchResults!.length}
-                              rowRenderer={renderRow}
-                              rowHeight={paddedRowHeight}
-                              overscanRowCount={10}
-                        >
-                        </List>
-                    )}
-                </AutoSizer>
-            </div>
+            <WindowScroller>
+                {({height, isScrolling, onChildScroll, width}) => (
+                    <List
+                        autoWidth
+                        autoContainerWidth
+                        height={height}
+                        width={width}
+                        isScrolling={isScrolling}
+                        onScroll={onChildScroll}
+                        scrollToIndex={0}
+                        deferredMeasureMentCache={cellMeasurerCache}
+                        rowCount={searchState.searchResults!.length}
+                        rowRenderer={renderRow}
+                        rowHeight={paddedRowHeight}
+                        overscanRowCount={10}
+                    >
+                    </List>
+                )}
+            </WindowScroller>
             }
         </div>
     )
