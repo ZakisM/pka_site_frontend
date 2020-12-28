@@ -9,10 +9,9 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {useAsync} from "react-async-hook";
 import {ThunkDispatch} from "redux-thunk";
 import {SearchItemType, SearchRootActionTypes} from "../redux/search/types";
-import {connect} from "react-redux";
 import {RootState} from "../redux";
 import {Tooltip} from "@material-ui/core";
-import {CellMeasurer, CellMeasurerCache, List, WindowScroller} from "react-virtualized";
+import {AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller} from "react-virtualized";
 import {isMobile} from "react-device-detect";
 import {getPKAEpisodeYoutubeLink} from "../redux/watch-episode/actions";
 import {useHistory} from "react-router-dom";
@@ -21,6 +20,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import {reverseResultsToggle, searchPKAItem} from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
 import {fade, makeStyles} from "@material-ui/core/styles";
+import {connect} from "react-redux";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchRootActionTypes>) => {
     return {
@@ -98,6 +98,9 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: fade(theme.palette.common.white, 0.025),
         },
     },
+    resultListParent: {
+        height: '100%',
+    }
 }));
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
@@ -250,27 +253,31 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 {`${searchState.searchResults!.length} Results`}
             </div>
 
-            {searchState.searchType === searchItemType &&
-            <WindowScroller>
-                {({height, isScrolling, onChildScroll, width}) => (
-                    <List
-                        autoWidth
-                        autoContainerWidth
-                        height={height}
-                        width={width}
-                        isScrolling={isScrolling}
-                        onScroll={onChildScroll}
-                        scrollToIndex={0}
-                        deferredMeasureMentCache={cellMeasurerCache}
-                        rowCount={searchState.searchResults!.length}
-                        rowRenderer={renderRow}
-                        rowHeight={paddedRowHeight}
-                        overscanRowCount={10}
-                    >
-                    </List>
-                )}
-            </WindowScroller>
-            }
+            <div className={classes.resultListParent}>
+                {searchState.searchType === searchItemType &&
+                <AutoSizer>
+                    {({height, width}) => (
+                        <WindowScroller>
+                            {({isScrolling, onChildScroll}) => (
+                                <List
+                                    height={height}
+                                    width={width}
+                                    isScrolling={isScrolling}
+                                    onScroll={onChildScroll}
+                                    scrollToIndex={0}
+                                    deferredMeasureMentCache={cellMeasurerCache}
+                                    rowCount={searchState.searchResults!.length}
+                                    rowRenderer={renderRow}
+                                    rowHeight={paddedRowHeight}
+                                    overscanRowCount={10}
+                                >
+                                </List>
+                            )}
+                        </WindowScroller>
+                    )}
+                </AutoSizer>
+                }
+            </div>
         </div>
     )
 };
