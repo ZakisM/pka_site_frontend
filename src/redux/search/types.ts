@@ -24,6 +24,8 @@ export interface SearchResult {
     cardSubtitle(): string,
 
     duration(): string,
+
+    extraInfo(): string | undefined,
 }
 
 export interface EventWithAllFields extends SearchResult {
@@ -31,6 +33,7 @@ export interface EventWithAllFields extends SearchResult {
     timestamp: number,
     description: string,
     lengthSeconds: number,
+    uploadDate: number;
 }
 
 export class EventWithAllFieldsClass implements EventWithAllFields {
@@ -38,20 +41,22 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
     timestamp: number;
     description: string;
     lengthSeconds: number;
+    uploadDate: number;
 
-    constructor(episodeNumber: number, timestamp: number, description: string, lengthSeconds: number) {
+    constructor(episodeNumber: number, timestamp: number, description: string, lengthSeconds: number, uploadDate: number) {
         this.episodeNumber = episodeNumber;
         this.timestamp = timestamp;
         this.description = description;
         this.lengthSeconds = lengthSeconds;
+        this.uploadDate = uploadDate;
     }
 
     static Deserialize(input: any): EventWithAllFieldsClass {
-        return new EventWithAllFieldsClass(input.episodeNumber(), input.timestamp(), input.description(), input.lengthSeconds())
+        return new EventWithAllFieldsClass(input.episodeNumber(), input.timestamp(), input.description(), input.lengthSeconds(), input.uploadDate().low)
     }
 
     static DeserializeNormalArr(input: EventWithAllFields[]) {
-        return input.map((event) => new EventWithAllFieldsClass(event.episodeNumber, event.timestamp, event.description, event.lengthSeconds));
+        return input.map((event) => new EventWithAllFieldsClass(event.episodeNumber, event.timestamp, event.description, event.lengthSeconds, event.uploadDate));
     }
 
     cardTitle(): string {
@@ -59,7 +64,7 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
     }
 
     cardSubtitle(): string {
-        return `Starts at ${moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss")}`;
+        return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
     }
 
     duration(): string {
@@ -70,6 +75,10 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
         } else {
             return `${d.minutes()}m ${d.seconds()}s`
         }
+    }
+
+    extraInfo(): string {
+        return moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss");
     }
 }
 
@@ -111,6 +120,10 @@ export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
         const d = moment.utc(this.lengthSeconds * 1000);
 
         return `${d.hours()}h ${d.minutes()}m`
+    }
+
+    extraInfo(): undefined {
+        return undefined
     }
 
 }

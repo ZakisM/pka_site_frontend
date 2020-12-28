@@ -206,6 +206,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                         title={searchResult.cardTitle()}
                         subtitle={searchResult.cardSubtitle()}
                         duration={searchResult.duration()}
+                        extraInfo={searchResult.extraInfo()}
                     />
                 </div>
             </CellMeasurer>
