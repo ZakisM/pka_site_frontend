@@ -16,7 +16,7 @@
     "@types/react-virtualized": "^9.21.10",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "awesome-debounce-promise": "^2.1.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "connected-react-router": "^6.8.0",
     "flatbuffers": "^1.12.0",
     "lodash": "^4.17.20",
