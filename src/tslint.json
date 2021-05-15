@@ -1,0 +1,17 @@
+{
+    "extends": ["tslint:recommended"],
+    "plugins": ["react-hooks"],
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "no-console": false,
+        "no-var-requires": false,
+        "object-literal-sort-keys": false,
+        "object-literal-shorthand": false,
+        "js-no-bind": false,
+        "jsx-no-lambda": false
+    },
+    "linterOptions": {
+        "exclude": ["config/**/*.js", "node_modules/**/.ts"]
+    }
+}

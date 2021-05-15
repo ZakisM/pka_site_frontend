@@ -1,41 +1,42 @@
-import {Dispatch} from "redux";
+import { Dispatch } from "redux";
 import axios from "axios";
 import handleError from "../../util";
-import {PkaEventsRootActionTypes, PkaEventsState, PkaEventsTypes} from "./types";
-import {EventWithAllFieldsClass} from "../search/types";
+import { PkaEventsRootActionTypes, PkaEventsTypes } from "./types";
+import { EventWithAllFieldsClass } from "../search/types";
 
-export const loadRandomEvents = () => (dispatch: Dispatch<PkaEventsRootActionTypes>) => {
-    dispatch(pkaEventsEventStarted());
+export const loadRandomEvents =
+    () =>
+    (dispatch: Dispatch<PkaEventsRootActionTypes>): void => {
+        dispatch(pkaEventsEventStarted());
 
-    axios
-        .get(`/v1/api/events/random`)
-        .then(res => {
+        axios
+            .get(`/v1/api/events/random`)
+            .then((res) => {
+                const randomEventsResult: EventWithAllFieldsClass[] = EventWithAllFieldsClass.DeserializeNormalArr(
+                    res.data.data
+                );
 
-            let randomEventsResult: PkaEventsState = {
-                randomEvents: EventWithAllFieldsClass.DeserializeNormalArr(res.data.data),
-            };
+                return dispatch(pkaEventsEventSuccess(randomEventsResult));
+            })
+            .catch((err) => {
+                err = handleError(err);
 
-            return dispatch(pkaEventsEventSuccess(randomEventsResult))
-        })
-        .catch(err => {
-            err = handleError(err);
-
-            return dispatch(pkaEventsEventFailure(err))
-        })
-}
+                return dispatch(pkaEventsEventFailure(err));
+            });
+    };
 
 const pkaEventsEventStarted = (): PkaEventsRootActionTypes => ({
     type: PkaEventsTypes.STARTED,
 });
 
-const pkaEventsEventSuccess = (eventResult: PkaEventsState): PkaEventsRootActionTypes => ({
+const pkaEventsEventSuccess = (eventResult: EventWithAllFieldsClass[]): PkaEventsRootActionTypes => ({
     type: PkaEventsTypes.SUCCESS,
-    payload: eventResult
+    payload: eventResult,
 });
 
 const pkaEventsEventFailure = (err: string): PkaEventsRootActionTypes => ({
     type: PkaEventsTypes.FAILURE,
     meta: {
-        error: err
-    }
+        error: err,
+    },
 });

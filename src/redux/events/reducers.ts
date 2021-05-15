@@ -1,15 +1,12 @@
-import {PkaEventsRootActionTypes, PkaEventsState, PkaEventsTypes} from "./types";
+import { PkaEventsRootActionTypes, PkaEventsState, PkaEventsTypes } from "./types";
 
 const initialState: PkaEventsState = {
     randomEvents: [],
     isLoading: false,
-    errors: []
+    errors: [],
 };
 
-export function pkaEventsReducer(
-    state = initialState,
-    action: PkaEventsRootActionTypes
-): PkaEventsState {
+export function pkaEventsReducer(state = initialState, action: PkaEventsRootActionTypes): PkaEventsState {
     switch (action.type) {
         case PkaEventsTypes.STARTED: {
             return {
@@ -21,17 +18,17 @@ export function pkaEventsReducer(
             return {
                 ...state,
                 isLoading: false,
-                errors: [...state.errors!, action.meta.error],
+                errors: [...state.errors, action.meta.error],
             };
         }
         case PkaEventsTypes.SUCCESS: {
             return {
                 ...state,
                 isLoading: false,
-                ...action.payload,
+                randomEvents: [...action.payload],
             };
         }
         default:
-            return state
+            return state;
     }
 }

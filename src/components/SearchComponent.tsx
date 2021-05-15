@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
@@ -6,111 +6,106 @@ import InputBase from "@material-ui/core/InputBase";
 import SearchResultCard from "./SearchResultCard";
 import useConstant from "use-constant";
 import AwesomeDebouncePromise from "awesome-debounce-promise";
-import {useAsync} from "react-async-hook";
-import {ThunkDispatch} from "redux-thunk";
-import {SearchItemType, SearchRootActionTypes} from "../redux/search/types";
-import {RootState} from "../redux";
-import {Tooltip} from "@material-ui/core";
-import {AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller} from "react-virtualized";
-import {isMobile} from "react-device-detect";
-import {getPKAEpisodeYoutubeLink} from "../redux/watch-episode/actions";
-import {useHistory} from "react-router-dom";
-import {YOUTUBE_BASE_URL} from "./PlayerComponent";
+import { useAsync } from "react-async-hook";
+import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
+import { RootState, ThunkDispatchType } from "../redux";
+import { Tooltip } from "@material-ui/core";
+import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
+import { isMobile } from "react-device-detect";
+import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
+import { useHistory } from "react-router-dom";
+import { YOUTUBE_BASE_URL } from "./PlayerComponent";
 import LoadingSpinner from "./LoadingSpinner";
-import {reverseResultsToggle, searchPKAItem} from "../redux/search/actions";
+import { reverseResultsToggle, searchPKAItem } from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
-import {fade, makeStyles} from "@material-ui/core/styles";
-import {connect} from "react-redux";
+import { fade, makeStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, {}, SearchRootActionTypes>) => {
+const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
     return {
-        searchPKAItem: (searchQuery: string, searchItemType: SearchItemType) => dispatch(searchPKAItem(searchQuery, searchItemType)),
-        reverseResultsToggle: () => dispatch(reverseResultsToggle()),
-    }
+        searchPKAItem: (searchQuery: string, searchItemType: SearchItemType): void =>
+            dispatch(searchPKAItem(searchQuery, searchItemType)),
+        reverseResultsToggle: (): SearchRootActionTypes => dispatch(reverseResultsToggle()),
+    };
 };
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): any => ({
     searchState: state.search,
 });
 
 interface InputProps {
-    searchItemType: SearchItemType,
+    searchItemType: SearchItemType;
 }
 
-type SearchComponentProps =
-    ReturnType<typeof mapStateToProps>
-    & ReturnType<typeof mapDispatchToProps>
-    & InputProps;
+type SearchComponentProps = InputProps & ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        display: 'flex',
-        flexFlow: 'column',
-        height: '100%',
-        maxHeight: 'calc(100vh - 100px)',
+        display: "flex",
+        flexFlow: "column",
+        height: "100%",
+        maxHeight: "calc(100vh - 100px)",
     },
     search: {
-        display: 'flex',
-        height: '100%',
+        display: "flex",
+        height: "100%",
         flex: 1,
-        backgroundColor: '#151515',
-        '&:hover': {
+        backgroundColor: "#151515",
+        "&:hover": {
             backgroundColor: fade(theme.palette.common.white, 0.05),
         },
         padding: theme.spacing(1),
-        borderRadius: '5px'
+        borderRadius: "5px",
     },
     iconButton: {
-        display: 'flex',
+        display: "flex",
         color: fade(theme.palette.common.white, 0.9),
-        padding: '10px',
-        pointerEvents: 'none',
+        padding: "10px",
+        pointerEvents: "none",
     },
     inputInput: {
-        color: 'inherit',
+        color: "inherit",
         marginLeft: theme.spacing(0.5),
     },
     subTitle: {
-        fontSize: '14.5px',
+        fontSize: "14.5px",
         color: fade(theme.palette.common.white, 0.45),
         marginBottom: theme.spacing(1.5),
     },
     searchRow: {
-        display: 'flex',
-        height: '100%',
-        maxHeight: '60px',
+        display: "flex",
+        height: "100%",
+        maxHeight: "60px",
         marginBottom: theme.spacing(1.5),
     },
     reverseButton: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#151515',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#151515",
         padding: theme.spacing(2.25),
         marginLeft: theme.spacing(2),
-        borderRadius: '5px',
+        borderRadius: "5px",
         boxShadow: "none",
-        '&:hover': {
+        "&:hover": {
             backgroundColor: fade(theme.palette.common.white, 0.1),
         },
-        '&:active': {
+        "&:active": {
             boxShadow: "none",
             backgroundColor: fade(theme.palette.common.white, 0.025),
         },
     },
     resultListParent: {
-        height: '100%',
-    }
+        height: "100%",
+    },
 }));
 
-const SearchComponent: React.FC<SearchComponentProps> = (props) => {
+const SearchComponent = (props: SearchComponentProps): ReactElement => {
     const classes = useStyles();
 
-    const {reverseResultsToggle, searchPKAItem, searchState, searchItemType} = props;
+    const { reverseResultsToggle, searchPKAItem, searchState, searchItemType } = props;
 
-    const searchPKAItemDebounced = useConstant(() =>
-        AwesomeDebouncePromise(searchPKAItem, 250)
-    );
+    const searchPKAItemDebounced = useConstant(() => AwesomeDebouncePromise(searchPKAItem, 250));
 
     const [initial, setInitial] = useState(true);
 
@@ -124,34 +119,34 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             setInput(searchState.searchQuery);
             setInitial(false);
         }
-    }, [initial, searchItemType, searchState.searchQuery])
+    }, [initial, searchItemType, searchState.searchQuery]);
 
     useEffect(() => {
-        const resetInput = () => {
-            let previousInput = input;
+        const resetInput = (): void => {
+            const previousInput = input;
 
-            if (input === '') {
-                setInput(' ');
+            if (input === "") {
+                setInput(" ");
             } else {
-                setInput('');
+                setInput("");
             }
 
             setInput(previousInput);
         };
 
         if (isMobile) {
-            window.addEventListener('orientationchange', resetInput);
+            window.addEventListener("orientationchange", resetInput);
         } else {
-            window.addEventListener('resize', resetInput);
+            window.addEventListener("resize", resetInput);
         }
 
-        return function cleanup() {
+        return (): void => {
             if (isMobile) {
-                window.removeEventListener('orientationchange', resetInput);
+                window.removeEventListener("orientationchange", resetInput);
             } else {
-                window.removeEventListener('resize', resetInput);
+                window.removeEventListener("resize", resetInput);
             }
-        }
+        };
     }, [input]);
 
     useAsync(async () => {
@@ -170,37 +165,40 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         defaultHeight: 85,
     });
 
-    const paddedRowHeight = ({index}: any): number => {
-        let height = cellMeasurerCache.rowHeight({index});
-        return height + 7
+    const paddedRowHeight = ({ index }: any): number => {
+        const height = cellMeasurerCache.rowHeight({ index });
+        return height + 7;
     };
 
-    const handleClickEventCard = (number: number, timestamp: number) => {
+    const handleClickEventCard = (number: number, timestamp: number): void => {
         history.push(`/watch/${number}?timestamp=${timestamp}`);
     };
 
-    const handleRightClickEventCard = async (e: React.MouseEvent<HTMLDivElement>, number: number, timestamp: number) => {
+    const handleRightClickEventCard = async (
+        e: React.MouseEvent<HTMLDivElement>,
+        number: number,
+        timestamp: number
+    ): Promise<void> => {
         e.preventDefault();
-        let youtube_link = await getPKAEpisodeYoutubeLink(number);
+        const youtube_link = await getPKAEpisodeYoutubeLink(number);
         if (youtube_link !== "") {
             window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
         }
     };
 
-    const renderRow = (props: any) => {
-        const {index, key, style, parent} = props;
-        const searchResult = searchState.searchResults![index];
+    const renderRow = (props: any): ReactElement => {
+        const { index, key, style, parent } = props;
+        const searchResult = searchState.searchResults[index];
 
         return (
-            <CellMeasurer key={key}
-                          cache={cellMeasurerCache}
-                          parent={parent}
-                          rowIndex={index}>
-                <div style={style}
-                     key={key}
-                     onClick={() => handleClickEventCard(searchResult.episodeNumber, searchResult.timestamp)}
-                     onContextMenu={(e) => handleRightClickEventCard(e, searchResult.episodeNumber, searchResult.timestamp)}
-                >
+            <CellMeasurer key={key} cache={cellMeasurerCache} parent={parent} rowIndex={index}>
+                <div
+                    style={style}
+                    key={key}
+                    onClick={(): void => handleClickEventCard(searchResult.episodeNumber, searchResult.timestamp)}
+                    onContextMenu={(e): Promise<void> =>
+                        handleRightClickEventCard(e, searchResult.episodeNumber, searchResult.timestamp)
+                    }>
                     <SearchResultCard
                         episodeNumber={searchResult.episodeNumber}
                         title={searchResult.cardTitle()}
@@ -214,13 +212,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     };
 
     return (
-        <div className={classes.root}
-             key={searchItemType}>
-            {searchItemType === SearchItemType.EVENT ? <RandomEventsListComponent/> : null}
+        <div className={classes.root} key={searchItemType}>
+            {searchItemType === SearchItemType.EVENT ? <RandomEventsListComponent /> : null}
             <div className={classes.searchRow}>
                 <div className={classes.search}>
                     <div className={classes.iconButton}>
-                        <SearchIcon/>
+                        <SearchIcon />
                     </div>
                     <InputBase
                         autoFocus={true}
@@ -229,60 +226,56 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                         classes={{
                             input: classes.inputInput,
                         }}
-                        inputProps={{'aria-label': 'search'}}
+                        inputProps={{ "aria-label": "search" }}
                         fullWidth={true}
-                        onChange={e => setInput(e.target.value)}
+                        onChange={(e): void => setInput(e.target.value)}
                     />
-                    {searchState.isLoading && <div className={classes.iconButton}>
-                        <LoadingSpinner/>
-                    </div>}
+                    {searchState.isLoading && (
+                        <div className={classes.iconButton}>
+                            <LoadingSpinner />
+                        </div>
+                    )}
                 </div>
-                {searchItemType === SearchItemType.EVENT &&
-                <div className={classes.reverseButton}
-                     onClick={() => reverseResultsToggle()}
-                     aria-label="Reverse Order">
-                    <Tooltip title="Reverse Order">
-                        {searchState.reverseResults === true ? <ArrowUpwardIcon/> :
-                            <ArrowDownwardIcon/>}
-                    </Tooltip>
-                </div>
-                }
+                {searchItemType === SearchItemType.EVENT && (
+                    <div
+                        className={classes.reverseButton}
+                        onClick={(): void => reverseResultsToggle()}
+                        aria-label="Reverse Order">
+                        <Tooltip title="Reverse Order">
+                            {searchState.reverseResults === true ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                        </Tooltip>
+                    </div>
+                )}
             </div>
 
-            <div className={classes.subTitle}>
-                {`${searchState.searchResults!.length} Results`}
-            </div>
+            <div className={classes.subTitle}>{`${searchState.searchResults.length} Results`}</div>
 
             <div className={classes.resultListParent}>
-                {searchState.searchType === searchItemType &&
-                <AutoSizer>
-                    {({height, width}) => (
-                        <WindowScroller>
-                            {({isScrolling, onChildScroll}) => (
-                                <List
-                                    height={height}
-                                    width={width}
-                                    isScrolling={isScrolling}
-                                    onScroll={onChildScroll}
-                                    scrollToIndex={0}
-                                    deferredMeasureMentCache={cellMeasurerCache}
-                                    rowCount={searchState.searchResults!.length}
-                                    rowRenderer={renderRow}
-                                    rowHeight={paddedRowHeight}
-                                    overscanRowCount={10}
-                                >
-                                </List>
-                            )}
-                        </WindowScroller>
-                    )}
-                </AutoSizer>
-                }
+                {searchState.searchType === searchItemType && (
+                    <AutoSizer>
+                        {({ height, width }): ReactElement => (
+                            <WindowScroller>
+                                {({ isScrolling, onChildScroll }): ReactElement => (
+                                    <List
+                                        height={height}
+                                        width={width}
+                                        isScrolling={isScrolling}
+                                        onScroll={onChildScroll}
+                                        scrollToIndex={0}
+                                        deferredMeasureMentCache={cellMeasurerCache}
+                                        rowCount={searchState.searchResults.length}
+                                        rowRenderer={renderRow}
+                                        rowHeight={paddedRowHeight}
+                                        overscanRowCount={10}
+                                    />
+                                )}
+                            </WindowScroller>
+                        )}
+                    </AutoSizer>
+                )}
             </div>
         </div>
-    )
+    );
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(SearchComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(SearchComponent);

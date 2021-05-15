@@ -11,7 +11,7 @@ COPY ./webpack.common.js ./webpack.common.js
 COPY ./webpack.prod.js ./webpack.prod.js
 
 RUN yarn install
-RUN yarn build
+RUN yarn prod
 
 FROM nginx:alpine
 
