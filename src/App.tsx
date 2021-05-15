@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from "react";
 import RootComponent from "./components/RootComponent";
 
-const App: React.FC = () => {
+const App = (): ReactElement => {
     return (
         <div className="App">
-            <RootComponent/>
+            <RootComponent />
         </div>
     );
 };

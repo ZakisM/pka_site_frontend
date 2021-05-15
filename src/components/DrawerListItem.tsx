@@ -1,77 +1,73 @@
-import React from "react";
-import {ListItem, ListItemIcon, ListItemText, SvgIcon, Typography} from "@material-ui/core";
-import {Link, useRouteMatch} from "react-router-dom";
-import {fade, makeStyles} from "@material-ui/core/styles";
+import React, { ReactElement } from "react";
+import { ListItem, ListItemIcon, ListItemText, SvgIcon, Typography } from "@material-ui/core";
+import { Link, useRouteMatch } from "react-router-dom";
+import { fade, makeStyles } from "@material-ui/core/styles";
 
 interface DrawerListItemProps {
-    onClick: () => void,
-    text: string,
-    Icon: typeof SvgIcon,
+    onClick: () => void;
+    text: string;
+    Icon: typeof SvgIcon;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     link: {
         color: fade(theme.palette.common.white, 0.5),
-        textDecoration: 'none',
+        textDecoration: "none",
     },
     item: {
-        height: '5.7ch',
-        '&:hover': {
+        height: "5.7ch",
+        "&:hover": {
             backgroundColor: fade(theme.palette.common.white, 0.0125),
         },
-        '&:active': {
+        "&:active": {
             backgroundColor: fade(theme.palette.common.white, 0.025),
         },
     },
     itemText: {
-        marginLeft: '-10px',
+        marginLeft: "-10px",
     },
     itemIconInactive: {
         color: fade(theme.palette.common.white, 0.5),
     },
     active: {
         color: theme.palette.common.white,
-        borderLeft: '5px solid #cd2d37',
-        pointerEvents: 'none',
-        cursor: 'default',
-    }
+        borderLeft: "5px solid #cd2d37",
+        pointerEvents: "none",
+        cursor: "default",
+    },
 }));
 
-const DrawerListItem: React.FC<DrawerListItemProps> = (props) => {
-    const {text, Icon, onClick} = props;
+const DrawerListItem = (props: DrawerListItemProps): ReactElement => {
+    const { text, Icon, onClick } = props;
     const classes = useStyles();
 
     const path = `/${text.toLowerCase()}`;
 
-    let match = useRouteMatch({
+    const match = useRouteMatch({
         path: path,
     });
 
     const inner = (
-        <ListItem className={`${classes.item} ${match ? classes.active : null}`}
-                  onClick={onClick}
-                  key={text}>
+        <ListItem className={`${classes.item} ${match ? classes.active : null}`} onClick={onClick} key={text}>
             <ListItemIcon className={`${match ? null : classes.itemIconInactive}`}>
-                <Icon/>
+                <Icon />
             </ListItemIcon>
             <ListItemText>
-                <Typography variant="button"
-                            className={classes.itemText}>{text}</Typography>
+                <Typography variant="button" className={classes.itemText}>
+                    {text}
+                </Typography>
             </ListItemText>
         </ListItem>
     );
 
     if (match) {
-        return (
-            inner
-        )
+        return inner;
     } else {
         return (
-            <Link to={path}
-                  className={classes.link}>
+            <Link to={path} className={classes.link}>
                 {inner}
             </Link>
-        )
+        );
     }
 };
 

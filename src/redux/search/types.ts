@@ -1,38 +1,44 @@
 import moment from "moment";
-import {LOCATION_CHANGE} from "connected-react-router";
+import { LOCATION_CHANGE } from "connected-react-router";
+import { PkaEventSearchResultFb } from "../../flatbuffers/pka_event_search_results_generated";
 
 export interface SearchState {
-    searchQuery: string
-    searchResults: SearchResult[]
-    searchType?: SearchItemType,
-    reverseResults?: boolean,
-    isLoading?: boolean
-    errors?: string[]
+    searchQuery: string;
+    searchResults: SearchResult[];
+    searchType?: SearchItemType;
+    reverseResults?: boolean;
+    isLoading?: boolean;
+    errors: string[];
+}
+
+export interface SearchSuccessState {
+    searchQuery: string;
+    searchResults: SearchResult[];
 }
 
 export enum SearchItemType {
-    EPISODE = 'Episode',
-    EVENT = 'Event',
+    EPISODE = "Episode",
+    EVENT = "Event",
 }
 
 export interface SearchResult {
-    episodeNumber: number,
-    timestamp: number,
+    episodeNumber: number;
+    timestamp: number;
 
-    cardTitle(): string,
+    cardTitle(): string;
 
-    cardSubtitle(): string,
+    cardSubtitle(): string;
 
-    duration(): string,
+    duration(): string;
 
-    extraInfo(): string | undefined,
+    extraInfo(): string | undefined;
 }
 
 export interface EventWithAllFields extends SearchResult {
-    episodeNumber: number,
-    timestamp: number,
-    description: string,
-    lengthSeconds: number,
+    episodeNumber: number;
+    timestamp: number;
+    description: string;
+    lengthSeconds: number;
     uploadDate: number;
 }
 
@@ -43,7 +49,13 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
     lengthSeconds: number;
     uploadDate: number;
 
-    constructor(episodeNumber: number, timestamp: number, description: string, lengthSeconds: number, uploadDate: number) {
+    constructor(
+        episodeNumber: number,
+        timestamp: number,
+        description: string,
+        lengthSeconds: number,
+        uploadDate: number
+    ) {
         this.episodeNumber = episodeNumber;
         this.timestamp = timestamp;
         this.description = description;
@@ -51,12 +63,27 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
         this.uploadDate = uploadDate;
     }
 
-    static Deserialize(input: any): EventWithAllFieldsClass {
-        return new EventWithAllFieldsClass(input.episodeNumber(), input.timestamp(), input.description(), input.lengthSeconds(), input.uploadDate().low)
+    static Deserialize(input: PkaEventSearchResultFb): EventWithAllFieldsClass {
+        return new EventWithAllFieldsClass(
+            input.episodeNumber(),
+            input.timestamp(),
+            input.description(),
+            input.lengthSeconds(),
+            input.uploadDate().low
+        );
     }
 
-    static DeserializeNormalArr(input: EventWithAllFields[]) {
-        return input.map((event) => new EventWithAllFieldsClass(event.episodeNumber, event.timestamp, event.description, event.lengthSeconds, event.uploadDate));
+    static DeserializeNormalArr(input: EventWithAllFields[]): EventWithAllFieldsClass[] {
+        return input.map(
+            (event) =>
+                new EventWithAllFieldsClass(
+                    event.episodeNumber,
+                    event.timestamp,
+                    event.description,
+                    event.lengthSeconds,
+                    event.uploadDate
+                )
+        );
     }
 
     cardTitle(): string {
@@ -71,9 +98,9 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
         const d = moment.utc(this.lengthSeconds * 1000);
 
         if (d.hours() > 0) {
-            return `${d.hours()}h ${d.minutes()}m ${d.seconds()}s`
+            return `${d.hours()}h ${d.minutes()}m ${d.seconds()}s`;
         } else {
-            return `${d.minutes()}m ${d.seconds()}s`
+            return `${d.minutes()}m ${d.seconds()}s`;
         }
     }
 
@@ -83,10 +110,10 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
 }
 
 export interface EpisodeWithAllFields extends SearchResult {
-    episodeNumber: number,
-    uploadDate: number,
-    title: string,
-    lengthSeconds: number,
+    episodeNumber: number;
+    uploadDate: number;
+    title: string;
+    lengthSeconds: number;
 }
 
 export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
@@ -105,7 +132,7 @@ export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
     }
 
     static Deserialize(input: EpisodeWithAllFields): EpisodeWithAllFieldsClass {
-        return new EpisodeWithAllFieldsClass(input.episodeNumber, input.uploadDate, input.title, input.lengthSeconds)
+        return new EpisodeWithAllFieldsClass(input.episodeNumber, input.uploadDate, input.title, input.lengthSeconds);
     }
 
     cardTitle(): string {
@@ -119,58 +146,57 @@ export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
     duration(): string {
         const d = moment.utc(this.lengthSeconds * 1000);
 
-        return `${d.hours()}h ${d.minutes()}m`
+        return `${d.hours()}h ${d.minutes()}m`;
     }
 
     extraInfo(): undefined {
-        return undefined
+        return undefined;
     }
-
 }
 
 export enum SearchTypes {
-    STARTED = 'SEARCH_STARTED',
-    FAILURE = 'SEARCH_FAILURE',
-    SUCCESS = 'SEARCH_SUCCESS',
-    SET_SEARCH_TYPE = 'SEARCH_SET_SEARCH_TYPE',
-    REVERSE_RESULTS_TOGGLE = 'SEARCH_REVERSE_RESULTS_TOGGLE',
+    STARTED = "SEARCH_STARTED",
+    FAILURE = "SEARCH_FAILURE",
+    SUCCESS = "SEARCH_SUCCESS",
+    SET_SEARCH_TYPE = "SEARCH_SET_SEARCH_TYPE",
+    REVERSE_RESULTS_TOGGLE = "SEARCH_REVERSE_RESULTS_TOGGLE",
 }
 
 interface SearchSuccess {
-    type: SearchTypes.SUCCESS,
-    payload: SearchState
+    type: SearchTypes.SUCCESS;
+    payload: SearchSuccessState;
 }
 
 interface SearchFailure {
-    type: SearchTypes.FAILURE
+    type: SearchTypes.FAILURE;
     meta: {
-        error: string
-    }
+        error: string;
+    };
 }
 
 interface SearchStarted {
-    type: SearchTypes.STARTED
+    type: SearchTypes.STARTED;
 }
 
 interface LocationChange {
-    type: typeof LOCATION_CHANGE
+    type: typeof LOCATION_CHANGE;
 }
 
 interface SetSearchType {
-    type: SearchTypes.SET_SEARCH_TYPE,
-    payload: SearchItemType
+    type: SearchTypes.SET_SEARCH_TYPE;
+    payload: SearchItemType;
 }
 
 interface ReverseResultsToggle {
-    type: SearchTypes.REVERSE_RESULTS_TOGGLE,
+    type: SearchTypes.REVERSE_RESULTS_TOGGLE;
 }
 
 type SearchActionTypes =
-    SearchStarted
+    | SearchStarted
     | SearchFailure
     | SearchSuccess
     | LocationChange
     | SetSearchType
-    | ReverseResultsToggle
+    | ReverseResultsToggle;
 
-export type SearchRootActionTypes = SearchActionTypes
+export type SearchRootActionTypes = SearchActionTypes;
