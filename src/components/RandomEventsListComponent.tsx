@@ -7,8 +7,10 @@ import { EventWithAllFieldsClass, SearchRootActionTypes } from "../redux/search/
 import { loadRandomEvents } from "../redux/events/actions";
 import LoadingSpinner from "./LoadingSpinner";
 import { useHistory } from "react-router-dom";
-import { Tooltip, Typography } from "@material-ui/core";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import { Card, Tooltip, Typography } from "@material-ui/core";
+import { RefreshRounded, TimelineRounded } from "@material-ui/icons";
+import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
+import { YOUTUBE_BASE_URL } from "./PlayerComponent";
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
     return {
@@ -24,37 +26,44 @@ type RandomEventsListComponentProps = ReturnType<typeof mapStateToProps> & Retur
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        padding: theme.spacing(2),
         marginBottom: theme.spacing(3),
-        backgroundColor: "#151515",
-        borderRadius: "5px",
         alignItems: "center",
         justifyContent: "center",
     },
     titleContainer: {
+        display: "flex",
+        alignItems: "center",
         color: fade(theme.palette.common.white, 0.8),
         flexGrow: 1,
         marginLeft: theme.spacing(2),
     },
+    titleContainerIcon: {
+        display: "flex",
+        marginRight: theme.spacing(1.25),
+    },
     title: {
-        fontSize: "16px",
+        fontSize: "18px",
+        fontWeight: 500,
+        color: fade(theme.palette.common.white, 0.9),
     },
     list: {
         display: "flex",
         flex: 1,
         overflowX: "auto",
-        marginLeft: theme.spacing(1),
     },
     listMaxWidthWithDrawer: {
-        maxWidth: "calc(100vw - 320px)",
+        maxWidth: "calc(100vw - 284px)",
     },
     listMaxWidthWithoutDrawer: {
-        maxWidth: "calc(100vw - 100px)",
+        maxWidth: "calc(100vw - 64px)",
     },
     listItem: {
         flex: 1,
         minWidth: "280px",
         marginRight: theme.spacing(1),
+        "&:last-child": {
+            marginRight: 0,
+        },
     },
     loadingSpinner: {
         display: "flex",
@@ -71,8 +80,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         backgroundColor: "#1a1a1a",
         borderRadius: "5px",
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
     refreshButton: {
@@ -85,6 +92,7 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: "none",
         "&:hover": {
             backgroundColor: fade(theme.palette.common.white, 0.1),
+            cursor: "pointer",
         },
         "&:active": {
             boxShadow: "none",
@@ -121,24 +129,32 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
         };
     }, []);
 
-    const handleClickEventCard = (number: number, timestamp: number): void => {
+    const handleClick = (number: number, timestamp: number): void => {
         history.push(`/watch/${number}?timestamp=${timestamp}`);
+    };
+
+    const handleYoutubeClick = async (number: number, timestamp: number): Promise<void> => {
+        const youtube_link = await getPKAEpisodeYoutubeLink(number);
+        if (youtube_link !== "") {
+            window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
+        }
     };
 
     return (
         <div className={classes.root}>
-            <div className={classes.toolbar}>
+            <Card variant="outlined" className={classes.toolbar}>
                 <div className={classes.titleContainer}>
-                    <Typography className={classes.title} variant={"button"}>
-                        Random Events
-                    </Typography>
+                    <span className={classes.titleContainerIcon}>
+                        <TimelineRounded />
+                    </span>
+                    <Typography className={classes.title}>Random Events</Typography>
                 </div>
                 <div className={classes.refreshButton} onClick={(): void => loadRandomEvents()} aria-label="Refresh">
                     <Tooltip title="Refresh">
-                        <RefreshIcon />
+                        <RefreshRounded />
                     </Tooltip>
                 </div>
-            </div>
+            </Card>
             {pkaEventsState.isLoading ? (
                 <div className={classes.loadingSpinner}>
                     <LoadingSpinner />
@@ -149,16 +165,17 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
                         drawerIsVisible ? classes.listMaxWidthWithDrawer : classes.listMaxWidthWithoutDrawer
                     }`}>
                     {pkaEventsState.randomEvents.map((event: EventWithAllFieldsClass, i: number) => (
-                        <div
-                            className={classes.listItem}
-                            key={i}
-                            onClick={(): void => handleClickEventCard(event.episodeNumber, event.timestamp)}>
+                        <div className={classes.listItem} key={i}>
                             <SearchResultCard
                                 customClassName={classes.eventCard}
                                 episodeNumber={event.episodeNumber}
                                 title={event.cardTitle()}
                                 subtitle={event.cardSubtitle()}
                                 duration={event.duration()}
+                                onWatchClick={(): void => handleClick(event.episodeNumber, event.timestamp)}
+                                onYoutubeClick={(): Promise<void> =>
+                                    handleYoutubeClick(event.episodeNumber, event.timestamp)
+                                }
                                 extraInfo={event.extraInfo()}
                             />
                         </div>

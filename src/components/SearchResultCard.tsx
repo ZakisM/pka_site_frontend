@@ -1,13 +1,16 @@
 import React, { ReactElement } from "react";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Card } from "@material-ui/core";
+import { PlayCircleOutlineRounded, YouTube } from "@material-ui/icons";
 
-interface Props {
+interface SearchResultCardProps {
     customClassName?: string;
     episodeNumber: number;
     title: string;
     subtitle: string;
     duration: string;
+    onWatchClick: () => void;
+    onYoutubeClick: () => Promise<void>;
     extraInfo?: string;
 }
 
@@ -17,14 +20,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         backgroundColor: "#151515",
         color: theme.palette.common.white,
-        "&:hover": {
-            backgroundColor: fade(theme.palette.common.white, 0.05),
-            cursor: "pointer",
-        },
-        "&:active": {
-            backgroundColor: fade(theme.palette.common.white, 0.075),
-            cursor: "pointer",
-        },
         boxShadow: "none",
     },
     avatar: {
@@ -59,36 +54,87 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
         borderRadius: "3px",
+        color: "#787878",
+        backgroundColor: "inherit",
+        marginRight: theme.spacing(1),
+    },
+    actionCard: {
+        display: "flex",
+        alignItems: "center",
+        fontWeight: 600,
+        fontSize: "14px",
+        paddingTop: theme.spacing(0.75),
+        paddingBottom: theme.spacing(0.75),
+        paddingLeft: theme.spacing(1.25),
+        paddingRight: theme.spacing(1.25),
+        borderRadius: "3px",
         color: theme.palette.common.white,
         backgroundColor: "#ab1029",
         marginRight: theme.spacing(1),
+        "&:hover": {
+            backgroundColor: fade("#ab1029", 0.75),
+            color: fade(theme.palette.common.white, 0.75),
+            cursor: "pointer",
+        },
+        "&:active": {
+            backgroundColor: fade("#ab1029", 0.5),
+            color: fade(theme.palette.common.white, 0.5),
+            cursor: "pointer",
+        },
+    },
+    actionCardIcon: {
+        display: "flex",
+        marginRight: theme.spacing(0.5),
     },
     cardInfo: {
         flex: 1,
-        marginBottom: theme.spacing(1.25),
     },
     metaData: {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        marginTop: theme.spacing(1.25),
     },
 }));
 
-const SearchResultCard = (props: Props): ReactElement => {
+const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
     const classes = useStyles();
-    const { customClassName, episodeNumber, title, subtitle, duration, extraInfo } = props;
+    const { customClassName, episodeNumber, title, subtitle, duration, onWatchClick, onYoutubeClick, extraInfo } =
+        props;
 
     return (
-        <Card className={`${classes.resultCard} ${customClassName}`}>
+        <Card variant="outlined" className={`${classes.resultCard} ${customClassName}`}>
             <div className={classes.cardDetails}>
                 <div className={classes.cardInfo}>
                     <div className={classes.title}>{title}</div>
                     <div className={classes.subtitle}>{subtitle}</div>
                 </div>
                 <div className={classes.metaData}>
-                    <div className={classes.infoCard}>PKA {+episodeNumber.toFixed(1)}</div>
-                    <div className={classes.infoCard}>{duration}</div>
-                    {extraInfo && <div className={classes.infoCard}>{extraInfo}</div>}
+                    <Card variant="outlined" className={classes.infoCard}>
+                        PKA {+episodeNumber.toFixed(1)}
+                    </Card>
+                    {extraInfo && (
+                        <Card variant="outlined" className={classes.infoCard}>
+                            {extraInfo}
+                        </Card>
+                    )}
+                    <Card variant="outlined" className={classes.infoCard}>
+                        {duration}
+                    </Card>
+                </div>
+                <div className={classes.metaData}>
+                    <div className={classes.actionCard} onClick={onWatchClick}>
+                        <span className={classes.actionCardIcon}>
+                            <PlayCircleOutlineRounded fontSize="small" />
+                        </span>
+                        Watch
+                    </div>
+                    <Card className={classes.actionCard} onClick={onYoutubeClick}>
+                        <span className={classes.actionCardIcon}>
+                            <YouTube fontSize="small" />
+                        </span>
+                        YouTube
+                    </Card>
                 </div>
             </div>
         </Card>

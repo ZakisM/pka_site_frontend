@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: "14.5px",
+        fontWeight: 500,
         marginBottom: "0.75ch",
     },
     subtitle: {
@@ -108,7 +109,7 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
     }, [id, isActive, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.timestamp]);
 
     return (
-        <Card ref={cardRef} className={`${classes.resultCard} ${isActive ? classes.active : null}`}>
+        <Card variant="outlined" ref={cardRef} className={`${classes.resultCard} ${isActive ? classes.active : null}`}>
             <Typography className={classes.title}>{title}</Typography>
             <Typography className={classes.subtitle}>
                 {moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}

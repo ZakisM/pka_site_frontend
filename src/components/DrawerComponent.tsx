@@ -1,15 +1,19 @@
 import React, { ReactElement } from "react";
 import { AppBar, fade, Hidden, IconButton, List, Tooltip, Typography } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
-import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerListItem from "./DrawerListItem";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import ShuffleIcon from "@material-ui/icons/Shuffle";
+import {
+    MenuRounded,
+    PlayCircleOutlineRounded,
+    ShuffleRounded,
+    TimelineRounded,
+    VideoLibraryRounded,
+} from "@material-ui/icons";
 import { WatchEpisodeRootActionTypes } from "../redux/watch-episode/types";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { PlayCircleOutline, Timeline, VideoLibrary } from "@material-ui/icons";
 import { clearWatchState } from "../redux/watch-episode/actions";
 import { ThunkDispatchType } from "../redux";
 
@@ -84,9 +88,9 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
         <div>
             <div className={classes.toolbar} />
             <List>
-                <DrawerListItem text={"Watch"} onClick={handleDrawerToggle} Icon={PlayCircleOutline} />
-                <DrawerListItem text={"Episodes"} onClick={handleDrawerToggle} Icon={VideoLibrary} />
-                <DrawerListItem text={"Events"} onClick={handleDrawerToggle} Icon={Timeline} />
+                <DrawerListItem text={"Watch"} onClick={handleDrawerToggle} Icon={PlayCircleOutlineRounded} />
+                <DrawerListItem text={"Episodes"} onClick={handleDrawerToggle} Icon={VideoLibraryRounded} />
+                <DrawerListItem text={"Events"} onClick={handleDrawerToggle} Icon={TimelineRounded} />
             </List>
         </div>
     );
@@ -101,7 +105,7 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
                         edge="start"
                         onClick={handleDrawerToggle}
                         className={classes.menuButton}>
-                        <MenuIcon />
+                        <MenuRounded />
                     </IconButton>
                     <Typography noWrap className={classes.appBarTitle}>
                         PKA INDEX
@@ -111,7 +115,7 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
                             className={classes.shuffleIcon}
                             onClick={watchRandomEpisode}
                             aria-label="Watch Random Episode">
-                            <ShuffleIcon />
+                            <ShuffleRounded />
                         </IconButton>
                     </Tooltip>
                 </Toolbar>

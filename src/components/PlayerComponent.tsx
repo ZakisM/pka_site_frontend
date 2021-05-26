@@ -80,8 +80,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#151515",
     },
     eventsHeaderText: {
-        fontSize: "15px",
-        color: fade(theme.palette.common.white, 0.8),
+        fontSize: "16px",
+        fontWeight: 500,
+        color: fade(theme.palette.common.white, 0.9),
     },
     eventsWidth: {
         width: "25%",
@@ -233,8 +234,10 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
 
     if (watchEpisodeState.episode !== undefined && !watchEpisodeState.isLoading) {
         return (
-            <Box display="flex" height="95%" className={isPortrait ? classes.flexColumn : ""}>
-                <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
+            <Box display="flex" height="100%" className={isPortrait ? classes.flexColumn : ""}>
+                <Card
+                    variant="outlined"
+                    className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
                     <div style={{ flex: "1" }}>
                         <ReactPlayer
                             ref={playerRef}
@@ -263,7 +266,9 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                 </Card>
 
                 {hasEvents() && (
-                    <Card className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
+                    <Card
+                        variant="outlined"
+                        className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
                         <div className={classes.eventsHeader}>
                             <Typography className={classes.eventsHeaderText} variant="button">
                                 Timeline
@@ -311,18 +316,20 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                 )}
 
                 <Box display="flex" height="95%" className={isPortrait ? classes.flexColumn : ""}>
-                    <Card className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
+                    <Card
+                        variant="outlined"
+                        className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
                         <div style={{ height: "100%" }}>
                             <Skeleton variant="rect" width={"100%"} height={"100%"} />
                         </div>
                         <CardHeader title={<Skeleton />} subheader={<Skeleton width="40%" />} />
                     </Card>
 
-                    <Card className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
+                    <Card
+                        variant="outlined"
+                        className={`${classes.eventsCard} ${isPortrait ? classes.halfHeight : classes.eventsWidth}`}>
                         <div className={classes.eventsHeader}>
-                            <Typography className={classes.eventsHeaderText} variant="button">
-                                Timeline
-                            </Typography>
+                            <Typography className={classes.eventsHeaderText}>Events</Typography>
                         </div>
                         <Box maxHeight="92.5%" style={{ overflow: "hidden" }}>
                             <CardContent>
