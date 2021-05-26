@@ -1,7 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import SearchIcon from "@material-ui/icons/Search";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import { ArrowDownwardRounded, ArrowUpwardRounded, SearchRounded } from "@material-ui/icons";
 import InputBase from "@material-ui/core/InputBase";
 import SearchResultCard from "./SearchResultCard";
 import useConstant from "use-constant";
@@ -9,7 +7,7 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { useAsync } from "react-async-hook";
 import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
 import { RootState, ThunkDispatchType } from "../redux";
-import { Tooltip } from "@material-ui/core";
+import { Card, Tooltip } from "@material-ui/core";
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
 import { isMobile } from "react-device-detect";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
@@ -43,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
         flexFlow: "column",
-        height: "100%",
+        height: "calc(100vh - 100px)",
         maxHeight: "calc(100vh - 100px)",
     },
     search: {
@@ -89,6 +87,7 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: "none",
         "&:hover": {
             backgroundColor: fade(theme.palette.common.white, 0.1),
+            cursor: "pointer",
         },
         "&:active": {
             boxShadow: "none",
@@ -170,16 +169,11 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
         return height + 7;
     };
 
-    const handleClickEventCard = (number: number, timestamp: number): void => {
+    const handleClick = (number: number, timestamp: number): void => {
         history.push(`/watch/${number}?timestamp=${timestamp}`);
     };
 
-    const handleRightClickEventCard = async (
-        e: React.MouseEvent<HTMLDivElement>,
-        number: number,
-        timestamp: number
-    ): Promise<void> => {
-        e.preventDefault();
+    const handleYoutubeClick = async (number: number, timestamp: number): Promise<void> => {
         const youtube_link = await getPKAEpisodeYoutubeLink(number);
         if (youtube_link !== "") {
             window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
@@ -192,18 +186,16 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
 
         return (
             <CellMeasurer key={key} cache={cellMeasurerCache} parent={parent} rowIndex={index}>
-                <div
-                    style={style}
-                    key={key}
-                    onClick={(): void => handleClickEventCard(searchResult.episodeNumber, searchResult.timestamp)}
-                    onContextMenu={(e): Promise<void> =>
-                        handleRightClickEventCard(e, searchResult.episodeNumber, searchResult.timestamp)
-                    }>
+                <div style={style} key={key}>
                     <SearchResultCard
                         episodeNumber={searchResult.episodeNumber}
                         title={searchResult.cardTitle()}
                         subtitle={searchResult.cardSubtitle()}
                         duration={searchResult.duration()}
+                        onWatchClick={(): void => handleClick(searchResult.episodeNumber, searchResult.timestamp)}
+                        onYoutubeClick={(): Promise<void> =>
+                            handleYoutubeClick(searchResult.episodeNumber, searchResult.timestamp)
+                        }
                         extraInfo={searchResult.extraInfo()}
                     />
                 </div>
@@ -215,9 +207,9 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
         <div className={classes.root} key={searchItemType}>
             {searchItemType === SearchItemType.EVENT ? <RandomEventsListComponent /> : null}
             <div className={classes.searchRow}>
-                <div className={classes.search}>
+                <Card variant="outlined" className={classes.search}>
                     <div className={classes.iconButton}>
-                        <SearchIcon />
+                        <SearchRounded />
                     </div>
                     <InputBase
                         autoFocus={true}
@@ -235,16 +227,17 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
                             <LoadingSpinner />
                         </div>
                     )}
-                </div>
+                </Card>
                 {searchItemType === SearchItemType.EVENT && (
-                    <div
+                    <Card
+                        variant="outlined"
                         className={classes.reverseButton}
                         onClick={(): void => reverseResultsToggle()}
                         aria-label="Reverse Order">
                         <Tooltip title="Reverse Order">
-                            {searchState.reverseResults === true ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                            {searchState.reverseResults === true ? <ArrowUpwardRounded /> : <ArrowDownwardRounded />}
                         </Tooltip>
-                    </div>
+                    </Card>
                 )}
             </div>
 

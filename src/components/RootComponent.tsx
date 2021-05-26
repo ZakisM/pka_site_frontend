@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(4),
         paddingBottom: theme.spacing(6),
-        height: "100vh",
+        height: "calc(100vh - 40px)",
+        maxHeight: "calc(100vh - 40px)",
     },
     toolbar: theme.mixins.toolbar,
 }));
