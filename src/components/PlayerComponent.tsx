@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     listItem: {
         marginBottom: "1ch",
     },
-    rootLoading: {
+    maxHeight: {
         height: "100%",
     },
     errorMessage: {
@@ -98,6 +98,16 @@ const useStyles = makeStyles((theme) => ({
     },
     errorBodyHeight: {
         height: "90%",
+    },
+    hiddenOverflow: {
+        overflow: "hidden",
+    },
+    reactPlayer: {
+        flex: "1",
+    },
+    timelineCards: {
+        overflow: "auto",
+        maxHeight: "92.5%",
     },
 }));
 
@@ -238,7 +248,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                 <Card
                     variant="outlined"
                     className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
-                    <div style={{ flex: "1" }}>
+                    <div className={classes.reactPlayer}>
                         <ReactPlayer
                             ref={playerRef}
                             url={getUrl()}
@@ -254,7 +264,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                         />
                     </div>
                     <div className={classes.videoHeader}>
-                        <Typography className={classes.videoTitle}>
+                        <Typography variant="h1" className={classes.videoTitle}>
                             {watchEpisodeState.youtubeDetails?.title}
                         </Typography>
                         <Typography className={classes.videoSubtitle}>
@@ -274,7 +284,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                                 Timeline
                             </Typography>
                         </div>
-                        <div style={{ overflow: "auto", maxHeight: "92.5%" }} ref={eventsCardRef}>
+                        <div className={classes.timelineCards} ref={eventsCardRef}>
                             <CardContent>
                                 <List>
                                     {watchEpisodeState.events.map((event: WatchEpisodeEvent, i: number) => {
@@ -303,10 +313,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
         );
     } else {
         return (
-            <div
-                className={`${classes.rootLoading} ${
-                    hasFailedToLoad() ? classes.errorBodyHeight : classes.fullHeight
-                }`}>
+            <div className={`${classes.maxHeight} ${hasFailedToLoad() ? classes.errorBodyHeight : classes.fullHeight}`}>
                 {hasFailedToLoad() && (
                     <Box className={classes.errorMessage}>
                         <Alert variant={"filled"} severity="error">
@@ -319,7 +326,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                     <Card
                         variant="outlined"
                         className={`${classes.videoCard} ${videoIsFullWidth() ? classes.fullWidth : null}`}>
-                        <div style={{ height: "100%" }}>
+                        <div className={classes.maxHeight}>
                             <Skeleton variant="rect" width={"100%"} height={"100%"} />
                         </div>
                         <CardHeader title={<Skeleton />} subheader={<Skeleton width="40%" />} />
@@ -331,7 +338,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                         <div className={classes.eventsHeader}>
                             <Typography className={classes.eventsHeaderText}>Events</Typography>
                         </div>
-                        <Box maxHeight="92.5%" style={{ overflow: "hidden" }}>
+                        <Box maxHeight="92.5%" className={classes.hiddenOverflow}>
                             <CardContent>
                                 <List>
                                     {Array(10)
