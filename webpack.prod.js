@@ -3,6 +3,7 @@ const { merge } = require("webpack-merge");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 
 module.exports = merge(common, {
     mode: "production",
@@ -13,6 +14,7 @@ module.exports = merge(common, {
             filename: "index.html",
             hash: true,
         }),
+        new FaviconsWebpackPlugin("./public/favicon.svg"),
         new CompressionPlugin({
             filename: "[path][base].gz",
             algorithm: "gzip",
