@@ -12,7 +12,7 @@ module.exports = merge(common, {
         hot: true,
         contentBase: "./public",
         watchContentBase: true,
-        allowedHosts: ["pkaindextest.com"],
+        allowedHosts: ["www.pkaindextest.com"],
         historyApiFallback: true,
     },
     output: {
