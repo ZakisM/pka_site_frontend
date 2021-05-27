@@ -109,7 +109,10 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
     }, [id, isActive, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.timestamp]);
 
     return (
-        <Card variant="outlined" ref={cardRef} className={`${classes.resultCard} ${isActive ? classes.active : null}`}>
+        <Card
+            variant={isActive ? "outlined" : undefined}
+            ref={cardRef}
+            className={`${classes.resultCard} ${isActive ? classes.active : null}`}>
             <Typography className={classes.title}>{title}</Typography>
             <Typography className={classes.subtitle}>
                 {moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}
