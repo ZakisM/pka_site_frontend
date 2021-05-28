@@ -29,9 +29,9 @@ export interface SearchResult {
 
     cardSubtitle(): string;
 
-    duration(): string;
+    cardDuration(): string;
 
-    extraInfo(): string | undefined;
+    cardTimestamp(): string | undefined;
 }
 
 export interface EventWithAllFields extends SearchResult {
@@ -94,7 +94,7 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
         return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
     }
 
-    duration(): string {
+    cardDuration(): string {
         const d = moment.utc(this.lengthSeconds * 1000);
 
         if (d.hours() > 0) {
@@ -104,7 +104,7 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
         }
     }
 
-    extraInfo(): string {
+    cardTimestamp(): string {
         return moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss");
     }
 }
@@ -143,13 +143,13 @@ export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
         return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
     }
 
-    duration(): string {
+    cardDuration(): string {
         const d = moment.utc(this.lengthSeconds * 1000);
 
         return `${d.hours()}h ${d.minutes()}m`;
     }
 
-    extraInfo(): undefined {
+    cardTimestamp(): undefined {
         return undefined;
     }
 }

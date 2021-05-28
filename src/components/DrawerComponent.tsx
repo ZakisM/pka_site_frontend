@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { AppBar, fade, Hidden, IconButton, List, Tooltip, Typography } from "@material-ui/core";
+import { AppBar, fade, Hidden, IconButton, List, Typography } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerListItem from "./DrawerListItem";
@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { clearWatchState } from "../redux/watch-episode/actions";
 import { ThunkDispatchType } from "../redux";
+import CustomTooltip from "./Tooltip";
 
 export const drawerWidth = "220px";
 
@@ -110,14 +111,14 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
                     <Typography noWrap className={classes.appBarTitle}>
                         PKA INDEX
                     </Typography>
-                    <Tooltip title="Watch Random Episode">
+                    <CustomTooltip title="Watch Random Episode" arrow>
                         <IconButton
                             className={classes.shuffleIcon}
                             onClick={watchRandomEpisode}
                             aria-label="Watch Random Episode">
                             <ShuffleRounded />
                         </IconButton>
-                    </Tooltip>
+                    </CustomTooltip>
                 </Toolbar>
             </AppBar>
             <nav className={classes.drawer} aria-label="All links">

@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { RootState, ThunkDispatchType } from "../redux";
-import ReactPlayer from "react-player";
+import ReactPlayer from "react-player/lazy";
 import { Box, Card, CardContent, CardHeader, fade, List, Typography } from "@material-ui/core";
 import { saveTimestamp, setCurrentEventCard, watchPKAEpisode } from "../redux/watch-episode/actions";
 import { WatchEpisodeEvent, WatchEpisodeRootActionTypes } from "../redux/watch-episode/types";
@@ -251,6 +251,7 @@ const PlayerComponent = (props: PlayerComponentProps): ReactElement => {
                     <div className={classes.reactPlayer}>
                         <ReactPlayer
                             ref={playerRef}
+                            // light={true}
                             url={getUrl()}
                             width={"100%"}
                             height={"100%"}
