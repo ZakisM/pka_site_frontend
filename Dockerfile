@@ -13,7 +13,7 @@ COPY ./webpack.prod.js ./webpack.prod.js
 RUN yarn install
 RUN yarn prod
 
-FROM nginx:alpine
+FROM fholzer/nginx-brotli
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 

@@ -1,3 +1,10 @@
 .ReactVirtualized__Grid {
     outline: none;
 }
+
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    src: local("Raleway");
+    font-display: swap;
+}

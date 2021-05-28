@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Card } from "@material-ui/core";
 import { PlayCircleOutlineRounded, YouTube } from "@material-ui/icons";
+import CustomTooltip from "./Tooltip";
 
 interface SearchResultCardProps {
     customClassName?: string;
@@ -11,7 +12,7 @@ interface SearchResultCardProps {
     duration: string;
     onWatchClick: () => void;
     onYoutubeClick: () => Promise<void>;
-    extraInfo?: string;
+    timestamp?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "15px",
         fontWeight: 500,
         color: fade(theme.palette.common.white, 0.9),
+        marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
     subtitle: {
@@ -54,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
         borderRadius: "3px",
-        color: "#787878",
+        color: "#a5a5a5",
         backgroundColor: "inherit",
         marginRight: theme.spacing(1),
     },
@@ -63,10 +65,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         fontWeight: 600,
         fontSize: "14px",
-        paddingTop: theme.spacing(0.75),
-        paddingBottom: theme.spacing(0.75),
-        paddingLeft: theme.spacing(1.25),
-        paddingRight: theme.spacing(1.25),
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
         borderRadius: "3px",
         color: theme.palette.common.white,
         backgroundColor: "#ab1029",
@@ -99,42 +101,50 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
     const classes = useStyles();
-    const { customClassName, episodeNumber, title, subtitle, duration, onWatchClick, onYoutubeClick, extraInfo } =
+    const { customClassName, episodeNumber, title, subtitle, duration, onWatchClick, onYoutubeClick, timestamp } =
         props;
 
     return (
         <Card variant="outlined" className={`${classes.resultCard} ${customClassName}`}>
             <div className={classes.cardDetails}>
                 <div className={classes.cardInfo}>
-                    <div className={classes.title}>{title}</div>
+                    <h1 className={classes.title}>{title}</h1>
                     <div className={classes.subtitle}>{subtitle}</div>
                 </div>
                 <div className={classes.metaData}>
-                    <Card variant="outlined" className={classes.infoCard}>
-                        PKA {+episodeNumber.toFixed(1)}
-                    </Card>
-                    {extraInfo && (
+                    <CustomTooltip title="Episode Number" placement="top" arrow>
                         <Card variant="outlined" className={classes.infoCard}>
-                            {extraInfo}
+                            PKA {+episodeNumber.toFixed(1)}
                         </Card>
+                    </CustomTooltip>
+                    {timestamp && (
+                        <CustomTooltip title="Timestamp" placement="top" arrow>
+                            <Card variant="outlined" className={classes.infoCard}>
+                                {timestamp}
+                            </Card>
+                        </CustomTooltip>
                     )}
-                    <Card variant="outlined" className={classes.infoCard}>
-                        {duration}
-                    </Card>
+                    <CustomTooltip title="Duration" placement="top" arrow>
+                        <Card variant="outlined" className={classes.infoCard}>
+                            {duration}
+                        </Card>
+                    </CustomTooltip>
                 </div>
                 <div className={classes.metaData}>
-                    <div className={classes.actionCard} onClick={onWatchClick}>
+                    <Card variant="outlined" className={classes.actionCard} onClick={onWatchClick}>
                         <span className={classes.actionCardIcon}>
                             <PlayCircleOutlineRounded fontSize="small" />
                         </span>
                         Watch
-                    </div>
-                    <Card className={classes.actionCard} onClick={onYoutubeClick}>
-                        <span className={classes.actionCardIcon}>
-                            <YouTube fontSize="small" />
-                        </span>
-                        YouTube
                     </Card>
+                    <CustomTooltip title="Open on YouTube" arrow>
+                        <Card variant="outlined" className={classes.actionCard} onClick={onYoutubeClick}>
+                            <span className={classes.actionCardIcon}>
+                                <YouTube fontSize="small" />
+                            </span>
+                            YouTube
+                        </Card>
+                    </CustomTooltip>
                 </div>
             </div>
         </Card>

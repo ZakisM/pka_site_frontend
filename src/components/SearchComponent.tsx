@@ -7,7 +7,7 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { useAsync } from "react-async-hook";
 import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
 import { RootState, ThunkDispatchType } from "../redux";
-import { Card, Tooltip } from "@material-ui/core";
+import { Card } from "@material-ui/core";
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
 import { isMobile } from "react-device-detect";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
@@ -18,6 +18,7 @@ import { reverseResultsToggle, searchPKAItem } from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
+import CustomTooltip from "./Tooltip";
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
     return {
@@ -191,12 +192,12 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
                         episodeNumber={searchResult.episodeNumber}
                         title={searchResult.cardTitle()}
                         subtitle={searchResult.cardSubtitle()}
-                        duration={searchResult.duration()}
+                        duration={searchResult.cardDuration()}
                         onWatchClick={(): void => handleClick(searchResult.episodeNumber, searchResult.timestamp)}
                         onYoutubeClick={(): Promise<void> =>
                             handleYoutubeClick(searchResult.episodeNumber, searchResult.timestamp)
                         }
-                        extraInfo={searchResult.extraInfo()}
+                        timestamp={searchResult.cardTimestamp()}
                     />
                 </div>
             </CellMeasurer>
@@ -234,9 +235,9 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
                         className={classes.reverseButton}
                         onClick={(): void => reverseResultsToggle()}
                         aria-label="Reverse Order">
-                        <Tooltip title="Reverse Order">
+                        <CustomTooltip title="Reverse Order" arrow>
                             {searchState.reverseResults === true ? <ArrowUpwardRounded /> : <ArrowDownwardRounded />}
-                        </Tooltip>
+                        </CustomTooltip>
                     </Card>
                 )}
             </div>

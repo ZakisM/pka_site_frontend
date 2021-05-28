@@ -7,10 +7,11 @@ import { EventWithAllFieldsClass, SearchRootActionTypes } from "../redux/search/
 import { loadRandomEvents } from "../redux/events/actions";
 import LoadingSpinner from "./LoadingSpinner";
 import { useHistory } from "react-router-dom";
-import { Card, Tooltip, Typography } from "@material-ui/core";
+import { Card, Typography } from "@material-ui/core";
 import { RefreshRounded, TimelineRounded } from "@material-ui/icons";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
 import { YOUTUBE_BASE_URL } from "./PlayerComponent";
+import CustomTooltip from "./Tooltip";
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
     return {
@@ -150,9 +151,9 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
                     <Typography className={classes.title}>Random Events</Typography>
                 </div>
                 <div className={classes.refreshButton} onClick={(): void => loadRandomEvents()} aria-label="Refresh">
-                    <Tooltip title="Refresh">
+                    <CustomTooltip title="Refresh" arrow>
                         <RefreshRounded />
-                    </Tooltip>
+                    </CustomTooltip>
                 </div>
             </Card>
             {pkaEventsState.isLoading ? (
@@ -171,12 +172,12 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
                                 episodeNumber={event.episodeNumber}
                                 title={event.cardTitle()}
                                 subtitle={event.cardSubtitle()}
-                                duration={event.duration()}
+                                duration={event.cardDuration()}
                                 onWatchClick={(): void => handleClick(event.episodeNumber, event.timestamp)}
                                 onYoutubeClick={(): Promise<void> =>
                                     handleYoutubeClick(event.episodeNumber, event.timestamp)
                                 }
-                                extraInfo={event.extraInfo()}
+                                timestamp={event.cardTimestamp()}
                             />
                         </div>
                     ))}
