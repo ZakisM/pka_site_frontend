@@ -108,7 +108,7 @@ const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
         <Card variant="outlined" className={`${classes.resultCard} ${customClassName}`}>
             <div className={classes.cardDetails}>
                 <div className={classes.cardInfo}>
-                    <h1 className={classes.title}>{title}</h1>
+                    <div className={classes.title}>{title}</div>
                     <div className={classes.subtitle}>{subtitle}</div>
                 </div>
                 <div className={classes.metaData}>
