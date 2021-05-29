@@ -14,7 +14,12 @@ module.exports = merge(common, {
             filename: "index.html",
             hash: true,
         }),
-        new FaviconsWebpackPlugin("./public/favicon.svg"),
+        new FaviconsWebpackPlugin({
+            logo: "./public/favicon.svg",
+            favicons: {
+                appName: "PKA Index",
+            }
+        }),
         new CompressionPlugin({
             filename: "[path][base].gz",
             algorithm: "gzip",
