@@ -112,19 +112,19 @@ const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
                     <div className={classes.subtitle}>{subtitle}</div>
                 </div>
                 <div className={classes.metaData}>
-                    <CustomTooltip title="Episode Number" placement="top" arrow>
+                    <CustomTooltip title="Episode Number" arrow>
                         <Card variant="outlined" className={classes.infoCard}>
                             PKA {+episodeNumber.toFixed(1)}
                         </Card>
                     </CustomTooltip>
                     {timestamp && (
-                        <CustomTooltip title="Timestamp" placement="top" arrow>
+                        <CustomTooltip title="Timestamp" arrow>
                             <Card variant="outlined" className={classes.infoCard}>
                                 {timestamp}
                             </Card>
                         </CustomTooltip>
                     )}
-                    <CustomTooltip title="Duration" placement="top" arrow>
+                    <CustomTooltip title="Duration" arrow>
                         <Card variant="outlined" className={classes.infoCard}>
                             {duration}
                         </Card>
