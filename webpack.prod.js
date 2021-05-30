@@ -18,6 +18,8 @@ module.exports = merge(common, {
             logo: "./public/favicon.svg",
             favicons: {
                 appName: "PKA Index",
+                background: "#151515",
+                theme_color: "#151515",
             }
         }),
         new CompressionPlugin({
