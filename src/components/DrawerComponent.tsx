@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { AppBar, fade, Hidden, IconButton, List, Typography } from "@material-ui/core";
+import { alpha, AppBar, Hidden, IconButton, List, Typography } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerListItem from "./DrawerListItem";
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
         border: 0,
     },
     shuffleIcon: {
-        color: fade(theme.palette.common.white, 0.8),
+        color: alpha(theme.palette.common.white, 0.8),
     },
 }));
 

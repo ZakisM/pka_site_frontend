@@ -9,7 +9,8 @@
         "object-literal-sort-keys": false,
         "object-literal-shorthand": false,
         "js-no-bind": false,
-        "jsx-no-lambda": false
+        "jsx-no-lambda": false,
+        "no-non-null-assertion": false
     },
     "linterOptions": {
         "exclude": ["config/**/*.js", "node_modules/**/.ts"]

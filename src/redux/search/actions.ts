@@ -9,9 +9,9 @@ import {
     SearchTypes,
 } from "./types";
 import { RootState } from "../index";
-import { AllPkaEventSearchResultsFb } from "../../flatbuffers/pka_event_search_results_generated";
-import { flatbuffers } from "flatbuffers";
+import * as flatbuffers from "flatbuffers";
 import handleError from "../../util";
+import { AllPkaEventSearchResultsFb } from "../../flatbuffers/all-pka-event-search-results-fb";
 
 export const searchPKAItem =
     (searchQuery: string, searchItemType: SearchItemType) =>

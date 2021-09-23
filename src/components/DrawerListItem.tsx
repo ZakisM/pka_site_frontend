@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
-import { ListItem, ListItemIcon, ListItemText, SvgIcon, Typography } from "@material-ui/core";
+import { alpha, ListItem, ListItemIcon, ListItemText, SvgIcon, Typography } from "@material-ui/core";
 import { Link, useRouteMatch } from "react-router-dom";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 interface DrawerListItemProps {
     onClick: () => void;
@@ -11,23 +11,23 @@ interface DrawerListItemProps {
 
 const useStyles = makeStyles((theme) => ({
     link: {
-        color: fade(theme.palette.common.white, 0.5),
+        color: alpha(theme.palette.common.white, 0.5),
         textDecoration: "none",
     },
     item: {
         height: "5.7ch",
         "&:hover": {
-            backgroundColor: fade(theme.palette.common.white, 0.0125),
+            backgroundColor: alpha(theme.palette.common.white, 0.0125),
         },
         "&:active": {
-            backgroundColor: fade(theme.palette.common.white, 0.025),
+            backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
     itemText: {
         marginLeft: "-10px",
     },
     itemIconInactive: {
-        color: fade(theme.palette.common.white, 0.5),
+        color: alpha(theme.palette.common.white, 0.5),
     },
     active: {
         color: theme.palette.common.white,

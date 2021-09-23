@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import SearchResultCard from "./SearchResultCard";
 import { connect } from "react-redux";
 import { RootState, ThunkDispatchType } from "../redux";
@@ -7,7 +7,7 @@ import { EventWithAllFieldsClass, SearchRootActionTypes } from "../redux/search/
 import { loadRandomEvents } from "../redux/events/actions";
 import LoadingSpinner from "./LoadingSpinner";
 import { useHistory } from "react-router-dom";
-import { Card, Typography } from "@material-ui/core";
+import { alpha, Card, Typography } from "@material-ui/core";
 import { RefreshRounded, TimelineRounded } from "@material-ui/icons";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
 import { YOUTUBE_BASE_URL } from "./PlayerComponent";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     titleContainer: {
         display: "flex",
         alignItems: "center",
-        color: fade(theme.palette.common.white, 0.8),
+        color: alpha(theme.palette.common.white, 0.8),
         flexGrow: 1,
         marginLeft: theme.spacing(2),
     },
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: "18px",
         fontWeight: 500,
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
     },
     list: {
         display: "flex",
@@ -92,12 +92,12 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: "5px",
         boxShadow: "none",
         "&:hover": {
-            backgroundColor: fade(theme.palette.common.white, 0.1),
+            backgroundColor: alpha(theme.palette.common.white, 0.1),
             cursor: "pointer",
         },
         "&:active": {
             boxShadow: "none",
-            backgroundColor: fade(theme.palette.common.white, 0.025),
+            backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
 }));
