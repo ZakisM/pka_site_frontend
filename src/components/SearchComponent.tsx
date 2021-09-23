@@ -7,7 +7,7 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { useAsync } from "react-async-hook";
 import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
 import { RootState, ThunkDispatchType } from "../redux";
-import { Card } from "@material-ui/core";
+import { alpha, Card } from "@material-ui/core";
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
 import { isMobile } from "react-device-detect";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
@@ -16,7 +16,7 @@ import { YOUTUBE_BASE_URL } from "./PlayerComponent";
 import LoadingSpinner from "./LoadingSpinner";
 import { reverseResultsToggle, searchPKAItem } from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import CustomTooltip from "./Tooltip";
 
@@ -51,14 +51,14 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         backgroundColor: "#151515",
         "&:hover": {
-            backgroundColor: fade(theme.palette.common.white, 0.05),
+            backgroundColor: alpha(theme.palette.common.white, 0.05),
         },
         padding: theme.spacing(1),
         borderRadius: "5px",
     },
     iconButton: {
         display: "flex",
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
         padding: "10px",
         pointerEvents: "none",
     },
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     },
     subTitle: {
         fontSize: "14.5px",
-        color: fade(theme.palette.common.white, 0.45),
+        color: alpha(theme.palette.common.white, 0.45),
         marginBottom: theme.spacing(1.5),
     },
     searchRow: {
@@ -87,12 +87,12 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: "5px",
         boxShadow: "none",
         "&:hover": {
-            backgroundColor: fade(theme.palette.common.white, 0.1),
+            backgroundColor: alpha(theme.palette.common.white, 0.1),
             cursor: "pointer",
         },
         "&:active": {
             boxShadow: "none",
-            backgroundColor: fade(theme.palette.common.white, 0.025),
+            backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
     resultListParent: {

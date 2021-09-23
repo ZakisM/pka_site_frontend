@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { RootState, ThunkDispatchType } from "../redux";
 import ReactPlayer from "react-player/lazy";
-import { Box, Card, CardContent, CardHeader, fade, List, Typography } from "@material-ui/core";
+import { alpha, Box, Card, CardContent, CardHeader, List, Typography } from "@material-ui/core";
 import { saveTimestamp, setCurrentEventCard, watchPKAEpisode } from "../redux/watch-episode/actions";
 import { WatchEpisodeEvent, WatchEpisodeRootActionTypes } from "../redux/watch-episode/types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -48,11 +48,11 @@ const useStyles = makeStyles((theme) => ({
     videoTitle: {
         fontSize: "20px",
         fontWeight: 500,
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
     },
     videoSubtitle: {
         fontSize: "15px",
-        color: fade(theme.palette.common.white, 0.5),
+        color: alpha(theme.palette.common.white, 0.5),
     },
     fullHeight: {
         height: "100%",
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     eventsHeaderText: {
         fontSize: "16px",
         fontWeight: 500,
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
     },
     eventsWidth: {
         width: "25%",

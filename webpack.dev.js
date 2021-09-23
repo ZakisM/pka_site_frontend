@@ -10,8 +10,7 @@ module.exports = merge(common, {
     devServer: {
         port: 5678,
         hot: true,
-        contentBase: "./public",
-        watchContentBase: true,
+        static: "./public",
         allowedHosts: ["www.pkaindextest.com"],
         historyApiFallback: true,
     },

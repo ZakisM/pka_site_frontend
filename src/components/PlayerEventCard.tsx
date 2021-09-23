@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { createStyles, fade, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { Card, LinearProgress, Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
+import { alpha, Card, LinearProgress, Typography } from "@material-ui/core";
 import { RootState } from "../redux";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -24,14 +24,14 @@ const useStyles = makeStyles((theme) => ({
     resultCard: {
         padding: "2ch",
         backgroundColor: "#151515",
-        color: fade(theme.palette.common.white, 0.3),
+        color: alpha(theme.palette.common.white, 0.3),
         "&:hover": {
             backgroundColor: "#6c181e",
             color: theme.palette.common.white,
             cursor: "pointer",
         },
         "&:active": {
-            backgroundColor: fade("#cd2d37", 0.4),
+            backgroundColor: alpha("#cd2d37", 0.4),
             cursor: "pointer",
         },
         boxShadow: "none",

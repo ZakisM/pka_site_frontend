@@ -9,7 +9,7 @@
         "awesome-debounce-promise": "^2.1.0",
         "axios": "^0.21.1",
         "connected-react-router": "^6.8.0",
-        "flatbuffers": "^1.12.0",
+        "flatbuffers": "2.0.3",
         "lodash": "^4.17.20",
         "moment": "^2.29.1",
         "raleway-webfont": "^3.0.1",
@@ -34,12 +34,9 @@
         "dev": "webpack --config webpack.dev.js",
         "prod": "webpack --config webpack.prod.js",
         "eslint": "eslint --max-warnings=0 --fix src --ext=ts,tsx",
-        "prettier": "prettier --write src"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run eslint && npm run prettier"
-        }
+        "stylelint": "stylelint --fix \"src/**/*.css\"",
+        "prettier": "prettier --write src",
+        "prepare": "husky install"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -64,8 +61,8 @@
         "@babel/preset-react": "^7.13.13",
         "@babel/preset-typescript": "^7.13.0",
         "@types/flatbuffers": "^1.10.0",
-        "@types/jest": "^26.0.23",
-        "@types/node": "^14.17.1",
+        "@types/jest": "27.0.2",
+        "@types/node": "16.9.6",
         "@types/react": "^17.0.8",
         "@types/react-dom": "^17.0.5",
         "@types/react-redux": "^7.1.12",
@@ -77,27 +74,28 @@
         "babel-loader": "^8.2.2",
         "babel-loader-exclude-node-modules-except": "^1.1.2",
         "babel-plugin-transform-class-properties": "^6.24.1",
-        "clean-webpack-plugin": "^3.0.0",
-        "compression-webpack-plugin": "^7.1.2",
-        "css-loader": "^5.2.6",
+        "clean-webpack-plugin": "4.0.0",
+        "compression-webpack-plugin": "9.0.0",
+        "css-loader": "6.3.0",
         "eslint": "^7.27.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-react": "^7.23.2",
         "eslint-plugin-react-hooks": "^4.2.0",
         "favicons": "^6.2.2",
         "favicons-webpack-plugin": "^5.0.2",
-        "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.3.1",
-        "husky": "4.3.8",
-        "prettier": "2.3.0",
+        "prettier": "2.4.1",
         "redux-devtools-extension": "^2.13.8",
-        "style-loader": "^2.0.0",
+        "style-loader": "3.3.0",
+        "stylelint": "^13.13.1",
+        "stylelint-config-standard": "^22.0.0",
         "typescript": "^4.2.4",
         "webpack": "^5.37.1",
         "webpack-bundle-analyzer": "^4.4.2",
         "webpack-cli": "^4.7.0",
-        "webpack-dev-server": "^3.11.2",
-        "webpack-merge": "^5.7.3"
+        "webpack-dev-server": "4.2.1",
+        "webpack-merge": "^5.7.3",
+        "husky": "^7.0.0"
     },
     "babel": {
         "presets": [

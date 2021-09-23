@@ -1,6 +1,6 @@
 import moment from "moment";
 import { LOCATION_CHANGE } from "connected-react-router";
-import { PkaEventSearchResultFb } from "../../flatbuffers/pka_event_search_results_generated";
+import { PkaEventSearchResultFb } from "../../flatbuffers/pka-event-search-result-fb";
 
 export interface SearchState {
     searchQuery: string;
@@ -64,10 +64,12 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
     }
 
     static Deserialize(input: PkaEventSearchResultFb): EventWithAllFieldsClass {
+        const description = input.description() ? input.description()! : "";
+
         return new EventWithAllFieldsClass(
             input.episodeNumber(),
             input.timestamp(),
-            input.description(),
+            description,
             input.lengthSeconds(),
             input.uploadDate().low
         );

@@ -1,10 +1,9 @@
-import { Theme, withStyles } from "@material-ui/core/styles";
+import { alpha, Theme, withStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
-import { fade } from "@material-ui/core";
 
 const CustomTooltip = withStyles((theme: Theme) => ({
     tooltip: {
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
         backgroundColor: "#1a1a1a",
         boxShadow: theme.shadows[1],
         border: "1px solid rgba(255, 255, 255, 0.12)",
