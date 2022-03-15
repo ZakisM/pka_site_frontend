@@ -20,4 +20,5 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 # copy build artifact from previous stage
 COPY --from=build /pka_site_frontend/dist /usr/share/nginx/html
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx"]
+CMD ["-g", "daemon off;"]
