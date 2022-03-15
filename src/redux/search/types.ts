@@ -39,7 +39,7 @@ export interface EventWithAllFields extends SearchResult {
     timestamp: number;
     description: string;
     lengthSeconds: number;
-    uploadDate: number;
+    uploadDate: bigint;
 }
 
 export class EventWithAllFieldsClass implements EventWithAllFields {
@@ -47,14 +47,14 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
     timestamp: number;
     description: string;
     lengthSeconds: number;
-    uploadDate: number;
+    uploadDate: bigint;
 
     constructor(
         episodeNumber: number,
         timestamp: number,
         description: string,
         lengthSeconds: number,
-        uploadDate: number
+        uploadDate: bigint
     ) {
         this.episodeNumber = episodeNumber;
         this.timestamp = timestamp;
@@ -71,7 +71,7 @@ export class EventWithAllFieldsClass implements EventWithAllFields {
             input.timestamp(),
             description,
             input.lengthSeconds(),
-            input.uploadDate().low
+            input.uploadDate()
         );
     }
 
