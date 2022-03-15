@@ -6,6 +6,10 @@ export class PkaEventSearchResultFb {
     bb: flatbuffers.ByteBuffer | null = null;
     bb_pos = 0;
 
+    static addUploadDate(builder: flatbuffers.Builder, uploadDate: bigint) {
+        builder.addFieldInt64(4, uploadDate, BigInt("0"));
+    }
+
     static getRootAsPkaEventSearchResultFb(
         bb: flatbuffers.ByteBuffer,
         obj?: PkaEventSearchResultFb
@@ -21,42 +25,13 @@ export class PkaEventSearchResultFb {
         return (obj || new PkaEventSearchResultFb()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
     }
 
-    static startPkaEventSearchResultFb(builder: flatbuffers.Builder) {
-        builder.startObject(5);
-    }
-
-    static addEpisodeNumber(builder: flatbuffers.Builder, episodeNumber: number) {
-        builder.addFieldFloat32(0, episodeNumber, 0.0);
-    }
-
-    static addTimestamp(builder: flatbuffers.Builder, timestamp: number) {
-        builder.addFieldInt32(1, timestamp, 0);
-    }
-
-    static addDescription(builder: flatbuffers.Builder, descriptionOffset: flatbuffers.Offset) {
-        builder.addFieldOffset(2, descriptionOffset, 0);
-    }
-
-    static addLengthSeconds(builder: flatbuffers.Builder, lengthSeconds: number) {
-        builder.addFieldInt32(3, lengthSeconds, 0);
-    }
-
-    static addUploadDate(builder: flatbuffers.Builder, uploadDate: flatbuffers.Long) {
-        builder.addFieldInt64(4, uploadDate, builder.createLong(0, 0));
-    }
-
-    static endPkaEventSearchResultFb(builder: flatbuffers.Builder): flatbuffers.Offset {
-        const offset = builder.endObject();
-        return offset;
-    }
-
     static createPkaEventSearchResultFb(
         builder: flatbuffers.Builder,
         episodeNumber: number,
         timestamp: number,
         descriptionOffset: flatbuffers.Offset,
         lengthSeconds: number,
-        uploadDate: flatbuffers.Long
+        uploadDate: bigint
     ): flatbuffers.Offset {
         PkaEventSearchResultFb.startPkaEventSearchResultFb(builder);
         PkaEventSearchResultFb.addEpisodeNumber(builder, episodeNumber);
@@ -92,13 +67,38 @@ export class PkaEventSearchResultFb {
         return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
     }
 
+    static startPkaEventSearchResultFb(builder: flatbuffers.Builder) {
+        builder.startObject(5);
+    }
+
+    static addEpisodeNumber(builder: flatbuffers.Builder, episodeNumber: number) {
+        builder.addFieldFloat32(0, episodeNumber, 0.0);
+    }
+
+    static addTimestamp(builder: flatbuffers.Builder, timestamp: number) {
+        builder.addFieldInt32(1, timestamp, 0);
+    }
+
+    static addDescription(builder: flatbuffers.Builder, descriptionOffset: flatbuffers.Offset) {
+        builder.addFieldOffset(2, descriptionOffset, 0);
+    }
+
+    static addLengthSeconds(builder: flatbuffers.Builder, lengthSeconds: number) {
+        builder.addFieldInt32(3, lengthSeconds, 0);
+    }
+
     lengthSeconds(): number {
         const offset = this.bb!.__offset(this.bb_pos, 10);
         return offset ? this.bb!.readInt32(this.bb_pos + offset) : 0;
     }
 
-    uploadDate(): flatbuffers.Long {
+    static endPkaEventSearchResultFb(builder: flatbuffers.Builder): flatbuffers.Offset {
+        const offset = builder.endObject();
+        return offset;
+    }
+
+    uploadDate(): bigint {
         const offset = this.bb!.__offset(this.bb_pos, 12);
-        return offset ? this.bb!.readInt64(this.bb_pos + offset) : this.bb!.createLong(0, 0);
+        return offset ? this.bb!.readInt64(this.bb_pos + offset) : BigInt("0");
     }
 }
