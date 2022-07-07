@@ -11,7 +11,7 @@
         "connected-react-router": "^6.9.2",
         "flatbuffers": "2.0.6",
         "lodash": "^4.17.20",
-        "moment": "^2.29.1",
+        "moment": "^2.29.4",
         "raleway-webfont": "^3.0.1",
         "react": "^17.0.2",
         "react-app-polyfill": "^3.0.0",
