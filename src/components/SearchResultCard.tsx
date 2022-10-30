@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: "15px",
         fontWeight: 500,
-        color: fade(theme.palette.common.white, 0.9),
+        color: alpha(theme.palette.common.white, 0.9),
         marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
     subtitle: {
         fontSize: "13px",
-        color: fade(theme.palette.common.white, 0.5),
+        color: alpha(theme.palette.common.white, 0.5),
     },
     infoCard: {
         fontWeight: 600,
