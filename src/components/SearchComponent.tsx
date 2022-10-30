@@ -7,7 +7,7 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { useAsync } from "react-async-hook";
 import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
 import { RootState, ThunkDispatchType } from "../redux";
-import { alpha, Card } from "@material-ui/core";
+import { Card } from "@material-ui/core";
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
 import { isMobile } from "react-device-detect";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
@@ -16,7 +16,7 @@ import { YOUTUBE_BASE_URL } from "./PlayerComponent";
 import LoadingSpinner from "./LoadingSpinner";
 import { reverseResultsToggle, searchPKAItem } from "../redux/search/actions";
 import RandomEventsListComponent from "./RandomEventsListComponent";
-import { makeStyles } from "@material-ui/core/styles";
+import { alpha, makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import CustomTooltip from "./Tooltip";
 

@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { RootState, ThunkDispatchType } from "../redux";
 import ReactPlayer from "react-player/lazy";
-import { alpha, Box, Card, CardContent, CardHeader, List, Typography } from "@material-ui/core";
+import { Box, Card, CardContent, CardHeader, alpha, List, Typography } from "@material-ui/core";
 import { saveTimestamp, setCurrentEventCard, watchPKAEpisode } from "../redux/watch-episode/actions";
 import { WatchEpisodeEvent, WatchEpisodeRootActionTypes } from "../redux/watch-episode/types";
 import { makeStyles } from "@material-ui/core/styles";

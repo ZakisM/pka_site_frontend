@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = merge(common, {
     mode: "production",
@@ -38,4 +39,15 @@ module.exports = merge(common, {
             minRatio: 0.8,
         }),
     ],
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                minify: TerserPlugin.swcMinify,
+                // `terserOptions` options will be passed to `swc` (`@swc/core`)
+                // Link to options - https://swc.rs/docs/config-js-minify
+                terserOptions: {},
+            }),
+        ],
+    },
 });

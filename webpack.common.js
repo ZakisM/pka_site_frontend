@@ -1,5 +1,4 @@
 const path = require("path");
-const babelLoaderExcludeNodeModulesExcept = require("babel-loader-exclude-node-modules-except");
 
 module.exports = {
     entry: ["./src/index.tsx"],
@@ -11,32 +10,22 @@ module.exports = {
         rules: [
             {
                 test: /\.(ts|tsx|js|jsx)$/i,
-                exclude: babelLoaderExcludeNodeModulesExcept(["scroll-js"]),
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: [
-                            [
-                                "@babel/preset-env",
-                                {
-                                    useBuiltIns: "entry",
-                                    corejs: 3,
-                                },
-                            ],
-                            "@babel/react",
-                            "@babel/preset-typescript",
-                        ],
-                        plugins: ["transform-class-properties"],
+                loader: "swc-loader",
+                exclude: [
+                    {
+                        and: [/node_modules/],
+                        not: [/flatbuffers/, /scroll-js/],
                     },
-                },
+                ],
             },
             {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
             },
             {
-                test: /\.(woff|woff2|eot|ttf|otf)$/i,
-                type: "asset/resource",
+                test: /\.(woff)$/i,
+                use: ["asset/resource"],
+                dependency: { not: ['url'] },
             },
         ],
     },

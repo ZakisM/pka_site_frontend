@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { alpha, AppBar, Hidden, IconButton, List, Typography } from "@material-ui/core";
+import { AppBar, alpha, Hidden, IconButton, List, Typography } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerListItem from "./DrawerListItem";

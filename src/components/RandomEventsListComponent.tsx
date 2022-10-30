@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { alpha, makeStyles } from "@material-ui/core/styles";
 import SearchResultCard from "./SearchResultCard";
 import { connect } from "react-redux";
 import { RootState, ThunkDispatchType } from "../redux";
@@ -7,7 +7,7 @@ import { EventWithAllFieldsClass, SearchRootActionTypes } from "../redux/search/
 import { loadRandomEvents } from "../redux/events/actions";
 import LoadingSpinner from "./LoadingSpinner";
 import { useHistory } from "react-router-dom";
-import { alpha, Card, Typography } from "@material-ui/core";
+import { Card, Typography } from "@material-ui/core";
 import { RefreshRounded, TimelineRounded } from "@material-ui/icons";
 import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
 import { YOUTUBE_BASE_URL } from "./PlayerComponent";
