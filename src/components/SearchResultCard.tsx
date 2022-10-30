@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { alpha, Card } from "@material-ui/core";
+import { alpha, makeStyles } from "@material-ui/core/styles";
+import { Card } from "@material-ui/core";
 import { PlayCircleOutlineRounded, YouTube } from "@material-ui/icons";
 import CustomTooltip from "./Tooltip";
 
@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: "15px",
         fontWeight: 500,
-        color: alpha(theme.palette.common.white, 0.9),
+        color: fade(theme.palette.common.white, 0.9),
         marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
     subtitle: {
         fontSize: "13px",
-        color: alpha(theme.palette.common.white, 0.5),
+        color: fade(theme.palette.common.white, 0.5),
     },
     infoCard: {
         fontWeight: 600,

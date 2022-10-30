@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { alpha, Card, LinearProgress, Typography } from "@material-ui/core";
+import { createStyles, alpha, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
+import { Card, LinearProgress, Typography } from "@material-ui/core";
 import { RootState } from "../redux";
 import { connect } from "react-redux";
 import moment from "moment";

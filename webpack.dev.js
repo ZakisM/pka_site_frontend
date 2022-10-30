@@ -11,7 +11,7 @@ module.exports = merge(common, {
         port: 5678,
         hot: true,
         static: "./public",
-        allowedHosts: ["www.pkaindextest.com"],
+        allowedHosts: ["pkaindextest.com"],
         historyApiFallback: true,
     },
     output: {
