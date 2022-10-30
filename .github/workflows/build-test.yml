@@ -1,23 +1,24 @@
 name: Build
 
 on:
-    pull_request:
-        paths-ignore:
-            - "README.md"
-            - ".github/**"
-        branches: [master]
-
+  push:
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Yarn install
-              uses: borales/actions-yarn@v2.3.0
-              with:
-                  cmd: install
-            - name: Yarn prod
-              uses: borales/actions-yarn@v2.3.0
-              with:
-                  cmd: prod
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [16.14.0]
+    steps:
+    - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2.2.4
+      with:
+        version: 7
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build production
+      run: pnpm run prod
