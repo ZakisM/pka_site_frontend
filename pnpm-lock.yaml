@@ -7,7 +7,6 @@ specifiers:
   '@swc/cli': ^0.1.57
   '@swc/core': ^1.3.11
   '@swc/helpers': ^0.4.12
-  '@types/flatbuffers': ^1.10.0
   '@types/jest': 29.2.0
   '@types/node': 16.9.6
   '@types/react': ^17.0.8
@@ -32,7 +31,7 @@ specifiers:
   eslint-plugin-react-hooks: ^4.6.0
   favicons: ^6.2.2
   favicons-webpack-plugin: ^5.0.2
-  flatbuffers: 2.0.3
+  flatbuffers: 22.10.26
   history: 4.7.2
   html-webpack-plugin: ^5.5.0
   lodash: ^4.17.21
@@ -72,7 +71,7 @@ dependencies:
   axios: 0.27.2
   connected-react-router: 6.9.3_oottk54zxvoc5gkaghciaiclwa
   core-js: 3.26.0
-  flatbuffers: 2.0.3
+  flatbuffers: 22.10.26
   history: 4.7.2
   lodash: 4.17.21
   moment: 2.29.4
@@ -97,7 +96,6 @@ devDependencies:
   '@swc/cli': 0.1.57_@swc+core@1.3.11
   '@swc/core': 1.3.11
   '@swc/helpers': 0.4.12
-  '@types/flatbuffers': 1.10.0
   '@types/jest': 29.2.0
   '@types/node': 16.9.6
   '@types/react': 17.0.52
@@ -1074,10 +1072,6 @@ packages:
     resolution: {integrity: sha512-s76OlRaBfqtGu2ZBobnZv2NETfqsQUVfKKlOkKNGo4ArBsqiblodKsnQ3j29hCCgmpQacEfLxealV96za+tzVQ==}
     dependencies:
       '@types/node': 16.9.6
-    dev: true
-
-  /@types/flatbuffers/1.10.0:
-    resolution: {integrity: sha512-7btbphLrKvo5yl/5CC2OCxUSMx1wV1wvGT1qDXkSt7yi00/YW7E8k6qzXqJHsp+WU0eoG7r6MTQQXI9lIvd0qA==}
     dev: true
 
   /@types/glob/7.2.0:
@@ -3021,8 +3015,8 @@ packages:
       rimraf: 3.0.2
     dev: true
 
-  /flatbuffers/2.0.3:
-    resolution: {integrity: sha512-lTN0GS4FjwPY6h8BDDuq8f2ZORIyRgI4pHXzIt7GBsTgyCt2z9OAPiWNaeEaNcjrmuLLzFagEDwpYiqGv5BEWg==}
+  /flatbuffers/22.10.26:
+    resolution: {integrity: sha512-sdO3emf/BlLfOogW6KwHuXg16APR/E86jNacDXfSInPzt8SSEzxlHcqDekfM/IJ1CGC5bvDksfNufNhS8h1FRA==}
     dev: false
 
   /flatted/3.2.7:
