@@ -1,11 +1,17 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { createStyles, alpha, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { Card, LinearProgress, Typography } from "@material-ui/core";
-import { RootState } from "../redux";
-import { connect } from "react-redux";
-import moment from "moment";
-import { scrollIntoView } from "scroll-js";
-import { useAsync } from "react-async-hook";
+import React, {type ReactElement, useEffect, useRef, useState} from 'react';
+import {
+    createStyles,
+    alpha,
+    makeStyles,
+    type Theme,
+    withStyles,
+} from '@material-ui/core/styles';
+import {Card, LinearProgress, Typography} from '@material-ui/core';
+import type {RootState} from '../redux';
+import {connect} from 'react-redux';
+import moment from 'moment';
+import {scrollIntoView} from 'scroll-js';
+import {useAsync} from 'react-async-hook';
 
 interface Props {
     parentRef: any;
@@ -22,31 +28,31 @@ type PlayerEventCardProps = ReturnType<typeof mapStateToProps> & Props;
 
 const useStyles = makeStyles((theme) => ({
     resultCard: {
-        padding: "2ch",
-        backgroundColor: "#151515",
+        padding: '2ch',
+        backgroundColor: '#151515',
         color: alpha(theme.palette.common.white, 0.3),
-        "&:hover": {
-            backgroundColor: "#6c181e",
+        '&:hover': {
+            backgroundColor: '#6c181e',
             color: theme.palette.common.white,
-            cursor: "pointer",
+            cursor: 'pointer',
         },
-        "&:active": {
-            backgroundColor: alpha("#cd2d37", 0.4),
-            cursor: "pointer",
+        '&:active': {
+            backgroundColor: alpha('#cd2d37', 0.4),
+            cursor: 'pointer',
         },
-        boxShadow: "none",
+        boxShadow: 'none',
     },
     active: {
-        backgroundColor: "#6c181e",
+        backgroundColor: '#6c181e',
         color: theme.palette.common.white,
     },
     title: {
-        fontSize: "14.5px",
+        fontSize: '14.5px',
         fontWeight: 500,
-        marginBottom: "0.75ch",
+        marginBottom: '0.75ch',
     },
     subtitle: {
-        fontSize: "13px",
+        fontSize: '13px',
     },
 }));
 
@@ -59,18 +65,18 @@ const CurrentEventProgressBar = withStyles((theme: Theme) =>
         },
         colorPrimary: {
             borderRadius: 5,
-            backgroundColor: "#111010",
+            backgroundColor: '#111010',
         },
         bar: {
             borderRadius: 5,
-            backgroundColor: "#c7c7c7",
+            backgroundColor: '#c7c7c7',
         },
     })
 )(LinearProgress);
 
 const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
     const classes = useStyles();
-    const { parentRef, id, title, timestamp, watchEpisodeState } = props;
+    const {parentRef, id, title, timestamp, watchEpisodeState} = props;
 
     const cardRef = useRef<HTMLUListElement>(null);
 
@@ -92,9 +98,17 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
         }
 
         if (cRef && isActive) {
-            await scrollIntoView(cRef, parentRef.current, { behavior: "smooth", block: "center" });
+            await scrollIntoView(cRef, parentRef.current, {
+                behavior: 'smooth',
+                block: 'center',
+            });
         }
-    }, [watchEpisodeState.events, watchEpisodeState.currentEventCard, id, isActive]);
+    }, [
+        watchEpisodeState.events,
+        watchEpisodeState.currentEventCard,
+        id,
+        isActive,
+    ]);
 
     useEffect(() => {
         if (isActive && watchEpisodeState.events && watchEpisodeState.episode) {
@@ -102,23 +116,39 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
 
             if (currentEvent) {
                 setProgress(
-                    ((watchEpisodeState.timestamp - currentEvent.timestamp) / currentEvent.lengthSeconds) * 100
+                    ((watchEpisodeState.timestamp - currentEvent.timestamp) /
+                        currentEvent.lengthSeconds) *
+                        100
                 );
             }
         }
-    }, [id, isActive, watchEpisodeState.episode, watchEpisodeState.events, watchEpisodeState.timestamp]);
+    }, [
+        id,
+        isActive,
+        watchEpisodeState.episode,
+        watchEpisodeState.events,
+        watchEpisodeState.timestamp,
+    ]);
 
     return (
         <Card
-            variant={isActive ? "outlined" : undefined}
+            variant={isActive ? 'outlined' : undefined}
             ref={cardRef}
-            className={`${classes.resultCard} ${isActive ? classes.active : null}`}>
+            className={`${classes.resultCard} ${
+                isActive ? classes.active : null
+            }`}>
             <Typography className={classes.title}>{title}</Typography>
             <Typography className={classes.subtitle}>
-                {moment.utc(Number(timestamp) * 1000).format("HH:mm:ss")}
+                {moment.utc(Number(timestamp) * 1000).format('HH:mm:ss')}
             </Typography>
 
-            {isActive ? <CurrentEventProgressBar key={progress} variant="determinate" value={progress} /> : null}
+            {isActive ? (
+                <CurrentEventProgressBar
+                    key={progress}
+                    variant="determinate"
+                    value={progress}
+                />
+            ) : null}
         </Card>
     );
 };

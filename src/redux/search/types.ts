@@ -1,6 +1,85 @@
-import moment from "moment";
-import { LOCATION_CHANGE } from "connected-react-router";
-import { PkaEventSearchResultFb } from "../../flatbuffers/pka-event-search-result-fb";
+import moment from 'moment';
+import type {LOCATION_CHANGE} from 'connected-react-router';
+import type {PkaEpisodeSearchResult, PkaEventSearchResult} from 'LibWasm';
+
+export abstract class SearchResult<T = unknown> {
+    protected res: T;
+
+    constructor(res: T) {
+        this.res = res;
+    }
+
+    abstract get timestamp(): number | null;
+    abstract cardEpisodeNumber(): number;
+    abstract cardTitle(): string;
+    abstract cardSubtitle(): string;
+    abstract cardDuration(): string;
+    abstract cardTimestamp(): string | null;
+}
+
+export class EpisodeResult extends SearchResult<PkaEpisodeSearchResult> {
+    get timestamp(): null {
+        return null;
+    }
+
+    cardEpisodeNumber(): number {
+        return this.res.episodeNumber;
+    }
+
+    cardTitle(): string {
+        return this.res.title;
+    }
+
+    cardSubtitle(): string {
+        return moment
+            .utc(Number(this.res.uploadDate) * 1000)
+            .format('dddd Do MMMM YYYY');
+    }
+
+    cardDuration(): string {
+        const d = moment.utc(this.res.lengthSeconds * 1000);
+
+        return `${d.hours()}h ${d.minutes()}m`;
+    }
+
+    cardTimestamp(): null {
+        return null;
+    }
+}
+
+export class EventResult extends SearchResult<PkaEventSearchResult> {
+    get timestamp(): number {
+        return this.res.timestamp;
+    }
+
+    cardEpisodeNumber(): number {
+        return this.res.episodeNumber;
+    }
+
+    cardTitle(): string {
+        return this.res.description;
+    }
+
+    cardSubtitle(): string {
+        return moment
+            .utc(Number(this.res.uploadDate) * 1000)
+            .format('dddd Do MMMM YYYY');
+    }
+
+    cardDuration(): string {
+        const d = moment.utc(this.res.lengthSeconds * 1000);
+
+        if (d.hours() > 0) {
+            return `${d.hours()}h ${d.minutes()}m ${d.seconds()}s`;
+        }
+
+        return `${d.minutes()}m ${d.seconds()}s`;
+    }
+
+    cardTimestamp(): string {
+        return moment.utc(Number(this.res.timestamp) * 1000).format('HH:mm:ss');
+    }
+}
 
 export interface SearchState {
     searchQuery: string;
@@ -17,151 +96,16 @@ export interface SearchSuccessState {
 }
 
 export enum SearchItemType {
-    EPISODE = "Episode",
-    EVENT = "Event",
-}
-
-export interface SearchResult {
-    episodeNumber: number;
-    timestamp: number;
-
-    cardTitle(): string;
-
-    cardSubtitle(): string;
-
-    cardDuration(): string;
-
-    cardTimestamp(): string | undefined;
-}
-
-export interface EventWithAllFields extends SearchResult {
-    episodeNumber: number;
-    timestamp: number;
-    description: string;
-    lengthSeconds: number;
-    uploadDate: bigint;
-}
-
-export class EventWithAllFieldsClass implements EventWithAllFields {
-    episodeNumber: number;
-    timestamp: number;
-    description: string;
-    lengthSeconds: number;
-    uploadDate: bigint;
-
-    constructor(
-        episodeNumber: number,
-        timestamp: number,
-        description: string,
-        lengthSeconds: number,
-        uploadDate: bigint
-    ) {
-        this.episodeNumber = episodeNumber;
-        this.timestamp = timestamp;
-        this.description = description;
-        this.lengthSeconds = lengthSeconds;
-        this.uploadDate = uploadDate;
-    }
-
-    static Deserialize(input: PkaEventSearchResultFb): EventWithAllFieldsClass {
-        const description = input.description() ? input.description()! : "";
-
-        return new EventWithAllFieldsClass(
-            input.episodeNumber(),
-            input.timestamp(),
-            description,
-            input.lengthSeconds(),
-            input.uploadDate()
-        );
-    }
-
-    static DeserializeNormalArr(input: EventWithAllFields[]): EventWithAllFieldsClass[] {
-        return input.map(
-            (event) =>
-                new EventWithAllFieldsClass(
-                    event.episodeNumber,
-                    event.timestamp,
-                    event.description,
-                    event.lengthSeconds,
-                    event.uploadDate
-                )
-        );
-    }
-
-    cardTitle(): string {
-        return this.description;
-    }
-
-    cardSubtitle(): string {
-        return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
-    }
-
-    cardDuration(): string {
-        const d = moment.utc(this.lengthSeconds * 1000);
-
-        if (d.hours() > 0) {
-            return `${d.hours()}h ${d.minutes()}m ${d.seconds()}s`;
-        } else {
-            return `${d.minutes()}m ${d.seconds()}s`;
-        }
-    }
-
-    cardTimestamp(): string {
-        return moment.utc(Number(this.timestamp) * 1000).format("HH:mm:ss");
-    }
-}
-
-export interface EpisodeWithAllFields extends SearchResult {
-    episodeNumber: number;
-    uploadDate: number;
-    title: string;
-    lengthSeconds: number;
-}
-
-export class EpisodeWithAllFieldsClass implements EpisodeWithAllFields {
-    episodeNumber: number;
-    uploadDate: number;
-    title: string;
-    lengthSeconds: number;
-
-    timestamp = 0;
-
-    constructor(episodeNumber: number, uploadDate: number, title: string, lengthSeconds: number) {
-        this.episodeNumber = episodeNumber;
-        this.uploadDate = uploadDate;
-        this.title = title;
-        this.lengthSeconds = lengthSeconds;
-    }
-
-    static Deserialize(input: EpisodeWithAllFields): EpisodeWithAllFieldsClass {
-        return new EpisodeWithAllFieldsClass(input.episodeNumber, input.uploadDate, input.title, input.lengthSeconds);
-    }
-
-    cardTitle(): string {
-        return this.title;
-    }
-
-    cardSubtitle(): string {
-        return moment.utc(Number(this.uploadDate) * 1000).format("dddd Do MMMM YYYY");
-    }
-
-    cardDuration(): string {
-        const d = moment.utc(this.lengthSeconds * 1000);
-
-        return `${d.hours()}h ${d.minutes()}m`;
-    }
-
-    cardTimestamp(): undefined {
-        return undefined;
-    }
+    EPISODE = 'Episode',
+    EVENT = 'Event',
 }
 
 export enum SearchTypes {
-    STARTED = "SEARCH_STARTED",
-    FAILURE = "SEARCH_FAILURE",
-    SUCCESS = "SEARCH_SUCCESS",
-    SET_SEARCH_TYPE = "SEARCH_SET_SEARCH_TYPE",
-    REVERSE_RESULTS_TOGGLE = "SEARCH_REVERSE_RESULTS_TOGGLE",
+    STARTED = 'SEARCH_STARTED',
+    FAILURE = 'SEARCH_FAILURE',
+    SUCCESS = 'SEARCH_SUCCESS',
+    SET_SEARCH_TYPE = 'SEARCH_SET_SEARCH_TYPE',
+    REVERSE_RESULTS_TOGGLE = 'SEARCH_REVERSE_RESULTS_TOGGLE',
 }
 
 interface SearchSuccess {

@@ -1,7 +1,13 @@
-import React, { ReactElement } from "react";
-import { ListItem, ListItemIcon, ListItemText, SvgIcon, Typography } from "@material-ui/core";
-import { Link, useRouteMatch } from "react-router-dom";
-import { alpha, makeStyles } from "@material-ui/core/styles";
+import React, {type ReactElement} from 'react';
+import {
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    type SvgIcon,
+    Typography,
+} from '@material-ui/core';
+import {Link, useRouteMatch} from 'react-router-dom';
+import {alpha, makeStyles} from '@material-ui/core/styles';
 
 interface DrawerListItemProps {
     onClick: () => void;
@@ -12,33 +18,33 @@ interface DrawerListItemProps {
 const useStyles = makeStyles((theme) => ({
     link: {
         color: alpha(theme.palette.common.white, 0.5),
-        textDecoration: "none",
+        textDecoration: 'none',
     },
     item: {
-        height: "5.7ch",
-        "&:hover": {
+        height: '5.7ch',
+        '&:hover': {
             backgroundColor: alpha(theme.palette.common.white, 0.0125),
         },
-        "&:active": {
+        '&:active': {
             backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
     itemText: {
-        marginLeft: "-10px",
+        marginLeft: '-10px',
     },
     itemIconInactive: {
         color: alpha(theme.palette.common.white, 0.5),
     },
     active: {
         color: theme.palette.common.white,
-        borderLeft: "5px solid #cd2d37",
-        pointerEvents: "none",
-        cursor: "default",
+        borderLeft: '5px solid #cd2d37',
+        pointerEvents: 'none',
+        cursor: 'default',
     },
 }));
 
 const DrawerListItem = (props: DrawerListItemProps): ReactElement => {
-    const { text, Icon, onClick } = props;
+    const {text, Icon, onClick} = props;
     const classes = useStyles();
 
     const path = `/${text.toLowerCase()}`;
@@ -48,8 +54,12 @@ const DrawerListItem = (props: DrawerListItemProps): ReactElement => {
     });
 
     const inner = (
-        <ListItem className={`${classes.item} ${match ? classes.active : null}`} onClick={onClick} key={text}>
-            <ListItemIcon className={`${match ? null : classes.itemIconInactive}`}>
+        <ListItem
+            className={`${classes.item} ${match ? classes.active : null}`}
+            onClick={onClick}
+            key={text}>
+            <ListItemIcon
+                className={`${match ? null : classes.itemIconInactive}`}>
                 <Icon />
             </ListItemIcon>
             <ListItemText>
@@ -62,13 +72,13 @@ const DrawerListItem = (props: DrawerListItemProps): ReactElement => {
 
     if (match) {
         return inner;
-    } else {
-        return (
-            <Link to={path} className={classes.link}>
-                {inner}
-            </Link>
-        );
     }
+
+    return (
+        <Link to={path} className={classes.link}>
+            {inner}
+        </Link>
+    );
 };
 
 export default DrawerListItem;

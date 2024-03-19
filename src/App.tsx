@@ -1,5 +1,5 @@
-import React, { ReactElement } from "react";
-import RootComponent from "./components/RootComponent";
+import React, {type ReactElement} from 'react';
+import RootComponent from './components/RootComponent';
 
 const App = (): ReactElement => {
     return (

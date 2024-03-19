@@ -1,15 +1,23 @@
-import { SearchItemType, SearchRootActionTypes, SearchState, SearchTypes } from "./types";
-import { LOCATION_CHANGE } from "connected-react-router";
+import {
+    SearchItemType,
+    type SearchRootActionTypes,
+    type SearchState,
+    SearchTypes,
+} from './types';
+import {LOCATION_CHANGE} from 'connected-react-router';
 
 const initialState: SearchState = {
-    searchQuery: "",
+    searchQuery: '',
     searchResults: [],
     reverseResults: false,
     isLoading: false,
     errors: [],
 };
 
-export function searchReducer(state = initialState, action: SearchRootActionTypes): SearchState {
+export function searchReducer(
+    state = initialState,
+    action: SearchRootActionTypes
+): SearchState {
     switch (action.type) {
         case SearchTypes.STARTED: {
             return {
@@ -36,7 +44,10 @@ export function searchReducer(state = initialState, action: SearchRootActionType
             return {
                 ...state,
                 // Don't remember the search query for Episodes when switching between pages
-                searchQuery: state.searchType === SearchItemType.EPISODE ? "" : state.searchQuery,
+                searchQuery:
+                    state.searchType === SearchItemType.EPISODE
+                        ? ''
+                        : state.searchQuery,
                 searchResults: [],
             };
         }
