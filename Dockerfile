@@ -26,7 +26,7 @@ COPY webpack.common.js .
 COPY webpack.prod.js .
 COPY /public ./public
 COPY /src ./src
-COPY --from=wasm-build /lib_wasm/lib_wasm_out ./lib_wasm_out
+COPY --from=wasm-build /lib_wasm/lib_wasm_out ./src/lib_wasm_out
 
 RUN pnpm install
 RUN pnpm build:prod
