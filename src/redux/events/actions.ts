@@ -1,8 +1,9 @@
-import { Dispatch } from "redux";
-import axios from "axios";
-import handleError from "../../util";
-import { PkaEventsRootActionTypes, PkaEventsTypes } from "./types";
-import { EventWithAllFieldsClass } from "../search/types";
+import type {Dispatch} from 'redux';
+import axios from 'axios';
+import handleError from '../../util';
+import {type PkaEventsRootActionTypes, PkaEventsTypes} from './types';
+import {EventResult} from '../search/types';
+import type {PkaEventSearchResult} from 'LibWasm';
 
 export const loadRandomEvents =
     () =>
@@ -10,18 +11,20 @@ export const loadRandomEvents =
         dispatch(pkaEventsEventStarted());
 
         axios
-            .get(`/v1/api/events/random`)
-            .then((res) => {
-                const randomEventsResult: EventWithAllFieldsClass[] = EventWithAllFieldsClass.DeserializeNormalArr(
-                    res.data.data
+            .get('/v1/api/events/random')
+            .then(async (res) => {
+                const results: PkaEventSearchResult[] = res.data.data;
+
+                const randomEventsResult = results.map(
+                    (r) => new EventResult(r),
                 );
 
                 return dispatch(pkaEventsEventSuccess(randomEventsResult));
             })
-            .catch((err) => {
-                err = handleError(err);
+            .catch((error) => {
+                const handledError = handleError(error);
 
-                return dispatch(pkaEventsEventFailure(err));
+                return dispatch(pkaEventsEventFailure(handledError));
             });
     };
 
@@ -29,7 +32,9 @@ const pkaEventsEventStarted = (): PkaEventsRootActionTypes => ({
     type: PkaEventsTypes.STARTED,
 });
 
-const pkaEventsEventSuccess = (eventResult: EventWithAllFieldsClass[]): PkaEventsRootActionTypes => ({
+const pkaEventsEventSuccess = (
+    eventResult: EventResult[],
+): PkaEventsRootActionTypes => ({
     type: PkaEventsTypes.SUCCESS,
     payload: eventResult,
 });

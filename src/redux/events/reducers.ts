@@ -1,4 +1,8 @@
-import { PkaEventsRootActionTypes, PkaEventsState, PkaEventsTypes } from "./types";
+import {
+    type PkaEventsRootActionTypes,
+    type PkaEventsState,
+    PkaEventsTypes,
+} from './types';
 
 const initialState: PkaEventsState = {
     randomEvents: [],
@@ -6,7 +10,10 @@ const initialState: PkaEventsState = {
     errors: [],
 };
 
-export function pkaEventsReducer(state = initialState, action: PkaEventsRootActionTypes): PkaEventsState {
+export function pkaEventsReducer(
+    state = initialState,
+    action: PkaEventsRootActionTypes
+): PkaEventsState {
     switch (action.type) {
         case PkaEventsTypes.STARTED: {
             return {

@@ -1,8 +1,8 @@
-import React, { ReactElement } from "react";
-import { alpha, makeStyles } from "@material-ui/core/styles";
-import { Card } from "@material-ui/core";
-import { PlayCircleOutlineRounded, YouTube } from "@material-ui/icons";
-import CustomTooltip from "./Tooltip";
+import React, {type ReactElement} from 'react';
+import {alpha, makeStyles} from '@material-ui/core/styles';
+import {Card} from '@material-ui/core';
+import {PlayCircleOutlineRounded, YouTube} from '@material-ui/icons';
+import CustomTooltip from './Tooltip';
 
 interface SearchResultCardProps {
     customClassName?: string;
@@ -12,100 +12,110 @@ interface SearchResultCardProps {
     duration: string;
     onWatchClick: () => void;
     onYoutubeClick: () => Promise<void>;
-    timestamp?: string;
+    timestamp: string | null;
 }
 
 const useStyles = makeStyles((theme) => ({
     resultCard: {
-        display: "flex",
+        display: 'flex',
         padding: theme.spacing(2),
-        backgroundColor: "#151515",
+        backgroundColor: '#151515',
         color: theme.palette.common.white,
-        boxShadow: "none",
+        boxShadow: 'none',
     },
     avatar: {
-        backgroundColor: "#a3252e",
-        color: "white",
-        width: "5ch",
+        backgroundColor: '#a3252e',
+        color: 'white',
+        width: '5ch',
         marginRight: theme.spacing(2),
     },
     cardDetails: {
-        display: "flex",
-        flexFlow: "column",
-        alignItems: "flex-start",
+        display: 'flex',
+        flexFlow: 'column',
+        alignItems: 'flex-start',
     },
     episodeNumber: {
-        fontSize: "17px",
+        fontSize: '17px',
     },
     title: {
-        fontSize: "15px",
+        fontSize: '15px',
         fontWeight: 500,
         color: alpha(theme.palette.common.white, 0.9),
         marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
     subtitle: {
-        fontSize: "13px",
+        fontSize: '13px',
         color: alpha(theme.palette.common.white, 0.5),
     },
     infoCard: {
         fontWeight: 600,
-        fontSize: "14px",
+        fontSize: '14px',
         paddingTop: theme.spacing(0.5),
         paddingBottom: theme.spacing(0.5),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        borderRadius: "3px",
-        color: "#a5a5a5",
-        backgroundColor: "inherit",
+        borderRadius: '3px',
+        color: '#a5a5a5',
+        backgroundColor: 'inherit',
         marginRight: theme.spacing(1),
     },
     actionCard: {
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         fontWeight: 600,
-        fontSize: "14px",
+        fontSize: '14px',
         paddingTop: theme.spacing(0.5),
         paddingBottom: theme.spacing(0.5),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        borderRadius: "3px",
+        borderRadius: '3px',
         color: theme.palette.common.white,
-        backgroundColor: "#ab1029",
+        backgroundColor: '#ab1029',
         marginRight: theme.spacing(1),
-        "&:hover": {
-            backgroundColor: alpha("#ab1029", 0.75),
+        '&:hover': {
+            backgroundColor: alpha('#ab1029', 0.75),
             color: alpha(theme.palette.common.white, 0.75),
-            cursor: "pointer",
+            cursor: 'pointer',
         },
-        "&:active": {
-            backgroundColor: alpha("#ab1029", 0.5),
+        '&:active': {
+            backgroundColor: alpha('#ab1029', 0.5),
             color: alpha(theme.palette.common.white, 0.5),
-            cursor: "pointer",
+            cursor: 'pointer',
         },
     },
     actionCardIcon: {
-        display: "flex",
+        display: 'flex',
         marginRight: theme.spacing(0.5),
     },
     cardInfo: {
         flex: 1,
     },
     metaData: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: theme.spacing(1.25),
     },
 }));
 
 const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
     const classes = useStyles();
-    const { customClassName, episodeNumber, title, subtitle, duration, onWatchClick, onYoutubeClick, timestamp } =
-        props;
+    const {
+        customClassName,
+        episodeNumber,
+        title,
+        subtitle,
+        duration,
+        onWatchClick,
+        onYoutubeClick,
+        timestamp,
+    } = props;
 
     return (
-        <Card variant="outlined" className={`${classes.resultCard} ${customClassName}`}>
+        <Card
+            variant="outlined"
+            className={`${classes.resultCard} ${customClassName}`}>
             <div className={classes.cardDetails}>
                 <div className={classes.cardInfo}>
                     <div className={classes.title}>{title}</div>
@@ -119,7 +129,9 @@ const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
                     </CustomTooltip>
                     {timestamp && (
                         <CustomTooltip title="Timestamp" arrow>
-                            <Card variant="outlined" className={classes.infoCard}>
+                            <Card
+                                variant="outlined"
+                                className={classes.infoCard}>
                                 {timestamp}
                             </Card>
                         </CustomTooltip>
@@ -131,14 +143,20 @@ const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
                     </CustomTooltip>
                 </div>
                 <div className={classes.metaData}>
-                    <Card variant="outlined" className={classes.actionCard} onClick={onWatchClick}>
+                    <Card
+                        variant="outlined"
+                        className={classes.actionCard}
+                        onClick={onWatchClick}>
                         <span className={classes.actionCardIcon}>
                             <PlayCircleOutlineRounded fontSize="small" />
                         </span>
                         Watch
                     </Card>
                     <CustomTooltip title="Open on YouTube" arrow>
-                        <Card variant="outlined" className={classes.actionCard} onClick={onYoutubeClick}>
+                        <Card
+                            variant="outlined"
+                            className={classes.actionCard}
+                            onClick={onYoutubeClick}>
                             <span className={classes.actionCardIcon}>
                                 <YouTube fontSize="small" />
                             </span>

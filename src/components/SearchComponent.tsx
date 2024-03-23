@@ -1,30 +1,49 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import { ArrowDownwardRounded, ArrowUpwardRounded, SearchRounded } from "@material-ui/icons";
-import InputBase from "@material-ui/core/InputBase";
-import SearchResultCard from "./SearchResultCard";
-import useConstant from "use-constant";
-import AwesomeDebouncePromise from "awesome-debounce-promise";
-import { useAsync } from "react-async-hook";
-import { SearchItemType, SearchRootActionTypes } from "../redux/search/types";
-import { RootState, ThunkDispatchType } from "../redux";
-import { Card } from "@material-ui/core";
-import { AutoSizer, CellMeasurer, CellMeasurerCache, List, WindowScroller } from "react-virtualized";
-import { isMobile } from "react-device-detect";
-import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
-import { useHistory } from "react-router-dom";
-import { YOUTUBE_BASE_URL } from "./PlayerComponent";
-import LoadingSpinner from "./LoadingSpinner";
-import { reverseResultsToggle, searchPKAItem } from "../redux/search/actions";
-import RandomEventsListComponent from "./RandomEventsListComponent";
-import { alpha, makeStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
-import CustomTooltip from "./Tooltip";
+import React, {type ReactElement, useEffect, useState} from 'react';
+import {
+    ArrowDownwardRounded,
+    ArrowUpwardRounded,
+    SearchRounded,
+} from '@material-ui/icons';
+import InputBase from '@material-ui/core/InputBase';
+import SearchResultCard from './SearchResultCard';
+import useConstant from 'use-constant';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import {useAsync} from 'react-async-hook';
+import {
+    SearchItemType,
+    type SearchResult,
+    type SearchRootActionTypes,
+} from '../redux/search/types';
+import type {RootState, ThunkDispatchType} from '../redux';
+import {Card} from '@material-ui/core';
+import {
+    AutoSizer,
+    CellMeasurer,
+    CellMeasurerCache,
+    List,
+    WindowScroller,
+} from 'react-virtualized';
+import {isMobile} from 'react-device-detect';
+import {getPKAEpisodeYoutubeLink} from '../redux/watch-episode/actions';
+import {useHistory} from 'react-router-dom';
+import {YOUTUBE_BASE_URL} from './PlayerComponent';
+import LoadingSpinner from './LoadingSpinner';
+import {reverseResultsToggle, searchPKAItem} from '../redux/search/actions';
+import RandomEventsListComponent from './RandomEventsListComponent';
+import {alpha, makeStyles} from '@material-ui/core/styles';
+import {connect} from 'react-redux';
+import CustomTooltip from './Tooltip';
 
-const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
+const mapDispatchToProps = (
+    dispatch: ThunkDispatchType<SearchRootActionTypes>,
+): any => {
     return {
-        searchPKAItem: (searchQuery: string, searchItemType: SearchItemType): void =>
-            dispatch(searchPKAItem(searchQuery, searchItemType)),
-        reverseResultsToggle: (): SearchRootActionTypes => dispatch(reverseResultsToggle()),
+        searchPKAItem: (
+            searchQuery: string,
+            searchItemType: SearchItemType,
+        ): void => dispatch(searchPKAItem(searchQuery, searchItemType)),
+        reverseResultsToggle: (): SearchRootActionTypes =>
+            dispatch(reverseResultsToggle()),
     };
 };
 
@@ -36,80 +55,85 @@ interface InputProps {
     searchItemType: SearchItemType;
 }
 
-type SearchComponentProps = InputProps & ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
+type SearchComponentProps = InputProps &
+    ReturnType<typeof mapStateToProps> &
+    ReturnType<typeof mapDispatchToProps>;
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        display: "flex",
-        flexFlow: "column",
-        height: "calc(100vh - 100px)",
-        maxHeight: "calc(100vh - 100px)",
+        display: 'flex',
+        flexFlow: 'column',
+        height: 'calc(100vh - 100px)',
+        maxHeight: 'calc(100vh - 100px)',
     },
     search: {
-        display: "flex",
-        height: "100%",
+        display: 'flex',
+        height: '100%',
         flex: 1,
-        backgroundColor: "#151515",
-        "&:hover": {
+        backgroundColor: '#151515',
+        '&:hover': {
             backgroundColor: alpha(theme.palette.common.white, 0.05),
         },
         padding: theme.spacing(1),
-        borderRadius: "5px",
+        borderRadius: '5px',
     },
     iconButton: {
-        display: "flex",
+        display: 'flex',
         color: alpha(theme.palette.common.white, 0.9),
-        padding: "10px",
-        pointerEvents: "none",
+        padding: '10px',
+        pointerEvents: 'none',
     },
     inputInput: {
-        color: "inherit",
+        color: 'inherit',
         marginLeft: theme.spacing(0.5),
     },
     subTitle: {
-        fontSize: "14.5px",
+        fontSize: '14.5px',
         color: alpha(theme.palette.common.white, 0.45),
         marginBottom: theme.spacing(1.5),
     },
     searchRow: {
-        display: "flex",
-        height: "100%",
-        maxHeight: "60px",
+        display: 'flex',
+        height: '100%',
+        maxHeight: '60px',
         marginBottom: theme.spacing(1.5),
     },
     reverseButton: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#151515",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#151515',
         padding: theme.spacing(2.25),
         marginLeft: theme.spacing(2),
-        borderRadius: "5px",
-        boxShadow: "none",
-        "&:hover": {
+        borderRadius: '5px',
+        boxShadow: 'none',
+        '&:hover': {
             backgroundColor: alpha(theme.palette.common.white, 0.1),
-            cursor: "pointer",
+            cursor: 'pointer',
         },
-        "&:active": {
-            boxShadow: "none",
+        '&:active': {
+            boxShadow: 'none',
             backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
     resultListParent: {
-        height: "100%",
+        height: '100%',
     },
 }));
 
 const SearchComponent = (props: SearchComponentProps): ReactElement => {
     const classes = useStyles();
 
-    const { reverseResultsToggle, searchPKAItem, searchState, searchItemType } = props;
+    const {reverseResultsToggle, searchPKAItem, searchState, searchItemType} =
+        props;
 
-    const searchPKAItemDebounced = useConstant(() => AwesomeDebouncePromise(searchPKAItem, 250));
+    const searchPKAItemDebounced = useConstant(() =>
+        AwesomeDebouncePromise(searchPKAItem, 250),
+    );
 
     const [initial, setInitial] = useState(true);
 
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState('');
 
     const history = useHistory();
 
@@ -125,26 +149,26 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
         const resetInput = (): void => {
             const previousInput = input;
 
-            if (input === "") {
-                setInput(" ");
+            if (input === '') {
+                setInput(' ');
             } else {
-                setInput("");
+                setInput('');
             }
 
             setInput(previousInput);
         };
 
         if (isMobile) {
-            window.addEventListener("orientationchange", resetInput);
+            window.addEventListener('orientationchange', resetInput);
         } else {
-            window.addEventListener("resize", resetInput);
+            window.addEventListener('resize', resetInput);
         }
 
         return (): void => {
             if (isMobile) {
-                window.removeEventListener("orientationchange", resetInput);
+                window.removeEventListener('orientationchange', resetInput);
             } else {
-                window.removeEventListener("resize", resetInput);
+                window.removeEventListener('resize', resetInput);
             }
         };
     }, [input]);
@@ -165,39 +189,69 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
         defaultHeight: 85,
     });
 
-    const paddedRowHeight = ({ index }: any): number => {
-        const height = cellMeasurerCache.rowHeight({ index });
+    const paddedRowHeight = ({index}: any): number => {
+        const height = cellMeasurerCache.rowHeight({index});
         return height + 7;
     };
 
-    const handleClick = (number: number, timestamp: number): void => {
-        history.push(`/watch/${number}?timestamp=${timestamp}`);
+    const handleWatchClick = (
+        number: number,
+        timestamp: number | null,
+    ): void => {
+        let url = `/watch/${number}`;
+
+        if (timestamp !== null) {
+            url += `?timestamp=${timestamp}s`;
+        }
+
+        history.push(url);
     };
 
-    const handleYoutubeClick = async (number: number, timestamp: number): Promise<void> => {
+    const handleYoutubeClick = async (
+        number: number,
+        timestamp: number | null,
+    ): Promise<void> => {
         const youtube_link = await getPKAEpisodeYoutubeLink(number);
-        if (youtube_link !== "") {
-            window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
+
+        if (youtube_link !== null) {
+            const url = new URL(YOUTUBE_BASE_URL);
+            url.pathname = 'watch';
+            url.searchParams.append('v', youtube_link);
+            timestamp && url.searchParams.append('t', `${timestamp}s`);
+
+            window.open(url.toString());
         }
     };
 
     const renderRow = (props: any): ReactElement => {
-        const { index, key, style, parent } = props;
-        const searchResult = searchState.searchResults[index];
+        const {index, key, style, parent} = props;
+        const searchResult: SearchResult = searchState.searchResults[index];
 
         return (
-            <CellMeasurer key={key} cache={cellMeasurerCache} parent={parent} rowIndex={index}>
+            <CellMeasurer
+                key={key}
+                cache={cellMeasurerCache}
+                parent={parent}
+                rowIndex={index}>
                 <div style={style} key={key}>
                     <SearchResultCard
-                        episodeNumber={searchResult.episodeNumber}
+                        episodeNumber={searchResult.cardEpisodeNumber()}
                         title={searchResult.cardTitle()}
                         subtitle={searchResult.cardSubtitle()}
                         duration={searchResult.cardDuration()}
-                        onWatchClick={(): void => handleClick(searchResult.episodeNumber, searchResult.timestamp)}
-                        onYoutubeClick={(): Promise<void> =>
-                            handleYoutubeClick(searchResult.episodeNumber, searchResult.timestamp)
-                        }
                         timestamp={searchResult.cardTimestamp()}
+                        onWatchClick={(): void =>
+                            handleWatchClick(
+                                searchResult.cardEpisodeNumber(),
+                                searchResult.timestamp,
+                            )
+                        }
+                        onYoutubeClick={(): Promise<void> =>
+                            handleYoutubeClick(
+                                searchResult.cardEpisodeNumber(),
+                                searchResult.timestamp,
+                            )
+                        }
                     />
                 </div>
             </CellMeasurer>
@@ -206,7 +260,9 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
 
     return (
         <div className={classes.root} key={searchItemType}>
-            {searchItemType === SearchItemType.EVENT ? <RandomEventsListComponent /> : null}
+            {searchItemType === SearchItemType.EVENT ? (
+                <RandomEventsListComponent />
+            ) : null}
             <div className={classes.searchRow}>
                 <Card variant="outlined" className={classes.search}>
                     <div className={classes.iconButton}>
@@ -219,7 +275,7 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
                         classes={{
                             input: classes.inputInput,
                         }}
-                        inputProps={{ "aria-label": "search" }}
+                        inputProps={{'aria-label': 'search'}}
                         fullWidth={true}
                         onChange={(e): void => setInput(e.target.value)}
                     />
@@ -236,28 +292,42 @@ const SearchComponent = (props: SearchComponentProps): ReactElement => {
                         onClick={(): void => reverseResultsToggle()}
                         aria-label="Reverse Order">
                         <CustomTooltip title="Reverse Order" arrow>
-                            {searchState.reverseResults === true ? <ArrowUpwardRounded /> : <ArrowDownwardRounded />}
+                            {searchState.reverseResults === true ? (
+                                <ArrowUpwardRounded />
+                            ) : (
+                                <ArrowDownwardRounded />
+                            )}
                         </CustomTooltip>
                     </Card>
                 )}
             </div>
 
-            <div className={classes.subTitle}>{`${searchState.searchResults.length} Results`}</div>
+            <div
+                className={
+                    classes.subTitle
+                }>{`${searchState.searchResults.length} Results`}</div>
 
             <div className={classes.resultListParent}>
                 {searchState.searchType === searchItemType && (
                     <AutoSizer>
-                        {({ height, width }): ReactElement => (
+                        {({height, width}): ReactElement => (
                             <WindowScroller>
-                                {({ isScrolling, onChildScroll }): ReactElement => (
+                                {({
+                                    isScrolling,
+                                    onChildScroll,
+                                }): ReactElement => (
                                     <List
                                         height={height}
                                         width={width}
                                         isScrolling={isScrolling}
                                         onScroll={onChildScroll}
                                         scrollToIndex={0}
-                                        deferredMeasureMentCache={cellMeasurerCache}
-                                        rowCount={searchState.searchResults.length}
+                                        deferredMeasureMentCache={
+                                            cellMeasurerCache
+                                        }
+                                        rowCount={
+                                            searchState.searchResults.length
+                                        }
                                         rowRenderer={renderRow}
                                         rowHeight={paddedRowHeight}
                                         overscanRowCount={10}

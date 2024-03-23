@@ -1,28 +1,38 @@
-import React, { ReactElement } from "react";
-import { AppBar, alpha, Hidden, IconButton, List, Typography } from "@material-ui/core";
-import Toolbar from "@material-ui/core/Toolbar";
-import Drawer from "@material-ui/core/Drawer";
-import DrawerListItem from "./DrawerListItem";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import React, {type ReactElement} from 'react';
+import {
+    AppBar,
+    alpha,
+    Hidden,
+    IconButton,
+    List,
+    Typography,
+} from '@material-ui/core';
+import Toolbar from '@material-ui/core/Toolbar';
+import Drawer from '@material-ui/core/Drawer';
+import DrawerListItem from './DrawerListItem';
+import {makeStyles, useTheme} from '@material-ui/core/styles';
 import {
     MenuRounded,
     PlayCircleOutlineRounded,
     ShuffleRounded,
     TimelineRounded,
     VideoLibraryRounded,
-} from "@material-ui/icons";
-import { WatchEpisodeRootActionTypes } from "../redux/watch-episode/types";
-import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { clearWatchState } from "../redux/watch-episode/actions";
-import { ThunkDispatchType } from "../redux";
-import CustomTooltip from "./Tooltip";
+} from '@material-ui/icons';
+import type {WatchEpisodeRootActionTypes} from '../redux/watch-episode/types';
+import {connect} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import {clearWatchState} from '../redux/watch-episode/actions';
+import type {ThunkDispatchType} from '../redux';
+import CustomTooltip from './Tooltip';
 
-export const drawerWidth = "220px";
+export const drawerWidth = '220px';
 
-const mapDispatchToProps = (dispatch: ThunkDispatchType<WatchEpisodeRootActionTypes>): any => {
+const mapDispatchToProps = (
+    dispatch: ThunkDispatchType<WatchEpisodeRootActionTypes>,
+): any => {
     return {
-        clearWatchState: (): WatchEpisodeRootActionTypes => dispatch(clearWatchState()),
+        clearWatchState: (): WatchEpisodeRootActionTypes =>
+            dispatch(clearWatchState()),
     };
 };
 
@@ -30,35 +40,35 @@ type DrawerComponentProps = ReturnType<typeof mapDispatchToProps>;
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
-        [theme.breakpoints.up("sm")]: {
+        [theme.breakpoints.up('sm')]: {
             width: drawerWidth,
             flexShrink: 0,
         },
     },
     appBar: {
-        [theme.breakpoints.up("sm")]: {
+        [theme.breakpoints.up('sm')]: {
             marginLeft: drawerWidth,
         },
         zIndex: theme.zIndex.drawer + 1,
-        boxShadow: "none",
+        boxShadow: 'none',
     },
     appBarTitle: {
-        color: "#cd2d37",
-        fontFamily: "Raleway",
-        fontSize: "24px",
+        color: '#cd2d37',
+        fontFamily: 'Raleway',
+        fontSize: '24px',
         fontWeight: 800,
         flexGrow: 1,
     },
     menuButton: {
         marginRight: theme.spacing(2),
-        [theme.breakpoints.up("sm")]: {
-            display: "none",
+        [theme.breakpoints.up('sm')]: {
+            display: 'none',
         },
     },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
         width: drawerWidth,
-        backgroundColor: "#151515",
+        backgroundColor: '#151515',
         border: 0,
     },
     shuffleIcon: {
@@ -70,7 +80,7 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
     const theme = useTheme();
     const classes = useStyles();
 
-    const { clearWatchState } = props;
+    const {clearWatchState} = props;
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -82,16 +92,28 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
 
     const watchRandomEpisode = (): void => {
         clearWatchState();
-        history.push(`/watch/random`);
+        history.push('/watch/random');
     };
 
     const drawer = (
         <div>
             <div className={classes.toolbar} />
             <List>
-                <DrawerListItem text={"Watch"} onClick={handleDrawerToggle} Icon={PlayCircleOutlineRounded} />
-                <DrawerListItem text={"Episodes"} onClick={handleDrawerToggle} Icon={VideoLibraryRounded} />
-                <DrawerListItem text={"Events"} onClick={handleDrawerToggle} Icon={TimelineRounded} />
+                <DrawerListItem
+                    text={'Watch'}
+                    onClick={handleDrawerToggle}
+                    Icon={PlayCircleOutlineRounded}
+                />
+                <DrawerListItem
+                    text={'Episodes'}
+                    onClick={handleDrawerToggle}
+                    Icon={VideoLibraryRounded}
+                />
+                <DrawerListItem
+                    text={'Events'}
+                    onClick={handleDrawerToggle}
+                    Icon={TimelineRounded}
+                />
             </List>
         </div>
     );
@@ -125,7 +147,7 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
                 <Hidden smUp implementation="js">
                     <Drawer
                         variant="temporary"
-                        anchor={theme.direction === "rtl" ? "right" : "left"}
+                        anchor={theme.direction === 'rtl' ? 'right' : 'left'}
                         open={mobileOpen}
                         onClose={handleDrawerToggle}
                         classes={{

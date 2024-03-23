@@ -1,10 +1,14 @@
-import axios from "axios";
-import { Dispatch } from "redux";
-import { WatchEpisodeRootActionTypes, WatchEpisodeSuccessState, WatchEpisodeTypes } from "./types";
-import handleError from "../../util";
+import axios from 'axios';
+import type {Dispatch} from 'redux';
+import {
+    type WatchEpisodeRootActionTypes,
+    type WatchEpisodeSuccessState,
+    WatchEpisodeTypes,
+} from './types';
+import handleError from '../../util';
 
 export const watchPKAEpisode =
-    (episodeNumber: number | "latest" | "random", timestamp: number) =>
+    (episodeNumber: number | 'latest' | 'random', timestamp: number) =>
     (dispatch: Dispatch<WatchEpisodeRootActionTypes>): void => {
         dispatch(watchEpisodeStarted());
 
@@ -20,34 +24,40 @@ export const watchPKAEpisode =
 
                 return dispatch(watchEpisodeSuccess(watchEpisodeResult));
             })
-            .catch((err) => {
-                err = handleError(err);
+            .catch((error) => {
+                const handledError = handleError(error);
 
-                return dispatch(watchEpisodeFailure(err));
+                return dispatch(watchEpisodeFailure(handledError));
             });
     };
 
-export const getPKAEpisodeYoutubeLink = (episodeNumber: number): Promise<string> => {
+export const getPKAEpisodeYoutubeLink = (
+    episodeNumber: number,
+): Promise<string | null> => {
     return axios
         .get(`/v1/api/episode/youtube_link/${episodeNumber}`)
         .then((res) => {
             return res.data.data;
         })
-        .catch((err) => {
-            err = handleError(err);
+        .catch((error) => {
+            const handledError = handleError(error);
 
-            console.log(err);
+            console.log(handledError);
 
-            return "";
+            return null;
         });
 };
 
-export const saveTimestamp = (timestamp: number): WatchEpisodeRootActionTypes => ({
+export const saveTimestamp = (
+    timestamp: number,
+): WatchEpisodeRootActionTypes => ({
     type: WatchEpisodeTypes.SAVE_TIMESTAMP,
     payload: timestamp,
 });
 
-export const setCurrentEventCard = (id: number): WatchEpisodeRootActionTypes => ({
+export const setCurrentEventCard = (
+    id: number,
+): WatchEpisodeRootActionTypes => ({
     type: WatchEpisodeTypes.SET_EVENT_CARD,
     payload: id,
 });
@@ -60,7 +70,9 @@ const watchEpisodeStarted = (): WatchEpisodeRootActionTypes => ({
     type: WatchEpisodeTypes.STARTED,
 });
 
-const watchEpisodeSuccess = (watchState: WatchEpisodeSuccessState): WatchEpisodeRootActionTypes => ({
+const watchEpisodeSuccess = (
+    watchState: WatchEpisodeSuccessState,
+): WatchEpisodeRootActionTypes => ({
     type: WatchEpisodeTypes.SUCCESS,
     payload: watchState,
 });

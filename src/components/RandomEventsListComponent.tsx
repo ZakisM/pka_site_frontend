@@ -1,19 +1,21 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import { alpha, makeStyles } from "@material-ui/core/styles";
-import SearchResultCard from "./SearchResultCard";
-import { connect } from "react-redux";
-import { RootState, ThunkDispatchType } from "../redux";
-import { EventWithAllFieldsClass, SearchRootActionTypes } from "../redux/search/types";
-import { loadRandomEvents } from "../redux/events/actions";
-import LoadingSpinner from "./LoadingSpinner";
-import { useHistory } from "react-router-dom";
-import { Card, Typography } from "@material-ui/core";
-import { RefreshRounded, TimelineRounded } from "@material-ui/icons";
-import { getPKAEpisodeYoutubeLink } from "../redux/watch-episode/actions";
-import { YOUTUBE_BASE_URL } from "./PlayerComponent";
-import CustomTooltip from "./Tooltip";
+import React, {type ReactElement, useEffect, useState} from 'react';
+import {alpha, makeStyles} from '@material-ui/core/styles';
+import SearchResultCard from './SearchResultCard';
+import {connect} from 'react-redux';
+import type {RootState, ThunkDispatchType} from '../redux';
+import type {EventResult, SearchRootActionTypes} from '../redux/search/types';
+import {loadRandomEvents} from '../redux/events/actions';
+import LoadingSpinner from './LoadingSpinner';
+import {useHistory} from 'react-router-dom';
+import {Card, Typography} from '@material-ui/core';
+import {RefreshRounded, TimelineRounded} from '@material-ui/icons';
+import {getPKAEpisodeYoutubeLink} from '../redux/watch-episode/actions';
+import {YOUTUBE_BASE_URL} from './PlayerComponent';
+import CustomTooltip from './Tooltip';
 
-const mapDispatchToProps = (dispatch: ThunkDispatchType<SearchRootActionTypes>): any => {
+const mapDispatchToProps = (
+    dispatch: ThunkDispatchType<SearchRootActionTypes>,
+): any => {
     return {
         loadRandomEvents: (): void => dispatch(loadRandomEvents()),
     };
@@ -23,91 +25,94 @@ const mapStateToProps = (state: RootState): any => ({
     pkaEventsState: state.pkaEvents,
 });
 
-type RandomEventsListComponentProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
+type RandomEventsListComponentProps = ReturnType<typeof mapStateToProps> &
+    ReturnType<typeof mapDispatchToProps>;
 
 const useStyles = makeStyles((theme) => ({
     root: {
         marginBottom: theme.spacing(3),
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     titleContainer: {
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         color: alpha(theme.palette.common.white, 0.8),
         flexGrow: 1,
         marginLeft: theme.spacing(2),
     },
     titleContainerIcon: {
-        display: "flex",
+        display: 'flex',
         marginRight: theme.spacing(1.25),
     },
     title: {
-        fontSize: "18px",
+        fontSize: '18px',
         fontWeight: 500,
         color: alpha(theme.palette.common.white, 0.9),
     },
     list: {
-        display: "flex",
+        display: 'flex',
         flex: 1,
-        overflowX: "auto",
+        overflowX: 'auto',
     },
     listMaxWidthWithDrawer: {
-        maxWidth: "calc(100vw - 284px)",
+        maxWidth: 'calc(100vw - 284px)',
     },
     listMaxWidthWithoutDrawer: {
-        maxWidth: "calc(100vw - 64px)",
+        maxWidth: 'calc(100vw - 64px)',
     },
     listItem: {
         flex: 1,
-        minWidth: "280px",
+        minWidth: '280px',
         marginRight: theme.spacing(1),
-        "&:last-child": {
+        '&:last-child': {
             marginRight: 0,
         },
     },
     loadingSpinner: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "140px",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '140px',
     },
     eventCard: {
-        height: "100%",
-        backgroundColor: "#1A1A1A",
+        height: '100%',
+        backgroundColor: '#1A1A1A',
     },
     toolbar: {
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#1a1a1a",
-        borderRadius: "5px",
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#1a1a1a',
+        borderRadius: '5px',
         marginBottom: theme.spacing(2),
     },
     refreshButton: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#1A1A1A",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#1A1A1A',
         padding: theme.spacing(1.5),
-        borderRadius: "5px",
-        boxShadow: "none",
-        "&:hover": {
+        borderRadius: '5px',
+        boxShadow: 'none',
+        '&:hover': {
             backgroundColor: alpha(theme.palette.common.white, 0.1),
-            cursor: "pointer",
+            cursor: 'pointer',
         },
-        "&:active": {
-            boxShadow: "none",
+        '&:active': {
+            boxShadow: 'none',
             backgroundColor: alpha(theme.palette.common.white, 0.025),
         },
     },
 }));
 
-const RandomEventsListComponent = (props: RandomEventsListComponentProps): ReactElement => {
+const RandomEventsListComponent = (
+    props: RandomEventsListComponentProps,
+): ReactElement => {
     const classes = useStyles();
 
     const history = useHistory();
 
-    const { pkaEventsState, loadRandomEvents } = props;
+    const {pkaEventsState, loadRandomEvents} = props;
 
     const [drawerIsVisible, setDrawerIsVisible] = useState(true);
 
@@ -123,21 +128,39 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
         };
 
         checkIfDrawerVisible();
-        window.addEventListener("resize", checkIfDrawerVisible);
+        window.addEventListener('resize', checkIfDrawerVisible);
 
         return (): void => {
-            window.removeEventListener("resize", checkIfDrawerVisible);
+            window.removeEventListener('resize', checkIfDrawerVisible);
         };
     }, []);
 
-    const handleClick = (number: number, timestamp: number): void => {
-        history.push(`/watch/${number}?timestamp=${timestamp}`);
+    const handleWatchClick = (
+        number: number,
+        timestamp: number | null,
+    ): void => {
+        let url = `/watch/${number}`;
+
+        if (timestamp !== null) {
+            url += `?timestamp=${timestamp}`;
+        }
+
+        history.push(url);
     };
 
-    const handleYoutubeClick = async (number: number, timestamp: number): Promise<void> => {
+    const handleYoutubeClick = async (
+        number: number,
+        timestamp: number | null,
+    ): Promise<void> => {
         const youtube_link = await getPKAEpisodeYoutubeLink(number);
-        if (youtube_link !== "") {
-            window.open(`${YOUTUBE_BASE_URL}${youtube_link}&t=${timestamp}`);
+
+        if (youtube_link !== null) {
+            const url = new URL(YOUTUBE_BASE_URL);
+            url.pathname = 'watch';
+            url.searchParams.append('v', youtube_link);
+            timestamp && url.searchParams.append('t', `${timestamp}s`);
+
+            window.open(url.toString());
         }
     };
 
@@ -148,9 +171,14 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
                     <span className={classes.titleContainerIcon}>
                         <TimelineRounded />
                     </span>
-                    <Typography className={classes.title}>Random Events</Typography>
+                    <Typography className={classes.title}>
+                        Random Events
+                    </Typography>
                 </div>
-                <div className={classes.refreshButton} onClick={(): void => loadRandomEvents()} aria-label="Refresh">
+                <div
+                    className={classes.refreshButton}
+                    onClick={(): void => loadRandomEvents()}
+                    aria-label="Refresh">
                     <CustomTooltip title="Refresh" arrow>
                         <RefreshRounded />
                     </CustomTooltip>
@@ -163,28 +191,43 @@ const RandomEventsListComponent = (props: RandomEventsListComponentProps): React
             ) : (
                 <div
                     className={`${classes.list} ${
-                        drawerIsVisible ? classes.listMaxWidthWithDrawer : classes.listMaxWidthWithoutDrawer
+                        drawerIsVisible
+                            ? classes.listMaxWidthWithDrawer
+                            : classes.listMaxWidthWithoutDrawer
                     }`}>
-                    {pkaEventsState.randomEvents.map((event: EventWithAllFieldsClass, i: number) => (
-                        <div className={classes.listItem} key={i}>
-                            <SearchResultCard
-                                customClassName={classes.eventCard}
-                                episodeNumber={event.episodeNumber}
-                                title={event.cardTitle()}
-                                subtitle={event.cardSubtitle()}
-                                duration={event.cardDuration()}
-                                onWatchClick={(): void => handleClick(event.episodeNumber, event.timestamp)}
-                                onYoutubeClick={(): Promise<void> =>
-                                    handleYoutubeClick(event.episodeNumber, event.timestamp)
-                                }
-                                timestamp={event.cardTimestamp()}
-                            />
-                        </div>
-                    ))}
+                    {pkaEventsState.randomEvents.map(
+                        (event: EventResult, i: number) => (
+                            <div className={classes.listItem} key={i}>
+                                <SearchResultCard
+                                    customClassName={classes.eventCard}
+                                    episodeNumber={event.cardEpisodeNumber()}
+                                    title={event.cardTitle()}
+                                    subtitle={event.cardSubtitle()}
+                                    duration={event.cardDuration()}
+                                    timestamp={event.cardTimestamp()}
+                                    onWatchClick={(): void =>
+                                        handleWatchClick(
+                                            event.cardEpisodeNumber(),
+                                            event.timestamp,
+                                        )
+                                    }
+                                    onYoutubeClick={(): Promise<void> =>
+                                        handleYoutubeClick(
+                                            event.cardEpisodeNumber(),
+                                            event.timestamp,
+                                        )
+                                    }
+                                />
+                            </div>
+                        ),
+                    )}
                 </div>
             )}
         </div>
     );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RandomEventsListComponent);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(RandomEventsListComponent);

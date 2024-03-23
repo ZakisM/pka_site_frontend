@@ -1,9 +1,9 @@
-import { applyMiddleware, createStore, StoreEnhancer } from "redux";
-import { rootReducer } from "./index";
-import { composeWithDevTools } from "redux-devtools-extension";
-import { createBrowserHistory } from "history";
-import thunk from "redux-thunk";
-import { routerMiddleware } from "connected-react-router";
+import {applyMiddleware, createStore, type StoreEnhancer} from 'redux';
+import {rootReducer} from './index';
+import {composeWithDevTools} from 'redux-devtools-extension';
+import {createBrowserHistory} from 'history';
+import thunk from 'redux-thunk';
+import {routerMiddleware} from 'connected-react-router';
 
 export const history = createBrowserHistory();
 

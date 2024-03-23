@@ -1,4 +1,8 @@
-import { WatchEpisodeRootActionTypes, WatchEpisodeState, WatchEpisodeTypes } from "./types";
+import {
+    type WatchEpisodeRootActionTypes,
+    type WatchEpisodeState,
+    WatchEpisodeTypes,
+} from './types';
 
 const initialState: WatchEpisodeState = {
     episode: undefined,
@@ -10,7 +14,10 @@ const initialState: WatchEpisodeState = {
     errors: [],
 };
 
-export function watchEpisodeReducer(state = initialState, action: WatchEpisodeRootActionTypes): WatchEpisodeState {
+export function watchEpisodeReducer(
+    state = initialState,
+    action: WatchEpisodeRootActionTypes
+): WatchEpisodeState {
     switch (action.type) {
         case WatchEpisodeTypes.STARTED: {
             return {

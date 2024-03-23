@@ -1,24 +1,24 @@
-import { useLocation } from "react-router-dom";
+import axios from 'axios';
+import {useLocation} from 'react-router-dom';
 
-const handleError = (err: {
-    response: { status: number; data: { message: any } };
-    message: string | string[];
-}): any => {
-    if (err.response.status === 401) {
-        return "Invalid authorization token passed.";
-    } else if (err.response.status === 500) {
-        if (err.response?.data && err.response?.data?.message) {
-            return err.response.data.message;
-        } else {
-            return "An internal error occurred.";
+type ApiError = {
+    message: string;
+};
+
+const isApiError = (data?: unknown): data is ApiError => {
+    return data !== null && typeof data === 'object' && 'message' in data;
+};
+
+const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+        if (error.response && isApiError(error.response.data)) {
+            return error.response.data.message;
         }
-    } else if (err.message === "Network Error") {
-        return "Server appears to be offline. Please refresh in a few minutes.";
-    } else if (err.response?.data?.message) {
-        return err.response.data.message;
-    } else {
-        return err.message;
+
+        return error.message;
     }
+
+    return 'An unknown error occurred';
 };
 
 export const useQuery = (): URLSearchParams => {

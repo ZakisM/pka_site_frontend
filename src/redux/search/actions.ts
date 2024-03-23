@@ -1,68 +1,92 @@
-import axios from "axios";
-import { Dispatch } from "redux";
+import axios from 'axios';
+import type {Dispatch} from 'redux';
 import {
-    EpisodeWithAllFieldsClass,
-    EventWithAllFieldsClass,
     SearchItemType,
-    SearchRootActionTypes,
-    SearchSuccessState,
+    type SearchRootActionTypes,
+    type SearchSuccessState,
     SearchTypes,
-} from "./types";
-import { RootState } from "../index";
-import * as flatbuffers from "flatbuffers";
-import handleError from "../../util";
-import { AllPkaEventSearchResultsFb } from "../../flatbuffers/all-pka-event-search-results-fb";
+    EpisodeResult,
+    type SearchResult,
+    EventResult,
+} from './types';
+import type {RootState} from '../index';
+import handleError from '../../util';
+import {
+    deserialize_episodes,
+    deserialize_events,
+    type PkaEventSearchResult,
+    type PkaEpisodeSearchResult,
+} from 'LibWasm';
 
 export const searchPKAItem =
     (searchQuery: string, searchItemType: SearchItemType) =>
-    (dispatch: Dispatch<SearchRootActionTypes>, getState: () => RootState): void => {
+    (
+        dispatch: Dispatch<SearchRootActionTypes>,
+        getState: () => RootState,
+    ): void => {
         dispatch(searchEventStarted());
         dispatch(setSearchType(searchItemType));
 
         const getEndpoint = (): string => {
             switch (searchItemType) {
                 case SearchItemType.EPISODE:
-                    return "search/search_pka_episode";
+                    return 'search/search_pka_episode';
                 case SearchItemType.EVENT:
-                    return "search/search_pka_event";
+                    return 'search/search_pka_event';
             }
         };
+
+        if (searchItemType === SearchItemType.EVENT && searchQuery === '') {
+            dispatch(
+                searchEventSuccess({
+                    searchQuery: searchQuery,
+                    searchResults: [],
+                }),
+            );
+
+            return;
+        }
 
         const endpoint = getEndpoint();
 
         axios
             .post(
                 `/v1/api/${endpoint}`,
-                { query: searchQuery },
-                searchItemType === SearchItemType.EVENT ? { responseType: "arraybuffer" } : {}
+                {query: searchQuery},
+                {responseType: 'arraybuffer'},
             )
-            .then((res) => {
-                let searchResults = [];
+            .then(async (res) => {
+                let searchResults: SearchResult[] = [];
+
+                const bytes = new Uint8Array(res.data);
 
                 switch (searchItemType) {
                     case SearchItemType.EPISODE: {
-                        for (const sr of res.data.data) {
-                            searchResults.push(EpisodeWithAllFieldsClass.Deserialize(sr));
-                        }
+                        const results: PkaEpisodeSearchResult[] = JSON.parse(
+                            new TextDecoder('utf-8').decode(
+                                await deserialize_episodes(bytes),
+                            ),
+                        );
+
+                        searchResults = results.map(
+                            (r) => new EpisodeResult(r),
+                        );
+
                         break;
                     }
                     case SearchItemType.EVENT: {
-                        const data = new Uint8Array(res.data);
+                        const results: PkaEventSearchResult[] = JSON.parse(
+                            new TextDecoder('utf-8').decode(
+                                await deserialize_events(bytes),
+                            ),
+                        );
 
-                        const buf = new flatbuffers.ByteBuffer(data);
-
-                        const all_events = AllPkaEventSearchResultsFb.getRootAsAllPkaEventSearchResultsFb(buf);
-
-                        for (let i = 0; i < all_events.resultsLength(); i++) {
-                            const event = all_events.results(i);
-                            if (event != null) {
-                                searchResults.push(EventWithAllFieldsClass.Deserialize(event));
-                            }
-                        }
+                        searchResults = results.map((r) => new EventResult(r));
 
                         if (getState().search.reverseResults && searchResults) {
-                            searchResults = [...searchResults].reverse();
+                            searchResults = searchResults.reverse();
                         }
+
                         break;
                     }
                 }
@@ -74,10 +98,10 @@ export const searchPKAItem =
 
                 return dispatch(searchEventSuccess(searchResult));
             })
-            .catch((err) => {
-                err = handleError(err);
+            .catch((error) => {
+                const handledError = handleError(error);
 
-                return dispatch(searchEventFailure(err));
+                return dispatch(searchEventFailure(handledError));
             });
     };
 
@@ -85,7 +109,9 @@ const searchEventStarted = (): SearchRootActionTypes => ({
     type: SearchTypes.STARTED,
 });
 
-const searchEventSuccess = (searchResult: SearchSuccessState): SearchRootActionTypes => ({
+const searchEventSuccess = (
+    searchResult: SearchSuccessState,
+): SearchRootActionTypes => ({
     type: SearchTypes.SUCCESS,
     payload: searchResult,
 });
