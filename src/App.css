@@ -1,3 +1,20 @@
-.ReactVirtualized__Grid {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: black;
+  }
+
+  iframe:focus-visible,
+  .ReactVirtualized__Grid {
     outline: none;
+  }
+}
+
+@layer utilities {
+  .content-area {
+    height: calc(100vh - theme("height.nav-height"));
+  }
 }

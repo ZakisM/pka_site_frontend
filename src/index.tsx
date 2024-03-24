@@ -1,35 +1,16 @@
-import 'core-js/stable';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import {Provider} from 'react-redux';
-import store from './redux/store';
-import {createTheme, CssBaseline, MuiThemeProvider} from '@material-ui/core';
-import './App.css';
-import 'typeface-roboto';
 import '@fontsource/raleway/800.css';
+import 'core-js/stable';
+import 'typeface-roboto';
+import App from './App.tsx';
+import '@fontsource/raleway/800.css';
+import 'core-js/stable';
+import {createRoot} from 'react-dom/client';
+import 'typeface-roboto';
 
-const darkTheme = createTheme({
-    palette: {
-        type: 'dark',
-        background: {
-            default: '#0f0f0f',
-        },
-        primary: {
-            main: '#151515',
-        },
-        secondary: {
-            main: '#171717',
-        },
-    },
-});
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Failed to find element for createRoot.');
+}
 
-ReactDOM.render(
-    <Provider store={store}>
-        <MuiThemeProvider theme={darkTheme}>
-            <CssBaseline />
-            <App />
-        </MuiThemeProvider>
-    </Provider>,
-    document.getElementById('root'),
-);
+const root = createRoot(container);
+root.render(<App />);

@@ -1,12 +1,22 @@
-import React, {type ReactElement} from 'react';
-import RootComponent from './components/RootComponent';
+import 'overlayscrollbars/overlayscrollbars.css';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import './App.css';
+import {NavBar} from './components/NavBar';
+import {Watch} from './components/Watch';
 
-const App = (): ReactElement => {
-    return (
-        <div className="App">
-            <RootComponent />
-        </div>
-    );
+const App = () => {
+  return (
+    <div>
+      <NavBar />
+      <div className="p-4 content-area">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/watch/:episodeNumber?" element={<Watch />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </div>
+  );
 };
 
 export default App;
