@@ -16,7 +16,7 @@ const initialState: WatchEpisodeState = {
 
 export function watchEpisodeReducer(
     state = initialState,
-    action: WatchEpisodeRootActionTypes
+    action: WatchEpisodeRootActionTypes,
 ): WatchEpisodeState {
     switch (action.type) {
         case WatchEpisodeTypes.STARTED: {

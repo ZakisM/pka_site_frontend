@@ -1,7 +1,7 @@
-import React, {type ReactElement} from 'react';
-import {alpha, makeStyles} from '@material-ui/core/styles';
 import {Card} from '@material-ui/core';
+import {alpha, makeStyles} from '@material-ui/core/styles';
 import {PlayCircleOutlineRounded, YouTube} from '@material-ui/icons';
+import React, {type ReactElement} from 'react';
 import CustomTooltip from './Tooltip';
 
 interface SearchResultCardProps {

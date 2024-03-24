@@ -1,6 +1,6 @@
-import moment from 'moment';
-import type {LOCATION_CHANGE} from 'connected-react-router';
 import type {PkaEpisodeSearchResult, PkaEventSearchResult} from 'LibWasm';
+import type {LOCATION_CHANGE} from 'connected-react-router';
+import moment from 'moment';
 
 export abstract class SearchResult<T = unknown> {
     protected res: T;

@@ -1,22 +1,22 @@
+import {
+    type PkaEpisodeSearchResult,
+    type PkaEventSearchResult,
+    deserialize_episodes,
+    deserialize_events,
+} from 'LibWasm';
 import axios from 'axios';
 import type {Dispatch} from 'redux';
+import handleError from '../../util';
+import type {RootState} from '../index';
 import {
+    EpisodeResult,
+    EventResult,
     SearchItemType,
+    type SearchResult,
     type SearchRootActionTypes,
     type SearchSuccessState,
     SearchTypes,
-    EpisodeResult,
-    type SearchResult,
-    EventResult,
 } from './types';
-import type {RootState} from '../index';
-import handleError from '../../util';
-import {
-    deserialize_episodes,
-    deserialize_events,
-    type PkaEventSearchResult,
-    type PkaEpisodeSearchResult,
-} from 'LibWasm';
 
 export const searchPKAItem =
     (searchQuery: string, searchItemType: SearchItemType) =>

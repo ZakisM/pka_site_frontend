@@ -1,13 +1,13 @@
-import {searchReducer} from './search/reducers';
-import {type Action, combineReducers} from 'redux';
-import {watchEpisodeReducer} from './watch-episode/reducers';
-import {connectRouter, type RouterState} from 'connected-react-router';
-import type {SearchState} from './search/types';
-import type {WatchEpisodeState} from './watch-episode/types';
-import type {PkaEventsState} from './events/types';
-import {pkaEventsReducer} from './events/reducers';
-import type {ThunkDispatch} from 'redux-thunk';
+import {type RouterState, connectRouter} from 'connected-react-router';
 import type {History} from 'history';
+import {type Action, combineReducers} from 'redux';
+import type {ThunkDispatch} from 'redux-thunk';
+import {pkaEventsReducer} from './events/reducers';
+import type {PkaEventsState} from './events/types';
+import {searchReducer} from './search/reducers';
+import type {SearchState} from './search/types';
+import {watchEpisodeReducer} from './watch-episode/reducers';
+import type {WatchEpisodeState} from './watch-episode/types';
 
 export type ThunkDispatchType<T extends Action> = ThunkDispatch<any, any, T>;
 

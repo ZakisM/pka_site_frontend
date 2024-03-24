@@ -1,17 +1,17 @@
-import React, {type ReactElement, useEffect, useState} from 'react';
-import {alpha, makeStyles} from '@material-ui/core/styles';
-import SearchResultCard from './SearchResultCard';
-import {connect} from 'react-redux';
-import type {RootState, ThunkDispatchType} from '../redux';
-import type {EventResult, SearchRootActionTypes} from '../redux/search/types';
-import {loadRandomEvents} from '../redux/events/actions';
-import LoadingSpinner from './LoadingSpinner';
-import {useHistory} from 'react-router-dom';
 import {Card, Typography} from '@material-ui/core';
+import {alpha, makeStyles} from '@material-ui/core/styles';
 import {RefreshRounded, TimelineRounded} from '@material-ui/icons';
+import React, {type ReactElement, useEffect, useState} from 'react';
+import {connect} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import type {RootState, ThunkDispatchType} from '../redux';
+import {loadRandomEvents} from '../redux/events/actions';
+import type {EventResult, SearchRootActionTypes} from '../redux/search/types';
 import {getPKAEpisodeYoutubeLink} from '../redux/watch-episode/actions';
-import {YOUTUBE_BASE_URL} from './PlayerComponent';
+import LoadingSpinner from './LoadingSpinner';
+import SearchResultCard from './SearchResultCard';
 import CustomTooltip from './Tooltip';
+import {YOUTUBE_BASE_URL} from './Watch';
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatchType<SearchRootActionTypes>,
