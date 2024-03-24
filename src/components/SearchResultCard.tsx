@@ -1,7 +1,7 @@
-import React, {type ReactElement} from 'react';
-import {alpha, makeStyles} from '@material-ui/core/styles';
 import {Card} from '@material-ui/core';
+import {alpha, makeStyles} from '@material-ui/core/styles';
 import {PlayCircleOutlineRounded, YouTube} from '@material-ui/icons';
+import React, {type ReactElement} from 'react';
 import CustomTooltip from './Tooltip';
 
 interface SearchResultCardProps {
@@ -115,7 +115,7 @@ const SearchResultCard = (props: SearchResultCardProps): ReactElement => {
     return (
         <Card
             variant="outlined"
-            className={`${classes.resultCard} ${customClassName}`}>
+            className={`${classes.resultCard}${customClassName}`}>
             <div className={classes.cardDetails}>
                 <div className={classes.cardInfo}>
                     <div className={classes.title}>{title}</div>

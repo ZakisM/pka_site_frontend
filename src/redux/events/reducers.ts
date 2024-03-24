@@ -11,8 +11,8 @@ const initialState: PkaEventsState = {
 };
 
 export function pkaEventsReducer(
-    state = initialState,
-    action: PkaEventsRootActionTypes
+    state,
+    action: PkaEventsRootActionTypes,
 ): PkaEventsState {
     switch (action.type) {
         case PkaEventsTypes.STARTED: {

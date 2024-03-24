@@ -1,9 +1,9 @@
-import type {Dispatch} from 'redux';
-import axios from 'axios';
-import handleError from '../../util';
-import {type PkaEventsRootActionTypes, PkaEventsTypes} from './types';
-import {EventResult} from '../search/types';
 import type {PkaEventSearchResult} from 'LibWasm';
+import axios from 'axios';
+import type {Dispatch} from 'redux';
+import handleError from '../../util';
+import {EventResult} from '../search/types';
+import {type PkaEventsRootActionTypes, PkaEventsTypes} from './types';
 
 export const loadRandomEvents =
     () =>

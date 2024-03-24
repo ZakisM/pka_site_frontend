@@ -1,11 +1,11 @@
 import axios from 'axios';
 import type {Dispatch} from 'redux';
+import handleError from '../../util';
 import {
     type WatchEpisodeRootActionTypes,
     type WatchEpisodeSuccessState,
     WatchEpisodeTypes,
 } from './types';
-import handleError from '../../util';
 
 export const watchPKAEpisode =
     (episodeNumber: number | 'latest' | 'random', timestamp: number) =>

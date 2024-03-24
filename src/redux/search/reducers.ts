@@ -1,10 +1,10 @@
+import {LOCATION_CHANGE} from 'connected-react-router';
 import {
     SearchItemType,
     type SearchRootActionTypes,
     type SearchState,
     SearchTypes,
 } from './types';
-import {LOCATION_CHANGE} from 'connected-react-router';
 
 const initialState: SearchState = {
     searchQuery: '',
@@ -15,8 +15,8 @@ const initialState: SearchState = {
 };
 
 export function searchReducer(
-    state = initialState,
-    action: SearchRootActionTypes
+    state,
+    action: SearchRootActionTypes,
 ): SearchState {
     switch (action.type) {
         case SearchTypes.STARTED: {

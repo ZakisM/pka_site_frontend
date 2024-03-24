@@ -1,21 +1,17 @@
-import React, {type ReactElement, useEffect, useState} from 'react';
+import {Card} from '@material-ui/core';
+import InputBase from '@material-ui/core/InputBase';
+import {alpha, makeStyles} from '@material-ui/core/styles';
 import {
     ArrowDownwardRounded,
     ArrowUpwardRounded,
     SearchRounded,
 } from '@material-ui/icons';
-import InputBase from '@material-ui/core/InputBase';
-import SearchResultCard from './SearchResultCard';
-import useConstant from 'use-constant';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import React, {type ReactElement, useEffect, useState} from 'react';
 import {useAsync} from 'react-async-hook';
-import {
-    SearchItemType,
-    type SearchResult,
-    type SearchRootActionTypes,
-} from '../redux/search/types';
-import type {RootState, ThunkDispatchType} from '../redux';
-import {Card} from '@material-ui/core';
+import {isMobile} from 'react-device-detect';
+import {connect} from 'react-redux';
+import {useHistory} from 'react-router-dom';
 import {
     AutoSizer,
     CellMeasurer,
@@ -23,16 +19,20 @@ import {
     List,
     WindowScroller,
 } from 'react-virtualized';
-import {isMobile} from 'react-device-detect';
-import {getPKAEpisodeYoutubeLink} from '../redux/watch-episode/actions';
-import {useHistory} from 'react-router-dom';
-import {YOUTUBE_BASE_URL} from './PlayerComponent';
-import LoadingSpinner from './LoadingSpinner';
+import useConstant from 'use-constant';
+import type {RootState, ThunkDispatchType} from '../redux';
 import {reverseResultsToggle, searchPKAItem} from '../redux/search/actions';
+import {
+    SearchItemType,
+    type SearchResult,
+    type SearchRootActionTypes,
+} from '../redux/search/types';
+import {getPKAEpisodeYoutubeLink} from '../redux/watch-episode/actions';
+import LoadingSpinner from './LoadingSpinner';
 import RandomEventsListComponent from './RandomEventsListComponent';
-import {alpha, makeStyles} from '@material-ui/core/styles';
-import {connect} from 'react-redux';
+import SearchResultCard from './SearchResultCard';
 import CustomTooltip from './Tooltip';
+import {YOUTUBE_BASE_URL} from './Watch';
 
 const mapDispatchToProps = (
     dispatch: ThunkDispatchType<SearchRootActionTypes>,

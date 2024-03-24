@@ -1,6 +1,6 @@
 import {CircularProgress} from '@material-ui/core';
-import React, {type ReactElement} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
+import React, {type ReactElement} from 'react';
 
 const useStyles = makeStyles(() => ({
     progress: {

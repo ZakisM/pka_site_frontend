@@ -1,4 +1,6 @@
-const path = require('path');
+const path = require('node:path');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
     entry: ['./src/index.tsx'],
@@ -10,17 +12,27 @@ module.exports = {
         rules: [
             {
                 test: /\.(ts|tsx|js|jsx)$/i,
-                loader: 'swc-loader',
                 exclude: [
                     {
                         and: [/node_modules/],
                         not: [/scroll-js/],
                     },
                 ],
+                loader: 'swc-loader',
+                options: {
+                    jsc: {
+                        transform: {
+                            react: {
+                                development: isDevelopment,
+                                refresh: isDevelopment,
+                            },
+                        },
+                    },
+                },
             },
             {
                 test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
+                use: ['style-loader', 'css-loader', 'postcss-loader'],
             },
             {
                 test: /\.woff$/i,

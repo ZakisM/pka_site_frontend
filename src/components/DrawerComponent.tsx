@@ -1,15 +1,13 @@
-import React, {type ReactElement} from 'react';
 import {
     AppBar,
-    alpha,
     Hidden,
     IconButton,
     List,
     Typography,
+    alpha,
 } from '@material-ui/core';
-import Toolbar from '@material-ui/core/Toolbar';
 import Drawer from '@material-ui/core/Drawer';
-import DrawerListItem from './DrawerListItem';
+import Toolbar from '@material-ui/core/Toolbar';
 import {makeStyles, useTheme} from '@material-ui/core/styles';
 import {
     MenuRounded,
@@ -18,25 +16,11 @@ import {
     TimelineRounded,
     VideoLibraryRounded,
 } from '@material-ui/icons';
-import type {WatchEpisodeRootActionTypes} from '../redux/watch-episode/types';
-import {connect} from 'react-redux';
-import {useHistory} from 'react-router-dom';
-import {clearWatchState} from '../redux/watch-episode/actions';
-import type {ThunkDispatchType} from '../redux';
+import React, {type ReactElement} from 'react';
+import DrawerListItem from './DrawerListItem';
 import CustomTooltip from './Tooltip';
 
 export const drawerWidth = '220px';
-
-const mapDispatchToProps = (
-    dispatch: ThunkDispatchType<WatchEpisodeRootActionTypes>,
-): any => {
-    return {
-        clearWatchState: (): WatchEpisodeRootActionTypes =>
-            dispatch(clearWatchState()),
-    };
-};
-
-type DrawerComponentProps = ReturnType<typeof mapDispatchToProps>;
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
@@ -76,23 +60,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
+export const DrawerComponent = (): ReactElement => {
     const theme = useTheme();
     const classes = useStyles();
-
-    const {clearWatchState} = props;
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = (): void => {
         setMobileOpen(!mobileOpen);
-    };
-
-    const history = useHistory();
-
-    const watchRandomEpisode = (): void => {
-        clearWatchState();
-        history.push('/watch/random');
     };
 
     const drawer = (
@@ -136,7 +111,7 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
                     <CustomTooltip title="Watch Random Episode" arrow>
                         <IconButton
                             className={classes.shuffleIcon}
-                            onClick={watchRandomEpisode}
+                            // onClick={watchRandomEpisode}
                             aria-label="Watch Random Episode">
                             <ShuffleRounded />
                         </IconButton>
@@ -173,5 +148,3 @@ const DrawerComponent = (props: DrawerComponentProps): ReactElement => {
         </div>
     );
 };
-
-export default connect(null, mapDispatchToProps)(DrawerComponent);

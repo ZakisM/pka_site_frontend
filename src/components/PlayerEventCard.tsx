@@ -1,17 +1,17 @@
-import React, {type ReactElement, useEffect, useRef, useState} from 'react';
+import {Card, LinearProgress, Typography} from '@material-ui/core';
 import {
-    createStyles,
-    alpha,
-    makeStyles,
     type Theme,
+    alpha,
+    createStyles,
+    makeStyles,
     withStyles,
 } from '@material-ui/core/styles';
-import {Card, LinearProgress, Typography} from '@material-ui/core';
-import type {RootState} from '../redux';
-import {connect} from 'react-redux';
 import moment from 'moment';
-import {scrollIntoView} from 'scroll-js';
+import React, {type ReactElement, useEffect, useRef, useState} from 'react';
 import {useAsync} from 'react-async-hook';
+import {connect} from 'react-redux';
+import {scrollIntoView} from 'scroll-js';
+import type {RootState} from '../redux';
 
 interface Props {
     parentRef: any;
@@ -71,7 +71,7 @@ const CurrentEventProgressBar = withStyles((theme: Theme) =>
             borderRadius: 5,
             backgroundColor: '#c7c7c7',
         },
-    })
+    }),
 )(LinearProgress);
 
 const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
@@ -118,7 +118,7 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
                 setProgress(
                     ((watchEpisodeState.timestamp - currentEvent.timestamp) /
                         currentEvent.lengthSeconds) *
-                        100
+                        100,
                 );
             }
         }
@@ -134,7 +134,7 @@ const PlayerEventCard = (props: PlayerEventCardProps): ReactElement => {
         <Card
             variant={isActive ? 'outlined' : undefined}
             ref={cardRef}
-            className={`${classes.resultCard} ${
+            className={`${classes.resultCard}${
                 isActive ? classes.active : null
             }`}>
             <Typography className={classes.title}>{title}</Typography>
