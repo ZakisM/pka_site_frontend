@@ -7,13 +7,14 @@
         background-color: black;
     }
 
-    iframe:focus-visible, .ReactVirtualized__Grid {
+    iframe:focus-visible,
+    .ReactVirtualized__Grid {
         outline: none;
     }
 }
 
 @layer utilities {
     .content-area {
-      height: calc(100vh - theme('height.nav-height'));
+        height: calc(100vh - theme("height.nav-height"));
     }
 }

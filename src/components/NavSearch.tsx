@@ -9,14 +9,17 @@ const EpisodeResult = (props: EpisodeResultProps) => {
 
     return (
         <div
-            className="group mb-3 flex flex-col rounded-md p-2 data-[active]:bg-red-500/60"
+            className="group mb-3 flex items-center justify-between text-sm"
             {...rest}>
-            <span className="font-medium text-sm text-zinc-300">
-                Painkiller Already Episode 26
-            </span>
-            <span className="text-xs text-zinc-500 group-data-[active]:text-zinc-200">
-                Thursday 14th October 2010
-            </span>
+            <div className="flex flex-col rounded-md p-2 data-[active]:bg-red-600/35">
+                <span className="font-medium text-zinc-300">
+                    Painkiller Already Episode 26
+                </span>
+                <span className="text-xs text-zinc-500 group-data-[active]:text-zinc-300">
+                    Thursday 14th October 2010
+                </span>
+            </div>
+            <div className="text-zinc-50">LMFAO</div>
         </div>
     );
 };
@@ -25,7 +28,7 @@ export const NavSearch = () => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="col-span-2">
+        <div>
             <button
                 className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-600 outline outline-1 outline-zinc-800 hover:bg-zinc-900 hover:outline-zinc-700/75"
                 onFocus={() => setOpen(true)}
@@ -35,7 +38,7 @@ export const NavSearch = () => {
             </button>
             {open && (
                 <div
-                    className="fixed top-0 left-0 z-10 size-full bg-black/75 p-4 backdrop-blur-lg xl:p-28"
+                    className="fixed top-0 left-0 z-10 size-full bg-black/50 p-12 backdrop-blur-md sm:p-24"
                     onMouseDown={() => {
                         setOpen(false);
                     }}>
