@@ -11,11 +11,11 @@ const EpisodeResult = (props: EpisodeResultProps) => {
     <div
       className="group mb-3 flex items-center justify-between text-sm"
       {...rest}>
-      <div className="flex flex-col rounded-md p-2 data-[active]:bg-red-600/35">
+      <div className="flex flex-col rounded-md p-2 data-active:bg-red-600/35">
         <span className="font-medium text-zinc-300">
           Painkiller Already Episode 26
         </span>
-        <span className="text-xs text-zinc-500 group-data-[active]:text-zinc-300">
+        <span className="text-xs text-zinc-500 group-data-active:text-zinc-300">
           Thursday 14th October 2010
         </span>
       </div>
@@ -48,7 +48,7 @@ export const NavSearch = () => {
             <div className="flex items-center border-zinc-900 border-b pl-4">
               <MagnifyingGlassIcon className="h-5 w-5 stroke-[2.5px] text-zinc-500" />
               <input
-                className="w-full bg-transparent p-4 text-sm text-zinc-300 caret-red-600 outline-none selection:bg-zinc-600 placeholder:text-zinc-600"
+                className="w-full bg-transparent p-4 text-sm text-zinc-300 caret-red-600 outline-hidden selection:bg-zinc-600 placeholder:text-zinc-600"
                 placeholder="Search..."
                 // biome-ignore lint/a11y/noAutofocus: Modal autofocus is desired behaviour
                 autoFocus

@@ -1,11 +1,8 @@
-import '@fontsource/raleway/800.css';
+import '@fontsource-variable/raleway';
+import '@fontsource/roboto';
 import 'core-js/stable';
-import 'typeface-roboto';
 import App from './App.tsx';
-import '@fontsource/raleway/800.css';
-import 'core-js/stable';
 import {createRoot} from 'react-dom/client';
-import 'typeface-roboto';
 
 const container = document.getElementById('root');
 if (!container) {

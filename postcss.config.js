@@ -2,7 +2,7 @@
 import process from 'node:process';
 const config = {
   plugins: {
-    tailwindcss: {},
+    '@tailwindcss/postcss': {},
     autoprefixer: {},
     // Conditionally add cssnano in production.
     // This relies on `process.env.NODE_ENV` being correctly set.
