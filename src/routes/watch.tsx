@@ -1,35 +1,42 @@
-import {Scrollbar} from './Scrollbar.tsx';
+import {format, fromUnixTime} from 'date-fns';
+import {Scrollbar} from '../components/Scrollbar';
+import {createFileRoute} from '@tanstack/react-router';
 
 export const YOUTUBE_BASE_URL = 'https://www.youtube.com';
 
-export const Watch = () => {
+const Watch = () => {
   // const playerRef = useRef<ReactPlayer>(null);
   // const eventsCardRef = useRef<any>(null);
 
-  // const getUrl = (): string => {
-  //     const videoId = watchEpisodeState.youtubeDetails?.videoId;
+  // Use the hook generated for your specific route to get typed loader data
+  // const episodeData = useLoaderData({from: watchEpisodeRoute.id});
 
-  //     const url = new URL(YOUTUBE_BASE_URL);
-  //     url.pathname = 'watch';
-  //     url.searchParams.append('v', videoId);
-  //     url.searchParams.append('origin', window.location.origin);
-  //     url.searchParams.append('enablejsapi', '1');
+  // // Check if data exists (especially during initial load or if fetch failed, though ensureQueryData helps)
+  // if (!episodeData?.data?.episode) {
+  //   // Handle loading or error state appropriately
+  //   // For example, show a loading spinner or an error message
+  //   return <div>Loading episode data...</div>;
+  // }
 
-  //     return url.toString();
-  // };
+  const {name, uploadDate} = {name: 'zak', uploadDate: 12331233};
+
+  // Convert Unix timestamp (seconds) to Date object
+  const dateObject = fromUnixTime(uploadDate);
+
+  // Format the date: e.g., "Saturday 18th May 2024"
+  // We need a custom day format part for the ordinal
+  const formattedDate = format(dateObject, 'EEEE do MMMM yyyy');
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-hidden xl:flex-row">
       <div className="flex grow flex-col overflow-hidden rounded-md border border-zinc-900 bg-night">
         <div className="p-4">
-          <h1 className="font-medium text-lg text-zinc-300">
-            PKA 692: President Squad
-          </h1>
-          <p className="text-zinc-500">Sunday 24th March 2024</p>
+          <h1 className="font-medium text-lg text-white">{name}</h1>
+          <p className="text-zinc-500">{formattedDate}</p>
         </div>
       </div>
       <div className="rounded-md border border-zinc-900 bg-night xl:w-96">
-        <h1 className="py-4 font-bold text-sm text-zinc-300 uppercase px-4 tracking-wide">
+        <h1 className="py-4 font-[425] text-sm text-white uppercase px-4 tracking-wider">
           Timeline
         </h1>
         <Scrollbar element="div" className="xl:h-[calc(100%-54px)]">
@@ -70,3 +77,7 @@ const Card = () => {
     </div>
   );
 };
+
+export const Route = createFileRoute('/watch')({
+  component: Watch,
+});

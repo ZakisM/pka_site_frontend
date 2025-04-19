@@ -1,6 +1,6 @@
 import {defineConfig} from 'rolldown-vite';
 import react from '@vitejs/plugin-react';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
 import path from 'node:path';
 import viteCompression from 'vite-plugin-compression';
 
@@ -9,7 +9,7 @@ export default defineConfig(({mode}) => {
 
   return {
     plugins: [
-      TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
+      TanStackRouterVite({target: 'react', autoCodeSplitting: true}),
       react({
         babel: {
           plugins: [['babel-plugin-react-compiler', {target: '19'}]],

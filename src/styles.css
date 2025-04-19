@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --font-sans: Roboto Variable;
@@ -33,7 +33,9 @@
 }
 
 @layer base {
-  body { @apply bg-zinc-950 text-white; }
+  body {
+    @apply bg-zinc-950 text-white;
+  }
 
   iframe:focus-visible,
   .ReactVirtualized__Grid {

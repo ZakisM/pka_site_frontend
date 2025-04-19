@@ -1,6 +1,6 @@
-/** @type {import('postcss-load-config').Config} */
 import process from 'node:process';
-const config = {
+
+export default {
   plugins: {
     '@tailwindcss/postcss': {},
     autoprefixer: {},
@@ -10,6 +10,3 @@ const config = {
     ...(process.env.NODE_ENV === 'production' ? {cssnano: {}} : {}),
   },
 };
-
-// Use export default for ES Module syntax
-export default config;
