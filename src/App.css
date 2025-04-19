@@ -1,10 +1,13 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: Roboto;
+  --font-sans: Roboto Variable;
   --font-raleway: Raleway Variable;
 
   --height-nav-height: 50px;
+
+  --color-primary: oklch(0.48 0.1751 27.03);
+  --color-night: #101114;
 }
 
 /*
@@ -30,9 +33,7 @@
 }
 
 @layer base {
-  body {
-    background-color: black;
-  }
+  body { @apply bg-zinc-950 text-white; }
 
   iframe:focus-visible,
   .ReactVirtualized__Grid {

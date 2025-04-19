@@ -1,5 +1,5 @@
 import '@fontsource-variable/raleway';
-import '@fontsource/roboto';
+import '@fontsource-variable/roboto';
 import 'core-js/stable';
 import App from './App.tsx';
 import {createRoot} from 'react-dom/client';

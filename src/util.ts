@@ -1,5 +1,4 @@
 import axios from 'axios';
-import {useLocation} from 'react-router-dom';
 
 type ApiError = {
   message: string;
@@ -21,8 +20,8 @@ const handleError = (error: unknown) => {
   return 'An unknown error occurred';
 };
 
-export const useQuery = (): URLSearchParams => {
-  return new URLSearchParams(useLocation().search);
-};
+// export const useQuery = (): URLSearchParams => {
+//   return new URLSearchParams(useLocation().search);
+// };
 
 export default handleError;
