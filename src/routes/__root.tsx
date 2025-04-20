@@ -28,7 +28,7 @@ const RootComponent = () => (
       <RouterSpinner />
       <Outlet />
     </div>
-    <ReactQueryDevtools buttonPosition="top-right" />
+    <ReactQueryDevtools buttonPosition="bottom-left" />
     <TanStackRouterDevtools position="bottom-right" />
   </>
 );

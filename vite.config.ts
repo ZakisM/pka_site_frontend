@@ -60,9 +60,9 @@ export default defineConfig(({mode}) => {
       port: 5678,
       strictPort: true,
       host: '0.0.0.0',
+      allowedHosts: ['www.pkaindextest.com'],
       hmr: {
         protocol: 'ws',
-        host: 'localhost',
       },
     },
     build: {

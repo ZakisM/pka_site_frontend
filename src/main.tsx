@@ -9,13 +9,21 @@ import {Navigate, RouterProvider, createRouter} from '@tanstack/react-router';
 import {routeTree} from './routeTree.gen';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+});
 
 const router = createRouter({
   routeTree,
   context: {queryClient},
   defaultPreloadStaleTime: 0,
-  defaultNotFoundComponent: () => <Navigate to="/watch" replace />,
+  defaultNotFoundComponent: () => (
+    <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />
+  ),
 });
 
 // Register the router instance for type safety

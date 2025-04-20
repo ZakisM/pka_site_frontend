@@ -4,9 +4,7 @@ import {MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 
 type EpisodeResultProps = React.ComponentPropsWithoutRef<'div'>;
 
-const EpisodeResult = (props: EpisodeResultProps) => {
-  const {...rest} = props;
-
+const EpisodeResult = ({...rest}: EpisodeResultProps) => {
   return (
     <div
       className="flex w-full flex-col first:border-t border-b border-zinc-800/50 py-2.5 gap-1"
@@ -36,7 +34,7 @@ export const NavSearch = () => {
         className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
         onClick={() => setOpen(true)}
         type="button">
-        <MagnifyingGlassIcon className="mr-1.5 h-4 w-4 text-zinc-500" />
+        <MagnifyingGlassIcon className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
         Search...
       </button>
       {open && (
@@ -54,7 +52,7 @@ export const NavSearch = () => {
               }
             }}>
             <div className="flex items-center border-zinc-800/50 border-b pl-4">
-              <MagnifyingGlassIcon className="h-5 w-5 stroke-[2.5px] text-zinc-400" />
+              <MagnifyingGlassIcon className="h-5 w-5 stroke-2 text-zinc-400" />
               <input
                 className="w-full bg-transparent p-4 text-base text-zinc-300 caret-primary outline-hidden selection:bg-zinc-700 placeholder:text-zinc-400"
                 placeholder="Search..."
