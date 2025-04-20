@@ -21,7 +21,7 @@ wasm-bindgen: wasm-build
 
 wasm-opt: wasm-bindgen
   @echo "Optimizing WASM"
-  @cd {{wasm_project_name}}; wasm-opt -O4 {{wasm_bg_file}} -o {{wasm_bg_file}}
+  @cd {{wasm_project_name}}; wasm-opt --enable-bulk-memory-opt -O4 {{wasm_bg_file}} -o {{wasm_bg_file}}
 
 update-wasm-bindgen: wasm-opt
   @echo "Deleting old WASM bindgen"
