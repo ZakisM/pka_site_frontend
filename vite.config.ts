@@ -1,15 +1,29 @@
 import {defineConfig} from 'rolldown-vite';
 import react from '@vitejs/plugin-react';
 import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
+import browserslist from 'browserslist'; // You need to import this package
+import {browserslistToTargets} from 'lightningcss'; // And this utility
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig(({mode}) => {
   const isProduction = mode === 'production';
 
   return {
+    css: {
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets: browserslistToTargets(
+          browserslist(undefined, {
+            env: mode,
+          }),
+        ),
+      },
+    },
     plugins: [
       TanStackRouterVite({target: 'react', autoCodeSplitting: true}),
+      tailwindcss(),
       react({
         babel: {
           plugins: [['babel-plugin-react-compiler', {target: '19'}]],
@@ -55,6 +69,7 @@ export default defineConfig(({mode}) => {
       outDir: 'dist',
       sourcemap: false,
       target: 'esnext',
+      cssMinify: 'lightningcss',
     },
   };
 });
