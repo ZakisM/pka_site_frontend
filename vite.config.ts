@@ -1,10 +1,10 @@
-import {defineConfig} from 'rolldown-vite';
-import react from '@vitejs/plugin-react';
-import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
-import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
+import tailwindcss from '@tailwindcss/vite';
+import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
+import react from '@vitejs/plugin-react';
 import browserslist from 'browserslist'; // You need to import this package
 import {browserslistToTargets} from 'lightningcss'; // And this utility
+import {defineConfig} from 'rolldown-vite';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig(({mode}) => {
@@ -50,6 +50,7 @@ export default defineConfig(({mode}) => {
     ],
     resolve: {
       alias: {
+        '@': path.resolve(__dirname, './src'),
         LibWasm: path.resolve(__dirname, 'src/lib_wasm'),
       },
     },

@@ -1,10 +1,10 @@
-import {format, fromUnixTime, intervalToDuration} from 'date-fns';
-import {Scrollbar} from '../components/Scrollbar';
-import {createFileRoute, redirect} from '@tanstack/react-router';
-import {episodeQueryKeyFn, episodeQueryOptions} from '../utils/queryOptions';
 import {useSuspenseQuery} from '@tanstack/react-query';
-
-export const YOUTUBE_BASE_URL = 'https://www.youtube.com';
+import {createFileRoute, redirect} from '@tanstack/react-router';
+import {format, fromUnixTime} from 'date-fns';
+import {Scrollbar} from '@/components/Scrollbar';
+import {TimelineCard} from '@/components/TimelineCard';
+import {fetchEpisodeById} from '@/utils/api';
+import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
 
 const Watch = () => {
   const params = Route.useParams();
@@ -17,7 +17,7 @@ const Watch = () => {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-hidden xl:flex-row">
-      <div className="flex grow flex-col overflow-hidden rounded-md border border-zinc-900 bg-night">
+      <div className="flex grow flex-col overflow-hidden rounded-lg border border-zinc-900 bg-night">
         <div className="p-4">
           <h1 className="font-medium text-lg text-white">
             {data.youtubeDetails.title}
@@ -25,18 +25,19 @@ const Watch = () => {
           <p className="text-zinc-500">{formattedDate}</p>
         </div>
       </div>
-      <div className="rounded-md border border-zinc-900 bg-night xl:w-96">
-        <h1 className="py-4 font-[425] text-sm text-white uppercase px-4 tracking-wider">
+      <div className="rounded-lg border border-zinc-900 bg-night xl:w-96">
+        <h1 className="py-4 font-medium text-primary uppercase px-6 tracking-wider">
           Timeline
         </h1>
         <Scrollbar element="div" className="xl:h-[calc(100%-54px)]">
-          <div className="flex flex-row gap-4 px-4 pb-4 xl:flex-col">
-            {data.events.map((event: any) => {
+          <div className="flex flex-row gap-2 px-4 pb-4 xl:flex-col">
+            {data.events.map((event: any, index: number) => {
               return (
-                <Card
+                <TimelineCard
                   key={event.timestamp}
                   description={event.description}
                   timestamp={event.timestamp}
+                  data-active={index === 1 ? true : undefined}
                 />
               );
             })}
@@ -47,38 +48,12 @@ const Watch = () => {
   );
 };
 
-interface CardProps extends React.ComponentPropsWithoutRef<'div'> {
-  description: string;
-  timestamp: number;
-}
-
-const Card = ({description, timestamp, ...rest}: CardProps) => {
-  const formatTimestamp = (timestamp: number) => {
-    const hours = Math.floor(timestamp / 3600);
-    const minutes = Math.floor(timestamp / 60) % 60;
-    const seconds = timestamp % 60;
-
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
-
-  return (
-    <div className="max-xl:min-w-60" {...rest}>
-      <div className="rounded-md bg-night p-4 text-sm text-zinc-400">
-        <p>{description}</p>
-        <time>{formatTimestamp(timestamp)}</time>
-      </div>
-    </div>
-  );
-};
-
 export const Route = createFileRoute('/watch/$episodeId')({
   component: Watch,
   loader: async ({context, params}) => {
-    const data = await context.queryClient.ensureQueryData(
-      episodeQueryOptions(params.episodeId),
-    );
-
     if (params.episodeId === 'latest' || params.episodeId === 'random') {
+      const data = await fetchEpisodeById(params.episodeId);
+
       const episodeId = data.episode.number;
 
       context.queryClient.setQueryData(episodeQueryKeyFn(episodeId), data);
@@ -88,5 +63,7 @@ export const Route = createFileRoute('/watch/$episodeId')({
         params: {episodeId},
       });
     }
+
+    context.queryClient.ensureQueryData(episodeQueryOptions(params.episodeId));
   },
 });

@@ -10,9 +10,9 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as RouteImport } from './routes/Route'
-import { Route as WatchEpisodeIdImport } from './routes/watch.$episodeId'
+import {Route as rootRoute} from './routes/__root';
+import {Route as RouteImport} from './routes/Route';
+import {Route as WatchEpisodeIdImport} from './routes/watch.$episodeId';
 
 // Create/Update Routes
 
@@ -20,75 +20,75 @@ const RouteRoute = RouteImport.update({
   id: '/Route',
   path: '/Route',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const WatchEpisodeIdRoute = WatchEpisodeIdImport.update({
   id: '/watch/$episodeId',
   path: '/watch/$episodeId',
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/Route': {
-      id: '/Route'
-      path: '/Route'
-      fullPath: '/Route'
-      preLoaderRoute: typeof RouteImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/Route';
+      path: '/Route';
+      fullPath: '/Route';
+      preLoaderRoute: typeof RouteImport;
+      parentRoute: typeof rootRoute;
+    };
     '/watch/$episodeId': {
-      id: '/watch/$episodeId'
-      path: '/watch/$episodeId'
-      fullPath: '/watch/$episodeId'
-      preLoaderRoute: typeof WatchEpisodeIdImport
-      parentRoute: typeof rootRoute
-    }
+      id: '/watch/$episodeId';
+      path: '/watch/$episodeId';
+      fullPath: '/watch/$episodeId';
+      preLoaderRoute: typeof WatchEpisodeIdImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/Route': typeof RouteRoute
-  '/watch/$episodeId': typeof WatchEpisodeIdRoute
+  '/Route': typeof RouteRoute;
+  '/watch/$episodeId': typeof WatchEpisodeIdRoute;
 }
 
 export interface FileRoutesByTo {
-  '/Route': typeof RouteRoute
-  '/watch/$episodeId': typeof WatchEpisodeIdRoute
+  '/Route': typeof RouteRoute;
+  '/watch/$episodeId': typeof WatchEpisodeIdRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/Route': typeof RouteRoute
-  '/watch/$episodeId': typeof WatchEpisodeIdRoute
+  __root__: typeof rootRoute;
+  '/Route': typeof RouteRoute;
+  '/watch/$episodeId': typeof WatchEpisodeIdRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/Route' | '/watch/$episodeId'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/Route' | '/watch/$episodeId'
-  id: '__root__' | '/Route' | '/watch/$episodeId'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: '/Route' | '/watch/$episodeId';
+  fileRoutesByTo: FileRoutesByTo;
+  to: '/Route' | '/watch/$episodeId';
+  id: '__root__' | '/Route' | '/watch/$episodeId';
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  RouteRoute: typeof RouteRoute
-  WatchEpisodeIdRoute: typeof WatchEpisodeIdRoute
+  RouteRoute: typeof RouteRoute;
+  WatchEpisodeIdRoute: typeof WatchEpisodeIdRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   RouteRoute: RouteRoute,
   WatchEpisodeIdRoute: WatchEpisodeIdRoute,
-}
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {

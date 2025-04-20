@@ -3,11 +3,11 @@ import '@fontsource-variable/roboto';
 import 'core-js/stable';
 import 'overlayscrollbars/overlayscrollbars.css';
 import './styles.css';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {createRouter, Navigate, RouterProvider} from '@tanstack/react-router';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import {Navigate, RouterProvider, createRouter} from '@tanstack/react-router';
 import {routeTree} from './routeTree.gen';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -18,7 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "LibWasm/*": ["./src/lib_wasm/*"]
+      "LibWasm/*": ["./src/lib_wasm/*"],
+      "@/*": ["./src/*"]
     },
     "types": ["vite/client"]
   },
