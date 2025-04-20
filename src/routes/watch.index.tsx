@@ -78,6 +78,6 @@ const Card = () => {
   );
 };
 
-export const Route = createFileRoute('/watch')({
+export const Route = createFileRoute('/watch/')({
   component: Watch,
 });

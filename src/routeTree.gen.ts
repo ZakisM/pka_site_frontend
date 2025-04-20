@@ -10,85 +10,85 @@
 
 // Import Routes
 
-import {Route as rootRoute} from './routes/__root';
-import {Route as WatchImport} from './routes/watch';
-import {Route as RouteImport} from './routes/Route';
+import { Route as rootRoute } from './routes/__root'
+import { Route as RouteImport } from './routes/Route'
+import { Route as WatchIndexImport } from './routes/watch.index'
 
 // Create/Update Routes
-
-const WatchRoute = WatchImport.update({
-  id: '/watch',
-  path: '/watch',
-  getParentRoute: () => rootRoute,
-} as any);
 
 const RouteRoute = RouteImport.update({
   id: '/Route',
   path: '/Route',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
+
+const WatchIndexRoute = WatchIndexImport.update({
+  id: '/watch/',
+  path: '/watch/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/Route': {
-      id: '/Route';
-      path: '/Route';
-      fullPath: '/Route';
-      preLoaderRoute: typeof RouteImport;
-      parentRoute: typeof rootRoute;
-    };
-    '/watch': {
-      id: '/watch';
-      path: '/watch';
-      fullPath: '/watch';
-      preLoaderRoute: typeof WatchImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/Route'
+      path: '/Route'
+      fullPath: '/Route'
+      preLoaderRoute: typeof RouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/watch/': {
+      id: '/watch/'
+      path: '/watch'
+      fullPath: '/watch'
+      preLoaderRoute: typeof WatchIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/Route': typeof RouteRoute;
-  '/watch': typeof WatchRoute;
+  '/Route': typeof RouteRoute
+  '/watch': typeof WatchIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/Route': typeof RouteRoute;
-  '/watch': typeof WatchRoute;
+  '/Route': typeof RouteRoute
+  '/watch': typeof WatchIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  '/Route': typeof RouteRoute;
-  '/watch': typeof WatchRoute;
+  __root__: typeof rootRoute
+  '/Route': typeof RouteRoute
+  '/watch/': typeof WatchIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/Route' | '/watch';
-  fileRoutesByTo: FileRoutesByTo;
-  to: '/Route' | '/watch';
-  id: '__root__' | '/Route' | '/watch';
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/Route' | '/watch'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/Route' | '/watch'
+  id: '__root__' | '/Route' | '/watch/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  RouteRoute: typeof RouteRoute;
-  WatchRoute: typeof WatchRoute;
+  RouteRoute: typeof RouteRoute
+  WatchIndexRoute: typeof WatchIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   RouteRoute: RouteRoute,
-  WatchRoute: WatchRoute,
-};
+  WatchIndexRoute: WatchIndexRoute,
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/Route",
-        "/watch"
+        "/watch/"
       ]
     },
     "/Route": {
       "filePath": "Route.tsx"
     },
-    "/watch": {
-      "filePath": "watch.tsx"
+    "/watch/": {
+      "filePath": "watch.index.tsx"
     }
   }
 }

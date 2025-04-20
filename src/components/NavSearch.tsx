@@ -33,8 +33,8 @@ export const NavSearch = () => {
   return (
     <div>
       <button
-        className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 outline-1 outline-zinc-800 hover:bg-zinc-900 hover:outline-zinc-700/75 hover:cursor-pointer"
-        onFocus={() => setOpen(true)}
+        className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
+        onClick={() => setOpen(true)}
         type="button">
         <MagnifyingGlassIcon className="mr-1.5 h-4 w-4 text-zinc-500" />
         Search...
@@ -47,7 +47,12 @@ export const NavSearch = () => {
           }}>
           <div
             className="mx-auto flex h-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-800/50 bg-night"
-            onMouseDown={(e) => e.stopPropagation()}>
+            onMouseDown={(e) => e.stopPropagation()}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                setOpen(false);
+              }
+            }}>
             <div className="flex items-center border-zinc-800/50 border-b pl-4">
               <MagnifyingGlassIcon className="h-5 w-5 stroke-[2.5px] text-zinc-400" />
               <input
