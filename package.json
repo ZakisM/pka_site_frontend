@@ -9,11 +9,7 @@
     "serve": "vite build && vite preview --port 5678"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -24,10 +20,12 @@
     "@fontsource-variable/raleway": "^5.2.5",
     "@fontsource-variable/roboto": "^5.2.5",
     "@heroicons/react": "^2.2.0",
-    "@radix-ui/react-tooltip": "^1.2.3",
+    "@lottiefiles/dotlottie-web": "^0.43.0",
+    "@radix-ui/react-tooltip": "^1.2.4",
     "@tanstack/react-query": "^5.74.4",
-    "@tanstack/react-router": "^1.116.0",
-    "@tanstack/react-router-devtools": "^1.116.0",
+    "@tanstack/react-router": "^1.117.1",
+    "@tanstack/react-router-devtools": "^1.117.1",
+    "class-variance-authority": "^0.7.1",
     "core-js": "^3.41.0",
     "date-fns": "^4.1.0",
     "jotai": "^2.12.3",
@@ -42,18 +40,21 @@
     "tw-animate-css": "^1.2.8"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.74.4",
-    "@tanstack/router-plugin": "^1.116.1",
+    "@tailwindcss/vite": "^4.1.4",
+    "@tanstack/react-query-devtools": "^5.74.6",
+    "@tanstack/router-plugin": "^1.117.2",
+    "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
     "babel-plugin-react-compiler": "^19.1.0-rc.1",
+    "browserslist": "^4.24.4",
     "caniuse-lite": "^1.0.30001715",
     "lightningcss": "^1.29.3",
-    "rolldown-vite": "^6.3.2",
+    "rolldown-vite": "^6.3.5",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
-    "vite": "^6.3.2",
+    "vite-plugin-arraybuffer": "^0.1.0",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-wasm": "^3.4.1"
   }

@@ -2,10 +2,9 @@ import {
   OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentProps,
 } from 'overlayscrollbars-react';
-import type {ReactNode} from 'react';
 
 interface ScrollbarProps extends OverlayScrollbarsComponentProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const Scrollbar = (props: ScrollbarProps) => {
@@ -18,7 +17,6 @@ export const Scrollbar = (props: ScrollbarProps) => {
         scrollbars: {
           theme: 'os-theme-light',
           autoHide: 'move',
-          clickScroll: true,
         },
       }}
       {...rest}>

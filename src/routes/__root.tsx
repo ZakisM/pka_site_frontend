@@ -12,7 +12,13 @@ import {Spinner} from '@/components/Spinner';
 const RouterSpinner = () => {
   const isLoading = useRouterState({select: (s) => s.status === 'pending'});
 
-  return isLoading && <Spinner />;
+  return (
+    isLoading && (
+      <div className="flex w-full h-full items-center justify-center">
+        <Spinner className="w-16 h-16" />
+      </div>
+    )
+  );
 };
 
 const RootComponent = () => (

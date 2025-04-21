@@ -1,12 +1,12 @@
-import {MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Link} from '@tanstack/react-router';
-import {Shuffle} from 'lucide-react';
-import {useState} from 'react';
+import {useAtom} from 'jotai';
+import {Search, Shuffle} from 'lucide-react';
+import {searchOpenAtom} from '@/atoms/searchAtoms.ts';
 import {NavSearch} from './NavSearch.tsx';
 import {Tooltip, TooltipContent, TooltipTrigger} from './Tooltip.tsx';
 
 export const NavBar = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [_, setSearchOpen] = useAtom(searchOpenAtom);
 
   return (
     <header>
@@ -14,13 +14,13 @@ export const NavBar = () => {
         <h1 className="select-none font-raleway font-extrabold text-primary text-xl uppercase">
           PKA Index
         </h1>
-        <NavSearch searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
+        <NavSearch />
         <div className="flex justify-end gap-4">
           <Tooltip>
             <TooltipTrigger
               className="sm:hidden hover:cursor-pointer inline-flex"
               onClick={() => setSearchOpen(true)}>
-              <MagnifyingGlassIcon className="h-5 w-5 stroke-2 text-zinc-300 hover:cursor-pointer" />
+              <Search className="h-5 w-5 stroke-2 text-zinc-300 hover:cursor-pointer" />
             </TooltipTrigger>
             <TooltipContent>Search</TooltipContent>
           </Tooltip>

@@ -1,4 +1,4 @@
-import {queryOptions} from '@tanstack/react-query';
+import {keepPreviousData, queryOptions} from '@tanstack/react-query';
 import {fetchEpisodeById, searchEpisodes} from './api';
 
 export const episodeQueryKeyFn = (episodeId: string | number) => [
@@ -17,5 +17,6 @@ export const searchEpisodeQueryOptions = (searchQuery = '') => {
   return queryOptions({
     queryKey: ['search', 'episode', searchQuery],
     queryFn: () => searchEpisodes(searchQuery),
+    placeholderData: keepPreviousData,
   });
 };

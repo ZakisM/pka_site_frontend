@@ -1,90 +1,55 @@
-import {MagnifyingGlassIcon} from '@heroicons/react/24/outline';
-import {useQuery} from '@tanstack/react-query';
-import {format, fromUnixTime} from 'date-fns';
-import {useEffect, useState} from 'react';
-import type {PkaEpisodeSearchResult} from '@/lib_wasm.ts';
-import type {DataComponentProps} from '@/types.ts';
+import {useIsFetching, useQuery} from '@tanstack/react-query';
+import {useAtom} from 'jotai';
+import {Milestone, Podcast, Search, SearchX} from 'lucide-react';
+import type {OverlayScrollbarsComponentRef} from 'overlayscrollbars-react';
+import {useEffect, useRef} from 'react';
+import {
+  debouncedSearchQueryAtom,
+  searchOpenAtom,
+  searchQueryAtom,
+  searchScrollStateAtom,
+} from '@/atoms/searchAtoms.ts';
 import {debounce} from '@/utils/index.ts';
 import {searchEpisodeQueryOptions} from '@/utils/queryOptions.ts';
+import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
 import {Scrollbar} from './Scrollbar.tsx';
 import {Spinner} from './Spinner.tsx';
+import {Button} from './Button.tsx';
 
-interface EpisodeResultProps extends DataComponentProps<'div'> {
-  item: PkaEpisodeSearchResult;
-}
-
-const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
-  const formattedUploadDate = format(
-    fromUnixTime(item.uploadDate),
-    'EEEE do MMMM yyyy',
-  );
-
-  const formattedLengthSeconds = () => {
-    const hours = Math.floor(item.lengthSeconds / 3600);
-    const minutes = Math.floor(item.lengthSeconds / 60) % 60;
-
-    return `${hours}h ${minutes}m`;
-  };
+export const NavSearch = () => {
+  const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
 
   return (
-    <div
-      className="flex w-full flex-col first:border-t border-b border-zinc-800/50 py-2.5 gap-1"
-      {...rest}>
-      <h3 className="text-sm font-medium text-zinc-300">{item.title}</h3>
-      <h4 className="text-xs text-zinc-400">{formattedUploadDate}</h4>
-      <div className="mt-1.5 flex gap-2">
-        <div className="w-fit rounded-[10px] bg-primary/75 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs uppercase">
-          EP {item.episodeNumber}
-        </div>
-        <div className="w-fit rounded-[10px] bg-zinc-800/90 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs">
-          {formattedLengthSeconds()}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface NavSearchProps extends DataComponentProps<'div'> {
-  searchOpen: boolean;
-  setSearchOpen: (open: boolean) => void;
-}
-
-export const NavSearch = ({
-  searchOpen,
-  setSearchOpen,
-  ...rest
-}: NavSearchProps) => {
-  return (
-    <div {...rest}>
+    <div>
       <div className="flex justify-between">
         <button
           className="max-sm:hidden flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
           onClick={() => setSearchOpen(true)}
           type="button">
-          <MagnifyingGlassIcon className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
+          <Search className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
           Search...
         </button>
       </div>
-      {searchOpen && (
-        <NavSearchModal searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
-      )}
+      {searchOpen && <NavSearchModal />}
     </div>
   );
 };
 
-const NavSearchModal = ({setSearchOpen}: NavSearchProps) => {
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+const NavSearchModal = () => {
+  const [, setSearchOpen] = useAtom(searchOpenAtom);
+  const searchFetching = useIsFetching({queryKey: ['search']});
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
 
-  const debouncedSet = debounce(setDebouncedQuery, 200);
+  const [debouncedQuery, setDebouncedQuery] = useAtom(debouncedSearchQueryAtom);
+  const debouncedSetQuery = debounce(setDebouncedQuery, 250);
 
   useEffect(() => {
-    debouncedSet(searchQuery);
-  }, [searchQuery, debouncedSet]);
+    debouncedSetQuery(searchQuery);
+  }, [searchQuery, debouncedSetQuery]);
 
   return (
     <div
-      className="fixed top-0 left-0 z-10 size-full bg-black/25 sm:p-16 backdrop-blur-md"
+      className="fixed top-0 left-0 z-10 size-full bg-black/25 sm:p-16 backdrop-blur-md animate-in fade-in duration-250"
       onMouseDown={() => {
         setSearchOpen(false);
       }}>
@@ -96,8 +61,8 @@ const NavSearchModal = ({setSearchOpen}: NavSearchProps) => {
             setSearchOpen(false);
           }
         }}>
-        <div className="flex items-center border-zinc-800/50 border-b pl-4">
-          <MagnifyingGlassIcon className="h-5 w-5 stroke-2 text-zinc-400" />
+        <div className="flex items-center border-zinc-800/50 border-b px-4">
+          <Search className="shrink-0 h-5 w-5 stroke-2 text-zinc-400" />
           <input
             // biome-ignore lint/a11y/noAutofocus: Modal autofocus is desired behaviour
             autoFocus
@@ -108,6 +73,11 @@ const NavSearchModal = ({setSearchOpen}: NavSearchProps) => {
             }
             value={searchQuery}
           />
+          <div className="w-8 h-8">
+            {searchFetching > 0 && (
+              <Spinner className="flex w-full h-full items-center justify-center" />
+            )}
+          </div>
         </div>
         <NavSearchContent searchQuery={debouncedQuery} />
       </div>
@@ -116,10 +86,33 @@ const NavSearchModal = ({setSearchOpen}: NavSearchProps) => {
 };
 
 const NavSearchContent = ({searchQuery}: {searchQuery: string}) => {
-  const {isPending, data} = useQuery(searchEpisodeQueryOptions(searchQuery));
+  const {data} = useQuery(searchEpisodeQueryOptions(searchQuery));
 
-  if (isPending) {
-    return <Spinner />;
+  const [scrollState, setScrollState] = useAtom(searchScrollStateAtom);
+  const debouncedSetScrollState = debounce(setScrollState, 100);
+
+  const firstRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<OverlayScrollbarsComponentRef | null>(null);
+
+  useEffect(() => {
+    if (firstRef.current && data) {
+      firstRef.current.scrollIntoView();
+    }
+  }, [data]);
+
+  if (!data) {
+    return null;
+  }
+
+  if (!data.length) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <div className="flex items-center gap-2 text-zinc-400">
+          <SearchX className="w-4.75 h-4.75" />
+          <span className="text-md">No results found</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -129,22 +122,40 @@ const NavSearchContent = ({searchQuery}: {searchQuery: string}) => {
           {data.length} results
         </div>
         <div className="flex gap-2 mt-2.5">
-          <button
-            className="rounded-[10px] bg-primary/75 py-1.25 px-3 tracking-wider font-[425]  text-white text-xs uppercase hover:cursor-pointer"
+          <Button className="inline-flex gap-1 items-center" type="button">
+            <span>Episodes</span>
+            <Podcast className="w-3 h-3" />
+          </Button>
+          <Button
+            className="inline-flex gap-1 items-center"
+            intent="secondary"
             type="button">
-            Episodes
-          </button>
-          <button
-            className="rounded-[10px] bg-primary py-1.25 px-3 tracking-wider font-[425]  text-white text-xs uppercase hover:cursor-pointer opacity-50"
-            type="button">
-            Events
-          </button>
+            <span>Events</span>
+            <Milestone className="w-3 h-3" />
+          </Button>
         </div>
       </div>
-      <Scrollbar element="div">
+      <Scrollbar
+        ref={scrollRef}
+        className="hidden"
+        element="div"
+        events={{
+          initialized(instance) {
+            instance.elements().viewport.scroll({top: scrollState});
+          },
+          scroll(instance) {
+            debouncedSetScrollState(instance.elements().viewport.scrollTop);
+          },
+        }}>
         <div className="mx-6 mb-6">
-          {data.map((item) => {
-            return <EpisodeSearchResult key={item.uploadDate} item={item} />;
+          {data.map((item, index) => {
+            return (
+              <EpisodeSearchResult
+                ref={index === 0 ? firstRef : undefined}
+                key={item.uploadDate}
+                item={item}
+              />
+            );
           })}
         </div>
       </Scrollbar>

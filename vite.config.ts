@@ -7,6 +7,7 @@ import {browserslistToTargets} from 'lightningcss'; // And this utility
 import {defineConfig} from 'rolldown-vite';
 import viteCompression from 'vite-plugin-compression';
 import wasm from 'vite-plugin-wasm';
+import arraybuffer from 'vite-plugin-arraybuffer';
 
 export default defineConfig(({mode}) => {
   const isProduction = mode === 'production';
@@ -24,6 +25,7 @@ export default defineConfig(({mode}) => {
     },
     plugins: [
       wasm(),
+      arraybuffer(),
       TanStackRouterVite({target: 'react', autoCodeSplitting: true}),
       tailwindcss(),
       react({
@@ -34,7 +36,7 @@ export default defineConfig(({mode}) => {
       viteCompression({
         verbose: true,
         disable: !isProduction,
-        filter: /\.(js|mjs|json|css|html|svg)$/i,
+        filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
         threshold: 10240,
         algorithm: 'gzip',
         ext: '.gz',

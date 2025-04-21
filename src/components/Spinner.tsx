@@ -1,7 +1,28 @@
-import {ArrowPathIcon} from '@heroicons/react/24/outline';
+import {DotLottieWorker} from '@lottiefiles/dotlottie-web';
+import dotLottieWasm from '@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm?url';
+import spinnerLottie from '@/lottie/spinner.lottie?arraybuffer';
+import type {DataComponentProps} from '@/types';
+import {useEffect, useRef} from 'react';
 
-export const Spinner = () => (
-  <div className="flex w-full h-full items-center justify-center">
-    <ArrowPathIcon className="text-primary h-8 w-8 inline-block animate-spin" />
-  </div>
-);
+DotLottieWorker.setWasmUrl(new URL(dotLottieWasm, import.meta.url).href);
+
+export const Spinner = ({...rest}: DataComponentProps<'div'>) => {
+  const dotLottieRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (dotLottieRef.current) {
+      new DotLottieWorker({
+        canvas: dotLottieRef.current,
+        data: spinnerLottie,
+        loop: true,
+        autoplay: true,
+      });
+    }
+  }, []);
+
+  return (
+    <div {...rest}>
+      <canvas ref={dotLottieRef} className="w-full h-full" />
+    </div>
+  );
+};
