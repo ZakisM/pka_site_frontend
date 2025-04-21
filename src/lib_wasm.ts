@@ -1,11 +1,7 @@
-import init from './lib_wasm_out/lib_wasm';
 import {
   deserialize_episodes,
   deserialize_events,
 } from './lib_wasm_out/lib_wasm';
-import wasm_bg from './lib_wasm_out/lib_wasm_bg.wasm';
-
-await init(wasm_bg);
 
 type PkaEpisodeSearchResult = {
   episodeNumber: number;

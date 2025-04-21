@@ -3,7 +3,6 @@ use bitcode::Decode;
 use futures::AsyncReadExt;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::js_sys::Uint8Array;
 
 #[derive(Clone, Decode, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -25,31 +24,29 @@ pub struct PkaEventSearchResult {
 }
 
 #[wasm_bindgen]
-pub async fn deserialize_episodes(bytes: &[u8]) -> Result<Uint8Array, JsValue> {
+pub async fn deserialize_episodes(bytes: &[u8]) -> Result<JsValue, JsValue> {
     let mut reader = ZstdDecoder::new(bytes);
     let mut decompressed_bytes = Vec::new();
 
     reader.read_to_end(&mut decompressed_bytes).await.unwrap();
 
-    let events: Vec<PkaEpisodeSearchResult> = bitcode::decode(&decompressed_bytes).unwrap();
-    let json_episodes = serde_json::to_vec(&events).unwrap();
-    let res = Uint8Array::new_with_length(json_episodes.len().try_into().unwrap());
-    res.copy_from(&json_episodes);
+    let episodes: Vec<PkaEpisodeSearchResult> = bitcode::decode(&decompressed_bytes).unwrap();
+
+    let res = serde_wasm_bindgen::to_value(&episodes).unwrap();
 
     Ok(res)
 }
 
 #[wasm_bindgen]
-pub async fn deserialize_events(bytes: &[u8]) -> Result<Uint8Array, JsValue> {
+pub async fn deserialize_events(bytes: &[u8]) -> Result<JsValue, JsValue> {
     let mut reader = ZstdDecoder::new(bytes);
     let mut decompressed_bytes = Vec::with_capacity(bytes.len());
 
     reader.read_to_end(&mut decompressed_bytes).await.unwrap();
 
     let events: Vec<PkaEventSearchResult> = bitcode::decode(&decompressed_bytes).unwrap();
-    let json_events = serde_json::to_vec(&events).unwrap();
-    let res = Uint8Array::new_with_length(json_events.len().try_into().unwrap());
-    res.copy_from(&json_events);
+
+    let res = serde_wasm_bindgen::to_value(&events).unwrap();
 
     Ok(res)
 }

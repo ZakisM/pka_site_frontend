@@ -16,20 +16,16 @@ export const NavBar = () => {
         </h1>
         <NavSearch searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
         <div className="flex justify-end gap-4">
-          <button
-            className="sm:hidden hover:cursor-pointer inline-flex"
-            type="button"
-            onClick={() => setSearchOpen(true)}>
-            <Tooltip>
-              <TooltipTrigger>
-                <MagnifyingGlassIcon className="h-5 w-5 stroke-2 text-zinc-300 hover:cursor-pointer" />
-              </TooltipTrigger>
-              <TooltipContent>Search</TooltipContent>
-            </Tooltip>
-          </button>
+          <Tooltip>
+            <TooltipTrigger
+              className="sm:hidden hover:cursor-pointer inline-flex"
+              onClick={() => setSearchOpen(true)}>
+              <MagnifyingGlassIcon className="h-5 w-5 stroke-2 text-zinc-300 hover:cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>Search</TooltipContent>
+          </Tooltip>
           <Link
             className="inline-flex"
-            type="button"
             to={'/watch/$episodeId'}
             params={{episodeId: 'random'}}>
             <Tooltip>

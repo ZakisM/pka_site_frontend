@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite build && vite preview"
+    "serve": "vite build && vite preview --port 5678"
   },
   "browserslist": {
     "production": [
@@ -39,7 +39,7 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "^19.1.0",
     "react-player": "^2.16.0",
-    "tw-animate-css": "^1.2.7"
+    "tw-animate-css": "^1.2.8"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.74.4",
@@ -47,13 +47,14 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
-    "babel-plugin-react-compiler": "^19.1.0-rc.1-rc-af1b7da-20250421",
+    "babel-plugin-react-compiler": "^19.1.0-rc.1",
     "caniuse-lite": "^1.0.30001715",
     "lightningcss": "^1.29.3",
     "rolldown-vite": "^6.3.2",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.2",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-wasm": "^3.4.1"
   }
 }

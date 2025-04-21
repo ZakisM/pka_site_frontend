@@ -17,7 +17,7 @@ wasm-build:
 
 wasm-bindgen: wasm-build
   @echo "Generating TypeScript bindings"
-  @cd {{wasm_project_name}}; wasm-bindgen ./target/wasm32-unknown-unknown/release/{{wasm_project_name}}.wasm --out-dir={{wasm_bindings_out_dir}} --target=web --omit-default-module-path
+  @cd {{wasm_project_name}}; wasm-bindgen ./target/wasm32-unknown-unknown/release/{{wasm_project_name}}.wasm --out-dir={{wasm_bindings_out_dir}} --target=bundler
 
 wasm-opt: wasm-bindgen
   @echo "Optimizing WASM"

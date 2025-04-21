@@ -20,10 +20,10 @@ const TooltipContent = ({
 );
 
 const Tooltip = ({
-  ...rest
+  children,
 }: React.ComponentPropsWithoutRef<typeof TooltipRoot>) => (
   <TooltipProvider delayDuration={200}>
-    <TooltipRoot {...rest} />
+    <TooltipRoot>{children} </TooltipRoot>
   </TooltipProvider>
 );
 

@@ -6,6 +6,7 @@ import browserslist from 'browserslist'; // You need to import this package
 import {browserslistToTargets} from 'lightningcss'; // And this utility
 import {defineConfig} from 'rolldown-vite';
 import viteCompression from 'vite-plugin-compression';
+import wasm from 'vite-plugin-wasm';
 
 export default defineConfig(({mode}) => {
   const isProduction = mode === 'production';
@@ -22,6 +23,7 @@ export default defineConfig(({mode}) => {
       },
     },
     plugins: [
+      wasm(),
       TanStackRouterVite({target: 'react', autoCodeSplitting: true}),
       tailwindcss(),
       react({
@@ -36,15 +38,6 @@ export default defineConfig(({mode}) => {
         threshold: 10240,
         algorithm: 'gzip',
         ext: '.gz',
-        deleteOriginFile: false,
-      }),
-      viteCompression({
-        verbose: true,
-        disable: !isProduction,
-        filter: /\.(js|mjs|json|css|html|svg)$/i,
-        threshold: 10240,
-        algorithm: 'brotliCompress',
-        ext: '.br',
         deleteOriginFile: false,
       }),
     ],

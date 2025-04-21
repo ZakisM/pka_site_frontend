@@ -1,5 +1,5 @@
 import {queryOptions} from '@tanstack/react-query';
-import {fetchEpisodeById} from './api';
+import {fetchEpisodeById, searchEpisodes} from './api';
 
 export const episodeQueryKeyFn = (episodeId: string | number) => [
   'episode',
@@ -10,5 +10,12 @@ export const episodeQueryOptions = (episodeId: string) => {
   return queryOptions({
     queryKey: episodeQueryKeyFn(episodeId),
     queryFn: () => fetchEpisodeById(episodeId),
+  });
+};
+
+export const searchEpisodeQueryOptions = (searchQuery = '') => {
+  return queryOptions({
+    queryKey: ['search', 'episode', searchQuery],
+    queryFn: () => searchEpisodes(searchQuery),
   });
 };
