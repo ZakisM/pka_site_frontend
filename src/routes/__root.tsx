@@ -24,7 +24,7 @@ const RouterSpinner = () => {
 const RootComponent = () => (
   <>
     <NavBar />
-    <div className="p-4 content-area">
+    <div className="p-4 content-area overflow-hidden">
       <RouterSpinner />
       <Outlet />
     </div>

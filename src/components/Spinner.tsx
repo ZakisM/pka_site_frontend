@@ -7,22 +7,27 @@ import {useEffect, useRef} from 'react';
 DotLottieWorker.setWasmUrl(new URL(dotLottieWasm, import.meta.url).href);
 
 export const Spinner = ({...rest}: DataComponentProps<'div'>) => {
-  const dotLottieRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const dotLottieInstanceRef = useRef<DotLottieWorker | null>(null);
 
   useEffect(() => {
-    if (dotLottieRef.current) {
-      new DotLottieWorker({
-        canvas: dotLottieRef.current,
+    if (canvasRef.current) {
+      dotLottieInstanceRef.current = new DotLottieWorker({
+        canvas: canvasRef.current,
         data: spinnerLottie,
         loop: true,
         autoplay: true,
       });
     }
+
+    return () => {
+      dotLottieInstanceRef.current?.destroy();
+    };
   }, []);
 
   return (
     <div {...rest}>
-      <canvas ref={dotLottieRef} className="w-full h-full" />
+      <canvas ref={canvasRef} className="w-full h-full" />
     </div>
   );
 };

@@ -16,8 +16,8 @@ const Watch = () => {
   );
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden xl:flex-row">
-      <div className="flex grow flex-col overflow-hidden rounded-lg border border-zinc-900 bg-night">
+    <div className="flex h-full flex-col gap-4 xl:flex-row">
+      <div className="flex grow flex-col rounded-lg border border-zinc-900 bg-night">
         <div className="p-4">
           <h1 className="font-medium text-lg text-white">
             {data.youtubeDetails.title}
@@ -64,6 +64,8 @@ export const Route = createFileRoute('/watch/$episodeId')({
       });
     }
 
-    context.queryClient.ensureQueryData(episodeQueryOptions(params.episodeId));
+    await context.queryClient.ensureQueryData(
+      episodeQueryOptions(params.episodeId),
+    );
   },
 });

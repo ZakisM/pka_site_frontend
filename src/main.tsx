@@ -20,6 +20,9 @@ const queryClient = new QueryClient({
 const router = createRouter({
   routeTree,
   context: {queryClient},
+  defaultPendingMs: 0,
+  defaultPendingMinMs: 500,
+  defaultPendingComponent: () => null,
   defaultPreloadStaleTime: 0,
   defaultNotFoundComponent: () => (
     <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />

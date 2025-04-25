@@ -16,9 +16,11 @@ export const fetchEpisodeById = async (episodeId: string) => {
 };
 
 export const searchEpisodes = async (
+  signal: AbortSignal,
   searchQuery: string,
 ): Promise<PkaEpisodeSearchResult[]> => {
   const response = await client.post('search/search_pka_episode', {
+    signal,
     json: {
       query: searchQuery,
     },

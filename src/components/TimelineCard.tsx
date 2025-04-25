@@ -21,7 +21,7 @@ export const TimelineCard = ({
 
   return (
     <div
-      className="max-xl:min-w-60 rounded-md p-3 bg-night text-sm text-zinc-400 data-[active]:text-white data-[active]:bg-[#341012] flex flex-col xl:flex-row gap-5"
+      className="max-xl:min-w-60 rounded-md p-3 bg-night text-sm text-zinc-400 data-[active]:text-white data-[active]:bg-timeline-card flex flex-col xl:flex-row gap-5"
       {...rest}>
       <time>{formatTimestamp(timestamp)}</time>
       <div className="flex flex-col gap-3 grow">

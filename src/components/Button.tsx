@@ -1,7 +1,7 @@
 import type {DataComponentProps} from '@/types';
 import {cva, type VariantProps} from 'class-variance-authority';
 
-const button = cva(
+export const buttonStyles = cva(
   'py-1.25 px-3 tracking-wider font-[425] text-white text-xs uppercase hover:cursor-pointer rounded-[10px]',
   {
     variants: {
@@ -16,10 +16,10 @@ const button = cva(
   },
 );
 
-interface ButtonProps
-  extends DataComponentProps<'button'>,
-    VariantProps<typeof button> {}
+export type ButtonStyleProps = VariantProps<typeof buttonStyles>;
+
+interface ButtonProps extends DataComponentProps<'button'>, ButtonStyleProps {}
 
 export const Button = ({intent, className, ...rest}: ButtonProps) => {
-  return <button {...rest} className={button({intent, className})} />;
+  return <button {...rest} className={buttonStyles({intent, className})} />;
 };

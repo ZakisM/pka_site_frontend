@@ -54,7 +54,7 @@ const NavSearchModal = () => {
         setSearchOpen(false);
       }}>
       <div
-        className="mx-auto flex h-full max-w-2xl flex-col overflow-hidden rounded-lg  border border-zinc-800/50 bg-night"
+        className="mx-auto flex h-full max-w-2xl flex-col rounded-lg  border border-zinc-800/50 bg-night"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(event) => {
           if (event.key === 'Escape') {

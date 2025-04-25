@@ -16,7 +16,7 @@ export const episodeQueryOptions = (episodeId: string) => {
 export const searchEpisodeQueryOptions = (searchQuery = '') => {
   return queryOptions({
     queryKey: ['search', 'episode', searchQuery],
-    queryFn: () => searchEpisodes(searchQuery),
+    queryFn: ({signal}) => searchEpisodes(signal, searchQuery),
     placeholderData: keepPreviousData,
   });
 };
