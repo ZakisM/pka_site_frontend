@@ -35,7 +35,7 @@ export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
         <time>{formattedUploadDate}</time>
       </p>
       <div className="mt-1.5 flex justify-between items-center">
-        <div className="inline-flex gap-2">
+        <div className="flex gap-2">
           <span className="rounded-[10px] bg-zinc-800 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs uppercase">
             EP {Number(item.episodeNumber.toFixed(1))}
           </span>
@@ -43,17 +43,17 @@ export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
             {formattedLengthSeconds()}
           </span>
         </div>
-        <div className="inline-flex gap-2">
+        <div className="flex gap-2">
           <LinkButton
             onClick={() => setSearchOpen(false)}
-            className="inline-flex gap-1 items-center"
+            className="flex gap-1 items-center"
             to={'/watch/$episodeId'}
             params={{episodeId: item.episodeNumber.toString()}}>
             <span className="text-xs">Watch</span>
             <Play className="w-3 h-3" />
           </LinkButton>
           <Button
-            className="inline-flex gap-1.5 items-center"
+            className="flex gap-1.5 items-center"
             intent="secondary"
             type="button">
             <span className="text-xs">YouTube</span>

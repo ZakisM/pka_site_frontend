@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
-
 import ky from 'ky';
 import {deserialize_episodes, type PkaEpisodeSearchResult} from '@/lib_wasm';
 
@@ -7,7 +6,38 @@ const client = ky.create({
   prefixUrl: '/v1/api',
 });
 
-export const fetchEpisodeById = async (episodeId: string) => {
+type PkaEpisode = {
+  number: number;
+  name: string;
+  youtubeLink: string;
+  uploadDate: number;
+};
+
+type PkaYoutubeDetails = {
+  videoId: string;
+  episodeNumber: number;
+  title: string;
+  lengthSeconds: number;
+};
+
+export type PkaEvent = {
+  eventId: string;
+  episodeNumber: number;
+  timestamp: number;
+  description: string;
+  lengthSeconds: number;
+  uploadDate: number;
+};
+
+type PkaEpisodeWithAll = {
+  episode: PkaEpisode;
+  youtubeDetails: PkaYoutubeDetails;
+  events: PkaEvent[];
+};
+
+export const fetchEpisodeById = async (
+  episodeId: string,
+): Promise<PkaEpisodeWithAll> => {
   const response = await client.get(`episode/watch/${episodeId}`);
 
   const {data} = await response.json<any>();

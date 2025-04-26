@@ -18,14 +18,14 @@ export const NavBar = () => {
         <div className="flex justify-end gap-4">
           <Tooltip>
             <TooltipTrigger
-              className="sm:hidden hover:cursor-pointer inline-flex"
+              className="sm:hidden hover:cursor-pointer flex"
               onClick={() => setSearchOpen(true)}>
               <Search className="h-5 w-5 stroke-2 text-zinc-300 hover:cursor-pointer" />
             </TooltipTrigger>
             <TooltipContent>Search</TooltipContent>
           </Tooltip>
           <Link
-            className="inline-flex"
+            className="flex"
             to={'/watch/$episodeId'}
             params={{episodeId: 'random'}}>
             <Tooltip>

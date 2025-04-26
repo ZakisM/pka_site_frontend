@@ -1,16 +1,25 @@
 import type {DataComponentProps} from '@/types';
 import {ProgressBar} from './ProgressBar';
+import {useAtom} from 'jotai';
+import {playerTimestampAtom} from '@/atoms/playerAtoms';
+import {useEffect, useRef} from 'react';
 
 interface TimelineCardProps extends DataComponentProps<'div'> {
   description: string;
   timestamp: number;
+  lengthSeconds: number;
 }
 
 export const TimelineCard = ({
   description,
   timestamp,
+  lengthSeconds,
   ...rest
 }: TimelineCardProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [playerTimestamp] = useAtom(playerTimestampAtom);
+
   const formatTimestamp = (timestamp: number) => {
     const hours = Math.floor(timestamp / 3600);
     const minutes = Math.floor(timestamp / 60) % 60;
@@ -19,14 +28,35 @@ export const TimelineCard = ({
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
+  const isActive = rest['data-active'];
+
+  useEffect(() => {
+    if (isActive) {
+      ref.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'start',
+      });
+    }
+  }, [isActive]);
+
   return (
     <div
+      ref={ref}
       className="max-xl:min-w-60 rounded-md p-3 bg-night text-sm text-zinc-400 data-[active]:text-white data-[active]:bg-timeline-card flex flex-col xl:flex-row gap-5"
       {...rest}>
       <time>{formatTimestamp(timestamp)}</time>
       <div className="flex flex-col gap-3 grow">
         <p>{description}</p>
-        {rest['data-active'] && <ProgressBar progress={50} />}
+        {isActive && (
+          <ProgressBar
+            progress={Number(
+              (((playerTimestamp - timestamp) / lengthSeconds) * 100).toFixed(
+                1,
+              ),
+            )}
+          />
+        )}
       </div>
     </div>
   );

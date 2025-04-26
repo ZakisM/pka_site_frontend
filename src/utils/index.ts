@@ -1,8 +1,8 @@
+import type {TimerId} from '@/types';
+
 export const clsx = (...classes: (string | boolean)[]) => {
   return classes.filter((cl) => Boolean(cl)).join(' ');
 };
-
-type TimerId = ReturnType<typeof setTimeout> | undefined;
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,

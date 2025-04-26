@@ -122,12 +122,12 @@ const NavSearchContent = ({searchQuery}: {searchQuery: string}) => {
           {data.length} results
         </div>
         <div className="flex gap-2 mt-2.5">
-          <Button className="inline-flex gap-1 items-center" type="button">
+          <Button className="flex gap-1 items-center" type="button">
             <span>Episodes</span>
             <Podcast className="w-3 h-3" />
           </Button>
           <Button
-            className="inline-flex gap-1 items-center"
+            className="flex gap-1 items-center"
             intent="secondary"
             type="button">
             <span>Events</span>
