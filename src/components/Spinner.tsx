@@ -1,8 +1,8 @@
 import {DotLottieWorker} from '@lottiefiles/dotlottie-web';
 import dotLottieWasm from '@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm?url';
+import {useEffect, useRef} from 'react';
 import spinnerLottie from '@/lottie/spinner.lottie?arraybuffer';
 import type {DataComponentProps} from '@/types';
-import {useEffect, useRef} from 'react';
 
 DotLottieWorker.setWasmUrl(new URL(dotLottieWasm, import.meta.url).href);
 

@@ -1,13 +1,20 @@
-import {playerTimestampAtom} from '@/atoms/playerAtoms';
-import type {DataComponentProps, TimerId} from '@/types';
 import {useAtom} from 'jotai';
 import {useEffect, useRef} from 'react';
-import YouTube from 'react-youtube';
+import YouTube, {YouTubeEvent} from 'react-youtube';
+import {playerTimestampAtom} from '@/atoms/playerAtoms';
+import type {DataComponentProps, TimerId} from '@/types';
+import {useSearch} from '@tanstack/react-router';
 
 export const YouTubePlayer = ({
   videoId,
 }: DataComponentProps<typeof YouTube>) => {
   const [, setPlayerTimestamp] = useAtom(playerTimestampAtom);
+  const timestamp = useSearch({
+    from: '/watch/$episodeId',
+    select(state) {
+      return state.timestamp;
+    },
+  });
 
   const youtubeRef = useRef<YouTube>(null);
   const intervalRef = useRef<TimerId>(undefined);
@@ -20,22 +27,32 @@ export const YouTubePlayer = ({
     };
   }, [setPlayerTimestamp]);
 
+  useEffect(() => {
+    youtubeRef.current?.getInternalPlayer().seekTo(timestamp);
+  }, [timestamp]);
+
+  const updatePlayerTimestamp = async (event: YouTubeEvent<number>) => {
+    setPlayerTimestamp(event.target.getCurrentTime());
+  };
+
   return (
     <YouTube
+      key={videoId}
       ref={youtubeRef}
       className="flex flex-grow-1"
       iframeClassName="w-full h-full"
       videoId={videoId}
-      loading="lazy"
-      onReady={() => {
+      onReady={(event) => {
+        event.target.seekTo(timestamp);
+        event.target.playVideo();
+      }}
+      onStateChange={async (event) => {
         clearInterval(intervalRef.current);
 
-        intervalRef.current = setInterval(async () => {
-          const time = await youtubeRef.current
-            ?.getInternalPlayer()
-            ?.getCurrentTime();
+        updatePlayerTimestamp(event);
 
-          setPlayerTimestamp(time);
+        intervalRef.current = setInterval(() => {
+          updatePlayerTimestamp(event);
         }, 1_000);
       }}
     />

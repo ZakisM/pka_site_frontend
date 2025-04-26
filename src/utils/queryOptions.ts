@@ -1,5 +1,6 @@
 import {keepPreviousData, queryOptions} from '@tanstack/react-query';
-import {fetchEpisodeById, searchEpisodes} from './api';
+import {fetchEpisodeById, searchEpisodes, searchEvents} from './api';
+import {SearchTab} from '@/atoms/searchAtoms';
 
 export const episodeQueryKeyFn = (episodeId: string | number) => [
   'episode',
@@ -15,8 +16,16 @@ export const episodeQueryOptions = (episodeId: string) => {
 
 export const searchEpisodeQueryOptions = (searchQuery = '') => {
   return queryOptions({
-    queryKey: ['search', 'episode', searchQuery],
+    queryKey: ['search', SearchTab.EPISODES, searchQuery],
     queryFn: ({signal}) => searchEpisodes(signal, searchQuery),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const searchEventQueryOptions = (searchQuery = '') => {
+  return queryOptions({
+    queryKey: ['search', SearchTab.EVENTS, searchQuery],
+    queryFn: ({signal}) => searchEvents(signal, searchQuery),
     placeholderData: keepPreviousData,
   });
 };

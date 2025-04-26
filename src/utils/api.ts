@@ -1,6 +1,11 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import ky from 'ky';
-import {deserialize_episodes, type PkaEpisodeSearchResult} from '@/lib_wasm';
+import {
+  deserialize_episodes,
+  deserialize_events,
+  PkaEventSearchResult,
+  type PkaEpisodeSearchResult,
+} from '@/lib_wasm';
 
 const client = ky.create({
   prefixUrl: '/v1/api',
@@ -61,4 +66,22 @@ export const searchEpisodes = async (
   const bytes = new Uint8Array(data);
 
   return await deserialize_episodes(bytes);
+};
+
+export const searchEvents = async (
+  signal: AbortSignal,
+  searchQuery: string,
+): Promise<PkaEventSearchResult[]> => {
+  const response = await client.post('search/search_pka_event', {
+    signal,
+    json: {
+      query: searchQuery,
+    },
+  });
+
+  const data = await response.arrayBuffer();
+
+  const bytes = new Uint8Array(data);
+
+  return await deserialize_events(bytes);
 };

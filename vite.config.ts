@@ -5,9 +5,9 @@ import react from '@vitejs/plugin-react';
 import browserslist from 'browserslist'; // You need to import this package
 import {browserslistToTargets} from 'lightningcss'; // And this utility
 import {defineConfig} from 'rolldown-vite';
+import arraybuffer from 'vite-plugin-arraybuffer';
 import viteCompression from 'vite-plugin-compression';
 import wasm from 'vite-plugin-wasm';
-import arraybuffer from 'vite-plugin-arraybuffer';
 
 export default defineConfig(({mode}) => {
   const isProduction = mode === 'production';

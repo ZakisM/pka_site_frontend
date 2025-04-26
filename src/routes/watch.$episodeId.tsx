@@ -1,13 +1,13 @@
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {createFileRoute, redirect} from '@tanstack/react-router';
 import {format, fromUnixTime} from 'date-fns';
+import {useAtom} from 'jotai';
+import {playerTimestampAtom} from '@/atoms/playerAtoms';
 import {Scrollbar} from '@/components/Scrollbar';
 import {TimelineCard} from '@/components/TimelineCard';
 import {YouTubePlayer} from '@/components/YouTubePlayer';
 import {fetchEpisodeById, type PkaEvent} from '@/utils/api';
 import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
-import {useAtom} from 'jotai';
-import {playerTimestampAtom} from '@/atoms/playerAtoms';
 
 const Watch = () => {
   const [playerTimestamp] = useAtom(playerTimestampAtom);
@@ -27,7 +27,7 @@ const Watch = () => {
 
     if (
       index === 0 &&
-      (playerTimestamp === 0 || playerTimestamp <= event.timestamp)
+      (playerTimestamp === 0 || playerTimestamp < event.timestamp)
     ) {
       return true;
     }
@@ -41,7 +41,7 @@ const Watch = () => {
 
     if (
       playerTimestamp >= event.timestamp &&
-      playerTimestamp <= event.timestamp + event.lengthSeconds
+      playerTimestamp < event.timestamp + event.lengthSeconds
     ) {
       return true;
     }
@@ -86,6 +86,9 @@ const Watch = () => {
 
 export const Route = createFileRoute('/watch/$episodeId')({
   component: Watch,
+  validateSearch: (search: Record<string, unknown>): {timestamp?: number} => {
+    return search;
+  },
   loader: async ({context, params}) => {
     if (params.episodeId === 'latest' || params.episodeId === 'random') {
       const data = await fetchEpisodeById(params.episodeId);

@@ -1,5 +1,5 @@
-import type {DataComponentProps} from '@/types';
 import {cva, type VariantProps} from 'class-variance-authority';
+import type {DataComponentProps} from '@/types';
 
 export const buttonStyles = cva(
   'py-1.25 px-3 tracking-wider font-[425] text-white text-xs uppercase hover:cursor-pointer rounded-[10px]',

@@ -2,16 +2,16 @@ import {format, fromUnixTime} from 'date-fns';
 import {useAtom} from 'jotai';
 import {ExternalLink, Play} from 'lucide-react';
 import {searchOpenAtom} from '@/atoms/searchAtoms';
-import type {PkaEpisodeSearchResult} from '@/lib_wasm';
+import type {PkaEventSearchResult} from '@/lib_wasm';
 import type {DataComponentProps} from '@/types';
 import {Button} from './Button';
 import {LinkButton} from './LinkButton';
 
-interface EpisodeResultProps extends DataComponentProps<'div'> {
-  item: PkaEpisodeSearchResult;
+interface EventResultProps extends DataComponentProps<'div'> {
+  item: PkaEventSearchResult;
 }
 
-export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
+export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
   const [, setSearchOpen] = useAtom(searchOpenAtom);
 
   const formattedUploadDate = format(
@@ -20,17 +20,27 @@ export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
   );
 
   const formattedLengthSeconds = () => {
-    const hours = Math.floor(item.lengthSeconds / 3600);
     const minutes = Math.floor(item.lengthSeconds / 60) % 60;
+    const seconds = item.lengthSeconds % 60;
 
-    return `${hours}h ${minutes}m`;
+    let res = '';
+
+    if (seconds) {
+      res += `${seconds}h`;
+    }
+
+    if (minutes) {
+      res += `${minutes}m`;
+    }
+
+    return `${minutes}m ${seconds}s`;
   };
 
   return (
     <div
       className="flex w-full flex-col first:border-t border-b border-zinc-800/50 py-2.5 gap-1"
       {...rest}>
-      <h3 className="text-sm font-medium text-zinc-300">{item.title}</h3>
+      <h3 className="text-sm font-medium text-zinc-300">{item.description}</h3>
       <p className="text-xs text-zinc-400">
         <time>{formattedUploadDate}</time>
       </p>
@@ -48,7 +58,8 @@ export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
             onClick={() => setSearchOpen(false)}
             className="flex gap-1 items-center"
             to={'/watch/$episodeId'}
-            params={{episodeId: item.episodeNumber.toString()}}>
+            params={{episodeId: item.episodeNumber.toString()}}
+            search={{timestamp: item.timestamp}}>
             <span className="text-xs">Watch</span>
             <Play className="w-3 h-3" />
           </LinkButton>

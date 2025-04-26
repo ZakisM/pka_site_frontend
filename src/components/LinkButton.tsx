@@ -1,6 +1,6 @@
 import {createLink, type LinkComponent} from '@tanstack/react-router';
-import {type ButtonStyleProps, buttonStyles} from './Button';
 import type {DataComponentProps} from '@/types';
+import {type ButtonStyleProps, buttonStyles} from './Button';
 
 interface BasicLinkComponentProps
   extends DataComponentProps<'a'>,

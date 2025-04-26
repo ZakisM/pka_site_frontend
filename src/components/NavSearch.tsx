@@ -1,20 +1,32 @@
-import {useIsFetching, useQuery} from '@tanstack/react-query';
+import {
+  useIsFetching,
+  useQuery,
+  type UseQueryOptions,
+} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import {Milestone, Podcast, Search, SearchX} from 'lucide-react';
-import type {OverlayScrollbarsComponentRef} from 'overlayscrollbars-react';
-import {useEffect, useRef} from 'react';
+import {useEffect, useLayoutEffect, useRef} from 'react';
 import {
   debouncedSearchQueryAtom,
+  searchCountAtom,
   searchOpenAtom,
   searchQueryAtom,
-  searchScrollStateAtom,
+  SearchTab,
+  searchTabAtom,
 } from '@/atoms/searchAtoms.ts';
 import {debounce} from '@/utils/index.ts';
-import {searchEpisodeQueryOptions} from '@/utils/queryOptions.ts';
-import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
-import {Scrollbar} from './Scrollbar.tsx';
-import {Spinner} from './Spinner.tsx';
+import {
+  searchEpisodeQueryOptions,
+  searchEventQueryOptions,
+} from '@/utils/queryOptions.ts';
 import {Button} from './Button.tsx';
+import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
+import {EventSearchResult} from './EventSearchResult.tsx';
+import {VirtualizedScrollbar} from './Scrollbar.tsx';
+import {Spinner} from './Spinner.tsx';
+import type {VListHandle} from 'virtua';
+import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
+import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
 
 export const NavSearch = () => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
@@ -35,10 +47,91 @@ export const NavSearch = () => {
   );
 };
 
+type SearchResultItem = PkaEpisodeSearchResult | PkaEventSearchResult;
+
+interface SearchConfig<T extends SearchResultItem = any> {
+  Component: React.ComponentType<T>;
+  queryFn: (searchQuery?: string) => UseQueryOptions<T[], Error, T[], T[]>;
+  searchTab: SearchTab;
+  itemKey: (item: T) => string;
+}
+
+const searchConfigMap = {
+  [SearchTab.EPISODES]: {
+    searchTab: SearchTab.EPISODES,
+    Component: EpisodeSearchResult,
+    queryFn: searchEpisodeQueryOptions,
+    itemKey: ({episodeNumber}: PkaEpisodeSearchResult) =>
+      episodeNumber.toString(),
+  },
+  [SearchTab.EVENTS]: {
+    searchTab: SearchTab.EVENTS,
+    Component: EventSearchResult,
+    queryFn: searchEventQueryOptions,
+    itemKey: ({episodeNumber, timestamp}: PkaEventSearchResult) =>
+      `${episodeNumber}-${timestamp}`,
+  },
+} as const satisfies Record<SearchTab, SearchConfig>;
+
+const GenericSearchContent = ({
+  config,
+  searchQuery,
+}: {
+  config: SearchConfig;
+  searchQuery: string;
+}) => {
+  const prevSearchQuery = useRef(searchQuery);
+  const vScrollBarRef = useRef<VListHandle | null>(null);
+
+  const {data, isFetched} = useQuery(config.queryFn(searchQuery));
+
+  const [_searchCount, setSearchCount] = useAtom(searchCountAtom);
+  const [_scrollbarState, setScrollbarState] = useAtom(scrollbarStateAtom);
+
+  useLayoutEffect(() => {
+    if (prevSearchQuery.current !== searchQuery) {
+      setScrollbarState({});
+      vScrollBarRef.current?.scrollTo(0);
+    }
+
+    prevSearchQuery.current = searchQuery;
+  }, [searchQuery, setScrollbarState]);
+
+  useEffect(() => {
+    setSearchCount(data?.length ?? 0);
+  }, [data, setSearchCount]);
+
+  return (
+    <>
+      {data?.length ? (
+        <VirtualizedScrollbar
+          key={config.searchTab}
+          scrollKey={config.searchTab}
+          className="flex grow-1 mb-6 px-6"
+          vScrollbarRef={vScrollBarRef}>
+          {isFetched
+            ? data.map((item) => (
+                <config.Component key={config.itemKey(item)} item={item} />
+              ))
+            : null}
+        </VirtualizedScrollbar>
+      ) : (
+        <div className="flex flex-grow-1 justify-center items-center gap-2 text-zinc-400">
+          <SearchX className="w-4 h-4" />
+          <span className="font-light text-md">No results found</span>
+        </div>
+      )}
+    </>
+  );
+};
+
 const NavSearchModal = () => {
-  const [, setSearchOpen] = useAtom(searchOpenAtom);
   const searchFetching = useIsFetching({queryKey: ['search']});
+
+  const [searchCount] = useAtom(searchCountAtom);
+  const [, setSearchOpen] = useAtom(searchOpenAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
+  const [searchTab, setSearchTab] = useAtom(searchTabAtom);
 
   const [debouncedQuery, setDebouncedQuery] = useAtom(debouncedSearchQueryAtom);
   const debouncedSetQuery = debounce(setDebouncedQuery, 250);
@@ -79,86 +172,40 @@ const NavSearchModal = () => {
             )}
           </div>
         </div>
-        <NavSearchContent searchQuery={debouncedQuery} />
+        <div className="mx-6 my-4">
+          <div className="text-zinc-400 font-light text-sm">
+            {searchCount} results
+          </div>
+          <div className="flex gap-2 mt-2.5">
+            <Button
+              className="flex gap-1 items-center"
+              intent={
+                searchTab === SearchTab.EPISODES ? 'primary' : 'secondary'
+              }
+              type="button"
+              onClick={() => {
+                setSearchTab(SearchTab.EPISODES);
+              }}>
+              <span>Episodes</span>
+              <Podcast className="w-3 h-3" />
+            </Button>
+            <Button
+              className="flex gap-1 items-center"
+              intent={searchTab === SearchTab.EVENTS ? 'primary' : 'secondary'}
+              type="button"
+              onClick={() => {
+                setSearchTab(SearchTab.EVENTS);
+              }}>
+              <span>Events</span>
+              <Milestone className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+        <GenericSearchContent
+          config={searchConfigMap[searchTab]}
+          searchQuery={debouncedQuery}
+        />
       </div>
     </div>
-  );
-};
-
-const NavSearchContent = ({searchQuery}: {searchQuery: string}) => {
-  const {data} = useQuery(searchEpisodeQueryOptions(searchQuery));
-
-  const [scrollState, setScrollState] = useAtom(searchScrollStateAtom);
-  const debouncedSetScrollState = debounce(setScrollState, 100);
-
-  const firstRef = useRef<HTMLDivElement | null>(null);
-  const scrollRef = useRef<OverlayScrollbarsComponentRef | null>(null);
-
-  useEffect(() => {
-    if (firstRef.current && data) {
-      firstRef.current.scrollIntoView();
-    }
-  }, [data]);
-
-  if (!data) {
-    return null;
-  }
-
-  if (!data.length) {
-    return (
-      <div className="flex w-full h-full items-center justify-center">
-        <div className="flex items-center gap-2 text-zinc-400">
-          <SearchX className="w-4.75 h-4.75" />
-          <span className="text-md">No results found</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div className="mx-6 my-4">
-        <div className="text-zinc-400 font-light text-sm">
-          {data.length} results
-        </div>
-        <div className="flex gap-2 mt-2.5">
-          <Button className="flex gap-1 items-center" type="button">
-            <span>Episodes</span>
-            <Podcast className="w-3 h-3" />
-          </Button>
-          <Button
-            className="flex gap-1 items-center"
-            intent="secondary"
-            type="button">
-            <span>Events</span>
-            <Milestone className="w-3 h-3" />
-          </Button>
-        </div>
-      </div>
-      <Scrollbar
-        ref={scrollRef}
-        className="hidden"
-        element="div"
-        events={{
-          initialized(instance) {
-            instance.elements().viewport.scroll({top: scrollState});
-          },
-          scroll(instance) {
-            debouncedSetScrollState(instance.elements().viewport.scrollTop);
-          },
-        }}>
-        <div className="mx-6 mb-6">
-          {data.map((item, index) => {
-            return (
-              <EpisodeSearchResult
-                ref={index === 0 ? firstRef : undefined}
-                key={item.uploadDate}
-                item={item}
-              />
-            );
-          })}
-        </div>
-      </Scrollbar>
-    </>
   );
 };
