@@ -1,32 +1,32 @@
 import {
+  type UseQueryOptions,
   useIsFetching,
   useQuery,
-  type UseQueryOptions,
 } from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import {Milestone, Podcast, Search, SearchX} from 'lucide-react';
 import {useEffect, useLayoutEffect, useRef} from 'react';
+import type {VListHandle} from 'virtua';
+import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
 import {
   debouncedSearchQueryAtom,
+  SearchTab,
   searchCountAtom,
   searchOpenAtom,
   searchQueryAtom,
-  SearchTab,
   searchTabAtom,
 } from '@/atoms/searchAtoms.ts';
+import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
 import {debounce} from '@/utils/index.ts';
 import {
   searchEpisodeQueryOptions,
   searchEventQueryOptions,
 } from '@/utils/queryOptions.ts';
-import {Button} from './Button.tsx';
 import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
 import {EventSearchResult} from './EventSearchResult.tsx';
 import {VirtualizedScrollbar} from './Scrollbar.tsx';
 import {Spinner} from './Spinner.tsx';
-import type {VListHandle} from 'virtua';
-import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
-import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
+import {TabButton} from './TabButton.tsx';
 
 export const NavSearch = () => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
@@ -83,45 +83,46 @@ const GenericSearchContent = ({
   const prevSearchQuery = useRef(searchQuery);
   const vScrollBarRef = useRef<VListHandle | null>(null);
 
-  const {data, isFetched} = useQuery(config.queryFn(searchQuery));
+  const {data, isFetched, isFetching} = useQuery(config.queryFn(searchQuery));
 
   const [_searchCount, setSearchCount] = useAtom(searchCountAtom);
   const [_scrollbarState, setScrollbarState] = useAtom(scrollbarStateAtom);
 
   useLayoutEffect(() => {
-    if (prevSearchQuery.current !== searchQuery) {
-      setScrollbarState({});
+    if (isFetched && prevSearchQuery.current !== searchQuery) {
       vScrollBarRef.current?.scrollTo(0);
-    }
+      setScrollbarState({});
 
-    prevSearchQuery.current = searchQuery;
-  }, [searchQuery, setScrollbarState]);
+      prevSearchQuery.current = searchQuery;
+    }
+  }, [searchQuery, setScrollbarState, isFetched]);
 
   useEffect(() => {
     setSearchCount(data?.length ?? 0);
   }, [data, setSearchCount]);
 
+  if (!data?.length && isFetching) {
+    return null;
+  }
+
+  if (!data?.length) {
+    return (
+      <div className="flex flex-grow-1 justify-center items-center gap-2 text-zinc-400">
+        <SearchX className="w-4 h-4" />
+        <span className="font-light text-md">No results found</span>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {data?.length ? (
-        <VirtualizedScrollbar
-          key={config.searchTab}
-          scrollKey={config.searchTab}
-          className="flex grow-1 mb-6 px-6"
-          vScrollbarRef={vScrollBarRef}>
-          {isFetched
-            ? data.map((item) => (
-                <config.Component key={config.itemKey(item)} item={item} />
-              ))
-            : null}
-        </VirtualizedScrollbar>
-      ) : (
-        <div className="flex flex-grow-1 justify-center items-center gap-2 text-zinc-400">
-          <SearchX className="w-4 h-4" />
-          <span className="font-light text-md">No results found</span>
-        </div>
-      )}
-    </>
+    <VirtualizedScrollbar
+      scrollKey={config.searchTab}
+      className="flex grow-1 mb-6 px-6"
+      vScrollbarRef={vScrollBarRef}>
+      {data.map((item) => (
+        <config.Component key={config.itemKey(item)} item={item} />
+      ))}
+    </VirtualizedScrollbar>
   );
 };
 
@@ -147,7 +148,7 @@ const NavSearchModal = () => {
         setSearchOpen(false);
       }}>
       <div
-        className="mx-auto flex h-full max-w-2xl flex-col rounded-lg  border border-zinc-800/50 bg-night"
+        className="mx-auto flex h-full max-w-2xl flex-col rounded-lg border border-zinc-800/50 bg-night"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(event) => {
           if (event.key === 'Escape') {
@@ -177,31 +178,22 @@ const NavSearchModal = () => {
             {searchCount} results
           </div>
           <div className="flex gap-2 mt-2.5">
-            <Button
-              className="flex gap-1 items-center"
-              intent={
-                searchTab === SearchTab.EPISODES ? 'primary' : 'secondary'
-              }
-              type="button"
-              onClick={() => {
-                setSearchTab(SearchTab.EPISODES);
-              }}>
+            <TabButton
+              active={searchTab === SearchTab.EPISODES}
+              onClick={() => setSearchTab(SearchTab.EPISODES)}>
               <span>Episodes</span>
               <Podcast className="w-3 h-3" />
-            </Button>
-            <Button
-              className="flex gap-1 items-center"
-              intent={searchTab === SearchTab.EVENTS ? 'primary' : 'secondary'}
-              type="button"
-              onClick={() => {
-                setSearchTab(SearchTab.EVENTS);
-              }}>
+            </TabButton>
+            <TabButton
+              active={searchTab === SearchTab.EVENTS}
+              onClick={() => setSearchTab(SearchTab.EVENTS)}>
               <span>Events</span>
               <Milestone className="w-3 h-3" />
-            </Button>
+            </TabButton>
           </div>
         </div>
         <GenericSearchContent
+          key={searchTab}
           config={searchConfigMap[searchTab]}
           searchQuery={debouncedQuery}
         />

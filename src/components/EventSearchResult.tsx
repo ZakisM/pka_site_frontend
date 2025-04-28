@@ -44,19 +44,19 @@ export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
       <p className="text-xs text-zinc-400">
         <time>{formattedUploadDate}</time>
       </p>
-      <div className="mt-1.5 flex justify-between items-center">
+      <div className="mt-1.5 flex justify-between">
         <div className="flex gap-2">
-          <span className="rounded-[10px] bg-zinc-800 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs uppercase">
+          <span className="shrink-0 rounded-[10px] bg-zinc-800 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs uppercase">
             EP {Number(item.episodeNumber.toFixed(1))}
           </span>
-          <span className="rounded-[10px] bg-zinc-800 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs">
+          <span className="shrink-0 rounded-[10px] bg-zinc-800 py-1.25 px-2 tracking-wider font-[425]  text-white text-xs">
             {formattedLengthSeconds()}
           </span>
         </div>
         <div className="flex gap-2">
           <LinkButton
             onClick={() => setSearchOpen(false)}
-            className="flex gap-1 items-center"
+            className="flex  gap-1 items-center"
             to={'/watch/$episodeId'}
             params={{episodeId: item.episodeNumber.toString()}}
             search={{timestamp: item.timestamp}}>

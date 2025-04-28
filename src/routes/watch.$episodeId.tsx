@@ -6,51 +6,40 @@ import {playerTimestampAtom} from '@/atoms/playerAtoms';
 import {Scrollbar} from '@/components/Scrollbar';
 import {TimelineCard} from '@/components/TimelineCard';
 import {YouTubePlayer} from '@/components/YouTubePlayer';
-import {fetchEpisodeById, type PkaEvent} from '@/utils/api';
+import {fetchEpisodeById} from '@/utils/api';
 import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
+import {useEffect, useState} from 'react';
 
 const Watch = () => {
-  const [playerTimestamp] = useAtom(playerTimestampAtom);
-
   const params = Route.useParams();
   const {data} = useSuspenseQuery(episodeQueryOptions(params.episodeId));
+
+  const [playerTimestamp] = useAtom(playerTimestampAtom);
+  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
 
   const formattedDate = format(
     fromUnixTime(data.episode.uploadDate),
     'EEEE do MMMM yyyy',
   );
 
-  const timelineCardIsActive = (event: PkaEvent, index: number) => {
-    if (data.events.length === 1) {
-      return true;
+  useEffect(() => {
+    for (const [index, event] of data.events.entries()) {
+      if (
+        playerTimestamp >= event.timestamp &&
+        playerTimestamp < event.timestamp + event.lengthSeconds
+      ) {
+        setActiveCardIndex(index);
+        break;
+      }
     }
 
-    if (
-      index === 0 &&
-      (playerTimestamp === 0 || playerTimestamp < event.timestamp)
-    ) {
-      return true;
-    }
-
-    if (
-      index === data.events.length - 1 &&
-      playerTimestamp >= event.timestamp
-    ) {
-      return true;
-    }
-
-    if (
-      playerTimestamp >= event.timestamp &&
-      playerTimestamp < event.timestamp + event.lengthSeconds
-    ) {
-      return true;
-    }
-
-    return undefined;
-  };
+    // TODO: Edge case for first card
+  }, [data, playerTimestamp]);
 
   return (
-    <div className="flex h-full flex-col gap-4 xl:flex-row">
+    <div
+      key={data.episode.number}
+      className="flex h-full flex-col gap-4 xl:flex-row">
       <div className="flex grow flex-col rounded-lg border border-zinc-900 bg-night">
         <YouTubePlayer videoId={data.youtubeDetails.videoId} />
         <div className="m-4">
@@ -73,7 +62,7 @@ const Watch = () => {
                   description={event.description}
                   timestamp={event.timestamp}
                   lengthSeconds={event.lengthSeconds}
-                  data-active={timelineCardIsActive(event, index)}
+                  data-active={index === activeCardIndex ? true : undefined}
                 />
               );
             })}

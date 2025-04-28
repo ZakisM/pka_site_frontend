@@ -1,4 +1,3 @@
-import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms';
 import {useAtom} from 'jotai';
 import {
   OverlayScrollbarsComponent,
@@ -12,6 +11,7 @@ import {
   useRef,
 } from 'react';
 import {VList, type VListHandle} from 'virtua';
+import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms';
 
 interface ScrollbarProps extends OverlayScrollbarsComponentProps {
   children: React.ReactNode;
@@ -99,7 +99,7 @@ export const VirtualizedScrollbar = ({
       <VList
         ref={vListRef}
         cache={scrollbarState[scrollKey]?.cache}
-        overscan={10}>
+        itemSize={98}>
         {children}
       </VList>
     </div>

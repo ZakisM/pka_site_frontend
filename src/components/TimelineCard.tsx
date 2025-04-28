@@ -47,7 +47,9 @@ export const TimelineCard = ({
       {...rest}>
       <time>{formatTimestamp(timestamp)}</time>
       <div className="flex flex-col gap-3 grow">
-        <p>{description}</p>
+        <p className="line-clamp-4" title={description}>
+          {description}
+        </p>
         {isActive && (
           <ProgressBar
             progress={Number(

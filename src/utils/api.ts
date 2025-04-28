@@ -3,8 +3,8 @@ import ky from 'ky';
 import {
   deserialize_episodes,
   deserialize_events,
-  PkaEventSearchResult,
   type PkaEpisodeSearchResult,
+  type PkaEventSearchResult,
 } from '@/lib_wasm';
 
 const client = ky.create({
