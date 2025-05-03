@@ -47,7 +47,7 @@ export const YouTubePlayer = ({
       videoId={videoId}
       onReady={(event) => {
         event.target.seekTo(routerTimestampMeta.timestamp);
-        // event.target.playVideo();
+        event.target.playVideo();
       }}
       onStateChange={(event) => {
         clearInterval(intervalRef.current);

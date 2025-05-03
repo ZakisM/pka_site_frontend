@@ -14,7 +14,9 @@ export const NavBar = () => {
         <h1 className="select-none font-raleway font-extrabold text-primary text-xl uppercase">
           PKA Index
         </h1>
-        <NavSearch />
+        <div>
+          <NavSearch className="max-sm:hidden" />
+        </div>
         <div className="flex justify-end gap-4">
           <Tooltip>
             <TooltipTrigger

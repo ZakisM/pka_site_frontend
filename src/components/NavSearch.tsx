@@ -4,7 +4,7 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {Milestone, Podcast, Search, SearchX} from 'lucide-react';
+import {Milestone, Podcast, Search, SearchX, X} from 'lucide-react';
 import {useEffect, useLayoutEffect, useRef} from 'react';
 import type {VListHandle} from 'virtua';
 import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
@@ -27,15 +27,16 @@ import {EventSearchResult} from './EventSearchResult.tsx';
 import {VirtualizedScrollbar} from './Scrollbar.tsx';
 import {Spinner} from './Spinner.tsx';
 import {TabButton} from './TabButton.tsx';
+import {DataComponentProps} from '@/types.ts';
 
-export const NavSearch = () => {
+export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
 
   return (
-    <div>
-      <div className="flex justify-between">
+    <>
+      <div className="flex justify-between" {...rest}>
         <button
-          className="max-sm:hidden flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
+          className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
           onClick={() => setSearchOpen(true)}
           type="button">
           <Search className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
@@ -43,7 +44,7 @@ export const NavSearch = () => {
         </button>
       </div>
       {searchOpen && <NavSearchModal />}
-    </div>
+    </>
   );
 };
 
@@ -155,23 +156,28 @@ const NavSearchModal = () => {
             setSearchOpen(false);
           }
         }}>
-        <div className="flex items-center border-zinc-800/50 border-b px-4">
-          <Search className="shrink-0 h-5 w-5 stroke-2 text-zinc-400" />
+        <div className="flex items-center border-zinc-800/50 border-b pr-4 px-2.75">
+          <div className="flex w-8 h-8 items-center justify-center">
+            {searchFetching > 0 ? (
+              <Spinner className="w-full h-full" />
+            ) : (
+              <Search className="h-5 w-5 stroke-2 text-zinc-400" />
+            )}
+          </div>
           <input
             // biome-ignore lint/a11y/noAutofocus: Modal autofocus is desired behaviour
             autoFocus
-            className="w-full bg-transparent p-4 text-base text-zinc-300 caret-primary outline-hidden selection:bg-zinc-700 placeholder:text-zinc-400"
+            className="w-full bg-transparent p-4 pl-2.75 text-base text-zinc-300 caret-primary outline-hidden selection:bg-zinc-700 placeholder:text-zinc-400"
             placeholder="Search..."
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
             value={searchQuery}
           />
-          <div className="w-8 h-8">
-            {searchFetching > 0 && (
-              <Spinner className="flex w-full h-full items-center justify-center" />
-            )}
-          </div>
+          <X
+            className="sm:hidden h-7 w-7 stroke-2 text-zinc-300 hover:cursor-pointer"
+            onClick={() => setSearchOpen(false)}
+          />
         </div>
         <div className="mx-6 my-4">
           <div className="text-zinc-400 font-light text-sm">
