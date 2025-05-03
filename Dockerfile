@@ -1,5 +1,7 @@
 FROM rust:latest AS wasm-build
 
+WORKDIR /wasm
+
 RUN apt update && \
     apt install clang llvm -y && \
     curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -22,6 +24,8 @@ COPY index.html .
 COPY vite.config.ts .
 COPY /public ./public
 COPY /src ./src
+
+COPY --from=wasm-build /wasm/src ./src/lib_wasm_out
 
 RUN bun install
 RUN bun run build
