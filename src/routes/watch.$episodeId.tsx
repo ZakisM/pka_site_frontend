@@ -2,8 +2,7 @@ import {type QueryClient, useSuspenseQuery} from '@tanstack/react-query';
 import {createFileRoute, redirect} from '@tanstack/react-router';
 import {format, fromUnixTime} from 'date-fns';
 import {useAtom} from 'jotai';
-import {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {scrollIntoView} from 'scroll-js';
+import {useLayoutEffect, useRef, useState} from 'react';
 import {
   playerTimestampAtom,
   playerScrollRequestTriggerAtom,
@@ -29,10 +28,11 @@ const Watch = () => {
 
   const {data} = useSuspenseQuery(episodeQueryOptions(params.episodeId));
 
-  const parentRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>(
     Array.from({length: data.events.length}, () => null),
   );
+
+  const scrollDebounceRef = useRef<NodeJS.Timeout>(undefined);
 
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
   const [playerTimestamp, setPlayerTimestamp] = useAtom(playerTimestampAtom);
@@ -68,16 +68,16 @@ const Watch = () => {
     }
   }, [data, playerTimestamp]);
 
-  useEffect(() => {
-    scrollIntoView(
-      cardRefs.current[activeCardIndex] as HTMLDivElement,
-      parentRef.current as HTMLDivElement,
-      {
+  useLayoutEffect(() => {
+    clearTimeout(scrollDebounceRef.current);
+
+    scrollDebounceRef.current = setTimeout(() => {
+      cardRefs.current[activeCardIndex]!.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
         inline: 'start',
-      },
-    );
+      });
+    }, 0);
   }, [activeCardIndex, playerScrollRequestTrigger]);
 
   return (
@@ -97,8 +97,8 @@ const Watch = () => {
         <h1 className="py-4 font-medium text-primary uppercase px-6 tracking-wider">
           Timeline
         </h1>
-        <Scrollbar className="xl:h-[calc(100%-54px)] mx-4 pb-4">
-          <div ref={parentRef} className="flex flex-row gap-2 xl:flex-col">
+        <Scrollbar className="xl:h-[calc(100%-54px)] mx-4 pb-4 max-xl:h-40">
+          <div className="flex flex-row gap-2 xl:flex-col">
             {data.events.map((event, index) => {
               return (
                 <TimelineCard
