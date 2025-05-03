@@ -73,7 +73,7 @@ const Watch = () => {
 
     scrollDebounceRef.current = setTimeout(() => {
       cardRefs.current[activeCardIndex]!.scrollIntoView({
-        behavior: 'smooth',
+        behavior: 'instant',
         block: 'start',
         inline: 'start',
       });
