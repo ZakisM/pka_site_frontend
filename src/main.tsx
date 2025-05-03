@@ -8,6 +8,7 @@ import {createRouter, Navigate, RouterProvider} from '@tanstack/react-router';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import {routeTree} from './routeTree.gen';
+import {LinkButton} from './components/LinkButton';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,12 +22,27 @@ const router = createRouter({
   routeTree,
   context: {queryClient},
   defaultPendingMs: 0,
-  defaultPendingMinMs: 500,
+  defaultPendingMinMs: 0,
   defaultPendingComponent: () => null,
   defaultPreloadStaleTime: 0,
   defaultNotFoundComponent: () => (
     <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />
   ),
+  defaultErrorComponent: (err) => {
+    console.error(err);
+
+    return (
+      <div className="flex flex-col h-full justify-center items-center gap-4">
+        <h1 className="text-zinc-300 text-md">An error occurred!</h1>
+        <LinkButton
+          className="text-sm"
+          to={'/watch/$episodeId'}
+          params={{episodeId: 'latest'}}>
+          Go Home
+        </LinkButton>
+      </div>
+    );
+  },
 });
 
 // Register the router instance for type safety

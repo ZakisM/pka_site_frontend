@@ -41,8 +41,9 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "^19.1.0",
     "react-youtube": "^10.1.0",
+    "scroll-js": "^3.5.2",
     "tw-animate-css": "^1.2.9",
-    "virtua": "^0.40.4"
+    "virtua": "^0.41.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.5",
@@ -56,9 +57,10 @@
     "browserslist": "^4.24.5",
     "caniuse-lite": "^1.0.30001716",
     "lightningcss": "^1.29.3",
-    "rolldown-vite": "^6.3.7",
+    "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.1.5",
     "typescript": "^5.8.3",
+    "vite": "^6.3.4",
     "vite-plugin-arraybuffer": "^0.1.0",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-wasm": "^3.4.1"

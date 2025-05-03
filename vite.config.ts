@@ -2,9 +2,9 @@ import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import browserslist from 'browserslist'; // You need to import this package
-import {browserslistToTargets} from 'lightningcss'; // And this utility
-import {defineConfig} from 'rolldown-vite';
+import browserslist from 'browserslist';
+import {browserslistToTargets} from 'lightningcss';
+import {defineConfig} from 'vite';
 import arraybuffer from 'vite-plugin-arraybuffer';
 import viteCompression from 'vite-plugin-compression';
 import wasm from 'vite-plugin-wasm';
@@ -40,6 +40,15 @@ export default defineConfig(({mode}) => {
         threshold: 10240,
         algorithm: 'gzip',
         ext: '.gz',
+        deleteOriginFile: false,
+      }),
+      viteCompression({
+        verbose: true,
+        disable: !isProduction,
+        filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
+        threshold: 10240,
+        algorithm: 'brotliCompress',
+        ext: '.br',
         deleteOriginFile: false,
       }),
     ],

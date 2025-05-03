@@ -3,7 +3,7 @@ import {
   useIsFetching,
   useQuery,
 } from '@tanstack/react-query';
-import {useAtom} from 'jotai';
+import {useAtom, useSetAtom} from 'jotai';
 import {Milestone, Podcast, Search, SearchX, X} from 'lucide-react';
 import {useEffect, useLayoutEffect, useRef} from 'react';
 import type {VListHandle} from 'virtua';
@@ -17,6 +17,7 @@ import {
   searchTabAtom,
 } from '@/atoms/searchAtoms.ts';
 import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
+import type {DataComponentProps} from '@/types.ts';
 import {debounce} from '@/utils/index.ts';
 import {
   searchEpisodeQueryOptions,
@@ -27,7 +28,6 @@ import {EventSearchResult} from './EventSearchResult.tsx';
 import {VirtualizedScrollbar} from './Scrollbar.tsx';
 import {Spinner} from './Spinner.tsx';
 import {TabButton} from './TabButton.tsx';
-import {DataComponentProps} from '@/types.ts';
 
 export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
@@ -86,8 +86,8 @@ const GenericSearchContent = ({
 
   const {data, isFetched, isFetching} = useQuery(config.queryFn(searchQuery));
 
-  const [_searchCount, setSearchCount] = useAtom(searchCountAtom);
-  const [_scrollbarState, setScrollbarState] = useAtom(scrollbarStateAtom);
+  const setSearchCount = useSetAtom(searchCountAtom);
+  const setScrollbarState = useSetAtom(scrollbarStateAtom);
 
   useLayoutEffect(() => {
     if (isFetched && prevSearchQuery.current !== searchQuery) {
@@ -131,7 +131,7 @@ const NavSearchModal = () => {
   const searchFetching = useIsFetching({queryKey: ['search']});
 
   const [searchCount] = useAtom(searchCountAtom);
-  const [, setSearchOpen] = useAtom(searchOpenAtom);
+  const setSearchOpen = useSetAtom(searchOpenAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [searchTab, setSearchTab] = useAtom(searchTabAtom);
 
@@ -174,10 +174,12 @@ const NavSearchModal = () => {
             }
             value={searchQuery}
           />
-          <X
-            className="sm:hidden h-7 w-7 stroke-2 text-zinc-300 hover:cursor-pointer"
-            onClick={() => setSearchOpen(false)}
-          />
+          <button
+            className="sm:hidden"
+            type="button"
+            onClick={() => setSearchOpen(false)}>
+            <X className="stroke-2 text-zinc-300 hover:cursor-pointer" />
+          </button>
         </div>
         <div className="mx-6 my-4">
           <div className="text-zinc-400 font-light text-sm">

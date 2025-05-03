@@ -34,6 +34,14 @@ export type PkaEvent = {
   uploadDate: number;
 };
 
+export type RandomPkaEvent = {
+  episodeNumber: number;
+  timestamp: number;
+  description: string;
+  lengthSeconds: number;
+  uploadDate: number;
+};
+
 type PkaEpisodeWithAll = {
   episode: PkaEpisode;
   youtubeDetails: PkaYoutubeDetails;
@@ -44,6 +52,14 @@ export const fetchEpisodeById = async (
   episodeId: string,
 ): Promise<PkaEpisodeWithAll> => {
   const response = await client.get(`episode/watch/${episodeId}`);
+
+  const {data} = await response.json<any>();
+
+  return data;
+};
+
+export const fetchRandomEvent = async (): Promise<RandomPkaEvent> => {
+  const response = await client.get('events/random');
 
   const {data} = await response.json<any>();
 

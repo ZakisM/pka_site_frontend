@@ -1,6 +1,5 @@
 import {useAtom} from 'jotai';
 import {
-  OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentProps,
   useOverlayScrollbars,
 } from 'overlayscrollbars-react';
@@ -12,24 +11,42 @@ import {
 } from 'react';
 import {VList, type VListHandle} from 'virtua';
 import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms';
+import type {DataComponentProps} from '@/types';
 
 interface ScrollbarProps extends OverlayScrollbarsComponentProps {
   children: React.ReactNode;
 }
 
-export const Scrollbar = ({children, ...rest}: ScrollbarProps) => (
-  <OverlayScrollbarsComponent
-    defer
-    options={{
+export const Scrollbar = ({children, ...rest}: DataComponentProps<'div'>) => {
+  const osRef = useRef<HTMLDivElement>(null);
+
+  const [initialize] = useOverlayScrollbars({
+    defer: false,
+    options: {
       scrollbars: {
         theme: 'os-theme-light',
         autoHide: 'move',
       },
-    }}
-    {...rest}>
-    {children}
-  </OverlayScrollbarsComponent>
-);
+    },
+  });
+
+  useLayoutEffect(() => {
+    if (osRef.current) {
+      initialize({
+        target: osRef.current,
+        elements: {
+          viewport: osRef.current.firstElementChild as HTMLElement,
+        },
+      });
+    }
+  }, [initialize]);
+
+  return (
+    <div {...rest} data-overlayscrollbars-initialize="" ref={osRef}>
+      {children}
+    </div>
+  );
+};
 
 interface VirtualizedScrollbarProps extends ScrollbarProps {
   vScrollbarRef: RefObject<VListHandle | null>;

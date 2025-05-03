@@ -1,18 +1,22 @@
 import {format, fromUnixTime} from 'date-fns';
-import {useAtom} from 'jotai';
+import {useSetAtom} from 'jotai';
 import {ExternalLink, Play} from 'lucide-react';
 import {searchOpenAtom} from '@/atoms/searchAtoms';
 import type {PkaEventSearchResult} from '@/lib_wasm';
 import type {DataComponentProps} from '@/types';
 import {Button} from './Button';
 import {LinkButton} from './LinkButton';
+import {playerScrollRequestTriggerAtom} from '@/atoms/playerAtoms';
 
 interface EventResultProps extends DataComponentProps<'div'> {
   item: PkaEventSearchResult;
 }
 
 export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
-  const [, setSearchOpen] = useAtom(searchOpenAtom);
+  const setSearchOpen = useSetAtom(searchOpenAtom);
+  const setPlayerScrollRequestTrigger = useSetAtom(
+    playerScrollRequestTriggerAtom,
+  );
 
   const formattedUploadDate = format(
     fromUnixTime(item.uploadDate),
@@ -55,7 +59,10 @@ export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
         </div>
         <div className="flex gap-2">
           <LinkButton
-            onClick={() => setSearchOpen(false)}
+            onClick={() => {
+              setSearchOpen(false);
+              setPlayerScrollRequestTrigger(Date.now());
+            }}
             className="flex  gap-1 items-center"
             to={'/watch/$episodeId'}
             params={{episodeId: item.episodeNumber.toString()}}

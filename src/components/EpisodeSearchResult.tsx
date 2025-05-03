@@ -1,5 +1,5 @@
 import {format, fromUnixTime} from 'date-fns';
-import {useAtom} from 'jotai';
+import {useSetAtom} from 'jotai';
 import {ExternalLink, Play} from 'lucide-react';
 import {searchOpenAtom} from '@/atoms/searchAtoms';
 import type {PkaEpisodeSearchResult} from '@/lib_wasm';
@@ -12,7 +12,7 @@ interface EpisodeResultProps extends DataComponentProps<'div'> {
 }
 
 export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
-  const [, setSearchOpen] = useAtom(searchOpenAtom);
+  const setSearchOpen = useSetAtom(searchOpenAtom);
 
   const formattedUploadDate = format(
     fromUnixTime(item.uploadDate),

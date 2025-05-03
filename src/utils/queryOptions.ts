@@ -2,10 +2,7 @@ import {keepPreviousData, queryOptions} from '@tanstack/react-query';
 import {SearchTab} from '@/atoms/searchAtoms';
 import {fetchEpisodeById, searchEpisodes, searchEvents} from './api';
 
-export const episodeQueryKeyFn = (episodeId: string | number) => [
-  'episode',
-  episodeId.toString(),
-];
+export const episodeQueryKeyFn = (episodeId: string) => ['episode', episodeId];
 
 export const episodeQueryOptions = (episodeId: string) => {
   return queryOptions({

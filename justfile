@@ -19,11 +19,11 @@ wasm-bindgen: wasm-build
   @echo "Generating TypeScript bindings"
   @cd {{wasm_project_name}}; wasm-bindgen ./target/wasm32-unknown-unknown/release/{{wasm_project_name}}.wasm --out-dir={{wasm_bindings_out_dir}} --target=bundler
 
-wasm-opt: wasm-bindgen
-  @echo "Optimizing WASM"
-  @cd {{wasm_project_name}}; wasm-opt --enable-bulk-memory-opt -O4 {{wasm_bg_file}} -o {{wasm_bg_file}}
+# wasm-opt: wasm-bindgen
+#   @echo "Optimizing WASM"
+#   @cd {{wasm_project_name}}; wasm-opt --enable-bulk-memory-opt -O4 {{wasm_bg_file}} -o {{wasm_bg_file}}
 
-update-wasm-bindgen: wasm-opt
+update-wasm-bindgen: wasm-bindgen
   @echo "Deleting old WASM bindgen"
   @rm -rf src/{{wasm_bindings_out_dir}}
   @echo "Moving WASM bindgen to frontend"
