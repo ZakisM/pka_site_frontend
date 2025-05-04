@@ -20,7 +20,7 @@ interface ScrollbarProps extends OverlayScrollbarsComponentProps {
 export const Scrollbar = ({children, ...rest}: DataComponentProps<'div'>) => {
   const osRef = useRef<HTMLDivElement>(null);
 
-  const [initialize] = useOverlayScrollbars({
+  const [initialize, instance] = useOverlayScrollbars({
     defer: false,
     options: {
       scrollbars: {
@@ -40,6 +40,12 @@ export const Scrollbar = ({children, ...rest}: DataComponentProps<'div'>) => {
       });
     }
   }, [initialize]);
+
+  useLayoutEffect(() => {
+    return () => {
+      instance()?.destroy();
+    };
+  }, [instance]);
 
   return (
     <div {...rest} data-overlayscrollbars-initialize="" ref={osRef}>
