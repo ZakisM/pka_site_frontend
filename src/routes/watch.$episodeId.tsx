@@ -84,7 +84,7 @@ const Watch = () => {
     <div
       key={data.episode.number}
       className="flex h-full flex-col gap-4 xl:flex-row">
-      <div className="flex grow flex-col rounded-lg border border-zinc-900 bg-night">
+      <div className="flex grow flex-col rounded-lg border border-zinc-900 bg-night overflow-hidden">
         <YouTubePlayer videoId={data.youtubeDetails.videoId} />
         <div className="m-4">
           <h1 className="font-medium text-lg text-white">
