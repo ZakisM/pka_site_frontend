@@ -1,6 +1,6 @@
 import {useRouterState} from '@tanstack/react-router';
 import {useSetAtom} from 'jotai';
-import {useLayoutEffect, useRef} from 'react';
+import {useEffect, useLayoutEffect, useRef} from 'react';
 import YouTube, {type YouTubeEvent} from 'react-youtube';
 import {playerTimestampAtom} from '@/atoms/playerAtoms';
 import type {DataComponentProps, TimerId} from '@/types';
@@ -38,6 +38,14 @@ export const YouTubePlayer = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (routerTimestampMeta.status === 'idle') {
+      youtubeRef.current
+        ?.getInternalPlayer()
+        ?.seekTo(routerTimestampMeta.timestamp);
+    }
+  }, [routerTimestampMeta]);
+
   return (
     <YouTube
       ref={youtubeRef}
@@ -46,12 +54,11 @@ export const YouTubePlayer = ({
       videoId={videoId}
       opts={{
         playerVars: {
-          autoplay: 1,
-          start:
-            routerTimestampMeta.status === 'idle'
-              ? routerTimestampMeta.timestamp
-              : undefined,
+          autoplay: 0,
         },
+      }}
+      onReady={(event) => {
+        event.target.seekTo(routerTimestampMeta.timestamp);
       }}
       onStateChange={(event) => {
         clearInterval(intervalRef.current);
