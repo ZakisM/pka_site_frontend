@@ -26,7 +26,7 @@
     "@heroicons/react": "^2.2.0",
     "@lottiefiles/dotlottie-web": "^0.44.0",
     "@radix-ui/react-tooltip": "^1.2.4",
-    "@tanstack/react-query": "^5.75.1",
+    "@tanstack/react-query": "^5.75.2",
     "@tanstack/react-router": "^1.119.0",
     "@tanstack/react-router-devtools": "^1.119.1",
     "class-variance-authority": "^0.7.1",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.5",
-    "@tanstack/react-query-devtools": "^5.75.1",
+    "@tanstack/react-query-devtools": "^5.75.2",
     "@tanstack/router-plugin": "^1.119.0",
     "@types/node": "^22.15.3",
     "@types/react": "^19.1.2",
