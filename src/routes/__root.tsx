@@ -1,13 +1,13 @@
-import type {QueryClient} from '@tanstack/react-query';
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {
-  createRootRouteWithContext,
   Outlet,
+  createRootRouteWithContext,
   useRouterState,
 } from '@tanstack/react-router';
-import {TanStackRouterDevtools} from '@tanstack/react-router-devtools';
 import {NavBar} from '@/components/NavBar';
+import type {QueryClient} from '@tanstack/react-query';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {Spinner} from '@/components/Spinner';
+import {TanStackRouterDevtools} from '@tanstack/react-router-devtools';
 
 const RouterSpinner = () => {
   const isLoading = useRouterState({select: (s) => s.status === 'pending'});

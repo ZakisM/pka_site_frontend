@@ -1,9 +1,9 @@
-import {Link} from '@tanstack/react-router';
-import {useSetAtom} from 'jotai';
 import {Dices, Search, Shuffle} from 'lucide-react';
-import {searchOpenAtom} from '@/atoms/searchAtoms.ts';
-import {NavSearch} from './NavSearch.tsx';
 import {Tooltip, TooltipContent, TooltipTrigger} from './Tooltip.tsx';
+import {Link} from '@tanstack/react-router';
+import {NavSearch} from './NavSearch.tsx';
+import {searchOpenAtom} from '@/atoms/searchAtoms.ts';
+import {useSetAtom} from 'jotai';
 
 export const NavBar = () => {
   const setSearchOpen = useSetAtom(searchOpenAtom);
@@ -28,7 +28,7 @@ export const NavBar = () => {
           </Tooltip>
           <Link
             className="flex"
-            to={'/watch/$episodeId'}
+            to="/watch/$episodeId"
             params={{episodeId: 'random-event'}}>
             <Tooltip>
               <TooltipTrigger>
@@ -39,7 +39,7 @@ export const NavBar = () => {
           </Link>
           <Link
             className="flex"
-            to={'/watch/$episodeId'}
+            to="/watch/$episodeId"
             params={{episodeId: 'random'}}>
             <Tooltip>
               <TooltipTrigger>

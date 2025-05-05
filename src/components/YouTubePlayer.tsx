@@ -1,9 +1,9 @@
+import type {DataComponentProps, TimerId} from '@/types';
+import YouTube, {type YouTubeEvent} from 'react-youtube';
+import {useEffect, useLayoutEffect, useRef} from 'react';
+import {playerTimestampAtom} from '@/atoms/playerAtoms';
 import {useRouterState} from '@tanstack/react-router';
 import {useSetAtom} from 'jotai';
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import YouTube, {type YouTubeEvent} from 'react-youtube';
-import {playerTimestampAtom} from '@/atoms/playerAtoms';
-import type {DataComponentProps, TimerId} from '@/types';
 
 enum State {
   UNSTARTED = -1,
@@ -18,6 +18,7 @@ export const YouTubePlayer = ({
   videoId,
 }: DataComponentProps<typeof YouTube>) => {
   const youtubeRef = useRef<YouTube>(null);
+  // eslint-disable-next-line no-useless-undefined
   const intervalRef = useRef<TimerId>(undefined);
 
   const setPlayerTimestamp = useSetAtom(playerTimestampAtom);
@@ -68,7 +69,7 @@ export const YouTubePlayer = ({
 
           intervalRef.current = setInterval(() => {
             updatePlayerTimestamp(event);
-          }, 1_000);
+          }, 1000);
         }
       }}
     />

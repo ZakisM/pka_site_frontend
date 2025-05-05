@@ -1,4 +1,3 @@
-import {useAtom} from 'jotai';
 import {
   type OverlayScrollbarsComponentProps,
   useOverlayScrollbars,
@@ -10,15 +9,16 @@ import {
   useRef,
 } from 'react';
 import {VList, type VListHandle} from 'virtua';
-import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms';
 import type {DataComponentProps} from '@/types';
+import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms';
+import {useAtom} from 'jotai';
 
 interface ScrollbarProps extends OverlayScrollbarsComponentProps {
   children: React.ReactNode;
 }
 
 export const Scrollbar = ({children, ...rest}: DataComponentProps<'div'>) => {
-  const osRef = useRef<HTMLDivElement>(null);
+  const osRef = useRef<HTMLDivElement | null>(null);
 
   const [initialize, instance] = useOverlayScrollbars({
     defer: false,
@@ -66,7 +66,7 @@ export const VirtualizedScrollbar = ({
   ...rest
 }: VirtualizedScrollbarProps) => {
   const vListRef = useRef<VListHandle | null>(null);
-  const osRef = useRef<HTMLDivElement>(null);
+  const osRef = useRef<HTMLDivElement | null>(null);
 
   const [scrollbarState, setScrollbarState] = useAtom(scrollbarStateAtom);
 
@@ -96,18 +96,18 @@ export const VirtualizedScrollbar = ({
   }, [initialize]);
 
   useLayoutEffect(() => {
-    if (vListRef.current) {
-      vListRef.current.scrollTo(scrollbarState[scrollKey]?.offset);
-    }
+    const ref = vListRef.current;
+
+    ref?.scrollTo(scrollbarState[scrollKey]?.offset);
 
     return () => {
       setScrollbarState((prev) => {
-        if (vListRef.current) {
+        if (ref) {
           return {
             ...prev,
             [scrollKey]: {
-              offset: vListRef.current.scrollOffset,
-              cache: vListRef.current.cache,
+              offset: ref.scrollOffset,
+              cache: ref.cache,
             },
           };
         }
@@ -115,6 +115,7 @@ export const VirtualizedScrollbar = ({
         return prev;
       });
     };
+    // eslint-disable-next-line exhaustive-deps
   }, []);
 
   return (

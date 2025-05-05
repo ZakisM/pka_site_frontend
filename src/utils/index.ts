@@ -1,16 +1,19 @@
 import type {TimerId} from '@/types';
 
 export const clsx = (...classes: (string | boolean)[]) => {
-  return classes.filter((cl) => Boolean(cl)).join(' ');
+  return classes.filter(Boolean).join(' ');
 };
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
   duration: number,
 ) => {
-  let timerId: TimerId;
+  let timerId: TimerId | null = null;
 
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+  return function debouncedFunction(
+    this: ThisParameterType<T>,
+    ...args: Parameters<T>
+  ) {
     if (timerId) {
       clearTimeout(timerId);
     }

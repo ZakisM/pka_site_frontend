@@ -1,17 +1,17 @@
 import {type QueryClient, useSuspenseQuery} from '@tanstack/react-query';
 import {createFileRoute, redirect} from '@tanstack/react-router';
+import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
+import {fetchEpisodeById, fetchRandomEvent} from '@/utils/api';
 import {format, fromUnixTime} from 'date-fns';
-import {useAtom} from 'jotai';
-import {useLayoutEffect, useRef, useState} from 'react';
 import {
-  playerTimestampAtom,
   playerScrollRequestTriggerAtom,
+  playerTimestampAtom,
 } from '@/atoms/playerAtoms';
+import {useLayoutEffect, useRef, useState} from 'react';
 import {Scrollbar} from '@/components/Scrollbar';
 import {TimelineCard} from '@/components/TimelineCard';
 import {YouTubePlayer} from '@/components/YouTubePlayer';
-import {fetchEpisodeById, fetchRandomEvent} from '@/utils/api';
-import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
+import {useAtom} from 'jotai';
 
 // To ensure state gets reset correctly.
 const WatchWrapper = () => {
@@ -32,6 +32,7 @@ const Watch = () => {
     Array.from({length: data.events.length}, () => null),
   );
 
+  // eslint-disable-next-line no-useless-undefined
   const scrollDebounceRef = useRef<NodeJS.Timeout>(undefined);
 
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
@@ -72,7 +73,7 @@ const Watch = () => {
     clearTimeout(scrollDebounceRef.current);
 
     scrollDebounceRef.current = setTimeout(() => {
-      cardRefs.current[activeCardIndex]!.scrollIntoView({
+      cardRefs.current[activeCardIndex]?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
         inline: 'start',
@@ -138,7 +139,7 @@ const fetchAndCacheEpisode = async (
 
 export const Route = createFileRoute('/watch/$episodeId')({
   component: WatchWrapper,
-  validateSearch: (search: Record<string, unknown>): {timestamp?: number} => {
+  validateSearch: (search: {[key: string]: unknown}): {timestamp?: number} => {
     return search;
   },
   loader: async ({context, params}) => {
