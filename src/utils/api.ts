@@ -1,11 +1,10 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
-import ky from 'ky';
 import {
-  deserialize_episodes,
-  deserialize_events,
   type PkaEpisodeSearchResult,
   type PkaEventSearchResult,
+  deserialize_episodes,
+  deserialize_events,
 } from '@/lib_wasm';
+import ky from 'ky';
 
 const client = ky.create({
   prefixUrl: '/v1/api',

@@ -1,4 +1,4 @@
-import {cva, type VariantProps} from 'class-variance-authority';
+import {type VariantProps, cva} from 'class-variance-authority';
 import type {DataComponentProps} from '@/types';
 import {twMerge} from 'tailwind-merge';
 
@@ -23,6 +23,10 @@ interface ButtonProps extends DataComponentProps<'button'>, ButtonStyleProps {}
 
 export const Button = ({intent, className, ...rest}: ButtonProps) => {
   return (
-    <button {...rest} className={twMerge(buttonStyles({intent, className}))} />
+    <button
+      type="button"
+      {...rest}
+      className={twMerge(buttonStyles({intent, className}))}
+    />
   );
 };

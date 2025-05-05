@@ -1,7 +1,7 @@
-import {useAtom} from 'jotai';
-import {playerTimestampAtom} from '@/atoms/playerAtoms';
 import type {DataComponentProps} from '@/types';
 import {ProgressBar} from './ProgressBar';
+import {playerTimestampAtom} from '@/atoms/playerAtoms';
+import {useAtom} from 'jotai';
 
 interface TimelineCardProps extends DataComponentProps<'div'> {
   description: string;

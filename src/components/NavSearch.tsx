@@ -1,33 +1,33 @@
-import {
-  type UseQueryOptions,
-  useIsFetching,
-  useQuery,
-} from '@tanstack/react-query';
-import {useAtom, useSetAtom} from 'jotai';
 import {Milestone, Podcast, Search, SearchX, X} from 'lucide-react';
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import type {VListHandle} from 'virtua';
-import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
+import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
 import {
-  debouncedSearchQueryAtom,
   SearchTab,
+  debouncedSearchQueryAtom,
   searchCountAtom,
   searchOpenAtom,
   searchQueryAtom,
   searchTabAtom,
 } from '@/atoms/searchAtoms.ts';
-import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
-import type {DataComponentProps} from '@/types.ts';
-import {debounce} from '@/utils/index.ts';
+import {
+  type UseQueryOptions,
+  useIsFetching,
+  useQuery,
+} from '@tanstack/react-query';
 import {
   searchEpisodeQueryOptions,
   searchEventQueryOptions,
 } from '@/utils/queryOptions.ts';
+import {useAtom, useSetAtom} from 'jotai';
+import {useEffect, useLayoutEffect, useRef} from 'react';
+import type {DataComponentProps} from '@/types.ts';
 import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
 import {EventSearchResult} from './EventSearchResult.tsx';
-import {VirtualizedScrollbar} from './Scrollbar.tsx';
 import {Spinner} from './Spinner.tsx';
 import {TabButton} from './TabButton.tsx';
+import type {VListHandle} from 'virtua';
+import {VirtualizedScrollbar} from './Scrollbar.tsx';
+import {debounce} from '@/utils/index.ts';
+import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
 
 export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
@@ -165,7 +165,6 @@ const NavSearchModal = () => {
             )}
           </div>
           <input
-            // biome-ignore lint/a11y/noAutofocus: Modal autofocus is desired behaviour
             autoFocus
             className="w-full bg-transparent p-4 pl-2.75 text-base text-zinc-300 caret-primary outline-hidden selection:bg-zinc-700 placeholder:text-zinc-400"
             placeholder="Search..."

@@ -1,5 +1,5 @@
-import type {DataComponentProps} from '@/types';
 import {Button} from './Button';
+import type {DataComponentProps} from '@/types';
 
 interface TabButtonProps extends DataComponentProps<typeof Button> {
   active: boolean;

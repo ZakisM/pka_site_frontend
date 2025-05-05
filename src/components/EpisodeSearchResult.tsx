@@ -1,10 +1,10 @@
 import {format, fromUnixTime} from 'date-fns';
-import {useSetAtom} from 'jotai';
-import {Play} from 'lucide-react';
-import {searchOpenAtom} from '@/atoms/searchAtoms';
-import type {PkaEpisodeSearchResult} from '@/lib_wasm';
 import type {DataComponentProps} from '@/types';
 import {LinkButton} from './LinkButton';
+import type {PkaEpisodeSearchResult} from '@/lib_wasm';
+import {Play} from 'lucide-react';
+import {searchOpenAtom} from '@/atoms/searchAtoms';
+import {useSetAtom} from 'jotai';
 
 interface EpisodeResultProps extends DataComponentProps<'div'> {
   item: PkaEpisodeSearchResult;
@@ -46,7 +46,7 @@ export const EpisodeSearchResult = ({item, ...rest}: EpisodeResultProps) => {
           <LinkButton
             onClick={() => setSearchOpen(false)}
             className="flex gap-1 items-center"
-            to={'/watch/$episodeId'}
+            to="/watch/$episodeId"
             params={{episodeId: item.episodeNumber.toString()}}>
             <span className="text-xs">Watch</span>
             <Play className="w-3 h-3" />

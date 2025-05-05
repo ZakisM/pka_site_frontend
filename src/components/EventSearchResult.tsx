@@ -1,11 +1,11 @@
 import {format, fromUnixTime} from 'date-fns';
-import {useSetAtom} from 'jotai';
-import {Play} from 'lucide-react';
-import {searchOpenAtom} from '@/atoms/searchAtoms';
-import type {PkaEventSearchResult} from '@/lib_wasm';
 import type {DataComponentProps} from '@/types';
 import {LinkButton} from './LinkButton';
+import type {PkaEventSearchResult} from '@/lib_wasm';
+import {Play} from 'lucide-react';
 import {playerScrollRequestTriggerAtom} from '@/atoms/playerAtoms';
+import {searchOpenAtom} from '@/atoms/searchAtoms';
+import {useSetAtom} from 'jotai';
 
 interface EventResultProps extends DataComponentProps<'div'> {
   item: PkaEventSearchResult;
@@ -25,16 +25,6 @@ export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
   const formattedLengthSeconds = () => {
     const minutes = Math.floor(item.lengthSeconds / 60) % 60;
     const seconds = item.lengthSeconds % 60;
-
-    let res = '';
-
-    if (seconds) {
-      res += `${seconds}h`;
-    }
-
-    if (minutes) {
-      res += `${minutes}m`;
-    }
 
     return `${minutes}m ${seconds}s`;
   };
@@ -63,7 +53,7 @@ export const EventSearchResult = ({item, ...rest}: EventResultProps) => {
               setPlayerScrollRequestTrigger(Date.now());
             }}
             className="flex  gap-1 items-center"
-            to={'/watch/$episodeId'}
+            to="/watch/$episodeId"
             params={{episodeId: item.episodeNumber.toString()}}
             search={{timestamp: item.timestamp}}>
             <span className="text-xs">Watch</span>

@@ -1,11 +1,11 @@
-import path from 'node:path';
-import tailwindcss from '@tailwindcss/vite';
 import {TanStackRouterVite} from '@tanstack/router-plugin/vite';
-import react from '@vitejs/plugin-react';
+import arraybuffer from 'vite-plugin-arraybuffer';
 import browserslist from 'browserslist';
 import {browserslistToTargets} from 'lightningcss';
 import {defineConfig} from 'vite';
-import arraybuffer from 'vite-plugin-arraybuffer';
+import path from 'node:path';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import wasm from 'vite-plugin-wasm';
 
@@ -37,7 +37,7 @@ export default defineConfig(({mode}) => {
         verbose: true,
         disable: !isProduction,
         filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
-        threshold: 10240,
+        threshold: 10_240,
         algorithm: 'gzip',
         ext: '.gz',
         deleteOriginFile: false,
@@ -46,7 +46,7 @@ export default defineConfig(({mode}) => {
         verbose: true,
         disable: !isProduction,
         filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
-        threshold: 10240,
+        threshold: 10_240,
         algorithm: 'brotliCompress',
         ext: '.br',
         deleteOriginFile: false,
