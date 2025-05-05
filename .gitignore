@@ -26,3 +26,5 @@ yarn-error.log*
 
 /lib_wasm/target
 **/lib_wasm_out
+
+./bun.lockb
