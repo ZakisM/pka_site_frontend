@@ -1,9 +1,5 @@
 import type {TimerId} from '@/types';
 
-export const clsx = (...classes: (string | boolean)[]) => {
-  return classes.filter(Boolean).join(' ');
-};
-
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
   duration: number,

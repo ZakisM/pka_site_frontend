@@ -1,4 +1,4 @@
-import {clsx} from '@/utils';
+import clsx from 'clsx';
 
 interface ProgressBarProps {
   progress: number;
@@ -8,7 +8,7 @@ export const ProgressBar = ({progress}: ProgressBarProps) => {
   const clampedProgress = Math.max(0, Math.min(100, Math.ceil(progress)));
 
   return (
-    <div className="flex h-1.75 w-full rounded-full bg-[#240306]">
+    <div className="flex h-2 w-full rounded-full bg-[#240306]">
       <div
         className={clsx(
           'bg-primary rounded-l-xl',
