@@ -47,22 +47,20 @@ type PkaEpisodeWithAll = {
   events: PkaEvent[];
 };
 
-export const fetchEpisodeById = async (
-  episodeId: string,
-): Promise<PkaEpisodeWithAll> => {
+export const fetchEpisodeById = async (episodeId: string) => {
   const response = await client.get(`episode/watch/${episodeId}`);
 
-  const {data} = await response.json<any>();
+  const responsePayload = await response.json<{data: PkaEpisodeWithAll}>();
 
-  return data;
+  return responsePayload.data;
 };
 
-export const fetchRandomEvent = async (): Promise<RandomPkaEvent> => {
+export const fetchRandomEvent = async () => {
   const response = await client.get('events/random');
 
-  const {data} = await response.json<any>();
+  const responsePayload = await response.json<{data: RandomPkaEvent}>();
 
-  return data;
+  return responsePayload.data;
 };
 
 export const searchEpisodes = async (

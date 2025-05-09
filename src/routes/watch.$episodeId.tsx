@@ -9,6 +9,7 @@ import {
 } from '@/atoms/playerAtoms';
 import {useLayoutEffect, useRef, useState} from 'react';
 import {Scrollbar} from '@/components/Scrollbar';
+import type {TimerId} from '@/types';
 import {TimelineCard} from '@/components/TimelineCard';
 import {YouTubePlayer} from '@/components/YouTubePlayer';
 import {useAtom} from 'jotai';
@@ -33,7 +34,7 @@ const Watch = () => {
   );
 
   // eslint-disable-next-line no-useless-undefined
-  const scrollDebounceRef = useRef<NodeJS.Timeout>(undefined);
+  const scrollDebounceRef = useRef<TimerId>(undefined);
 
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
   const [playerTimestamp, setPlayerTimestamp] = useAtom(playerTimestampAtom);

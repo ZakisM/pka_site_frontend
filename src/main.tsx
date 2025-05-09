@@ -5,18 +5,11 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import './styles.css';
 import * as React from 'react';
 import {Navigate, RouterProvider, createRouter} from '@tanstack/react-router';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {QueryClientProvider} from '@tanstack/react-query';
 import {LinkButton} from './components/LinkButton';
 import ReactDOM from 'react-dom/client';
 import {routeTree} from './routeTree.gen';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-    },
-  },
-});
+import {queryClient} from './queryClient';
 
 const router = createRouter({
   routeTree,
@@ -29,7 +22,7 @@ const router = createRouter({
     <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />
   ),
   defaultErrorComponent: (err) => {
-    console.error(err);
+    console.error(err.error);
 
     return (
       <div className="flex flex-col h-full justify-center items-center gap-4">
