@@ -19,6 +19,14 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  body {
+    @apply bg-zinc-950 text-white;
+  }
+
+  iframe:focus-visible {
+    outline: none;
+  }
 }
 
 @utility content-area {
@@ -27,15 +35,4 @@
 
 @utility bg-timeline-card {
   background-color: oklch(0.24 0.1036 19.47);
-}
-
-@layer base {
-  body {
-    @apply bg-zinc-950 text-white;
-  }
-
-  iframe:focus-visible,
-  .ReactVirtualized__Grid {
-    outline: none;
-  }
 }

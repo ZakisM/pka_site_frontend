@@ -36,7 +36,7 @@ export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
     <>
       <div className="flex justify-between" {...rest}>
         <button
-          className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border-1 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
+          className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
           onClick={() => setSearchOpen(true)}
           type="button">
           <Search className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
@@ -108,7 +108,7 @@ const GenericSearchContent = ({
 
   if (!data?.length) {
     return (
-      <div className="flex flex-grow-1 justify-center items-center gap-2 text-zinc-400">
+      <div className="flex flex-grow justify-center items-center gap-2 text-zinc-400">
         <SearchX className="w-4 h-4" />
         <span className="font-light text-md">No results found</span>
       </div>
@@ -118,7 +118,7 @@ const GenericSearchContent = ({
   return (
     <VirtualizedScrollbar
       scrollKey={config.searchTab}
-      className="flex grow-1 mb-6 px-6"
+      className="flex grow mb-6 px-6"
       vScrollbarRef={vScrollBarRef}>
       {data.map((item) => (
         <config.Component key={config.itemKey(item)} item={item} />
@@ -166,7 +166,7 @@ const NavSearchModal = () => {
           </div>
           <input
             autoFocus
-            className="w-full bg-transparent p-4 pl-2.75 text-base text-zinc-300 caret-primary outline-hidden selection:bg-zinc-700 placeholder:text-zinc-400"
+            className="w-full bg-transparent p-4 pl-2.75 text-base text-zinc-300 caret-primary outline-none selection:bg-zinc-700 placeholder:text-zinc-400"
             placeholder="Search..."
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)

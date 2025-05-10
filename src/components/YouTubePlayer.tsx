@@ -50,7 +50,7 @@ export const YouTubePlayer = ({
   return (
     <YouTube
       ref={youtubeRef}
-      className="flex flex-grow-1"
+      className="flex flex-grow"
       iframeClassName="w-full h-full"
       videoId={videoId}
       opts={{

@@ -12,7 +12,7 @@ export const ProgressBar = ({progress}: ProgressBarProps) => {
       <div
         className={clsx(
           'bg-primary rounded-l-xl',
-          'transition-width duration-300 ease-in-out',
+          'transition-[width] duration-300 ease-in-out',
           clampedProgress === 100 && 'rounded-r-xl',
         )}
         style={{width: `${clampedProgress}%`}}
