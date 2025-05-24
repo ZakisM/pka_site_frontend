@@ -5,18 +5,22 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import './styles.css';
 import * as React from 'react';
 import {Navigate, RouterProvider, createRouter} from '@tanstack/react-router';
-import {QueryClientProvider} from '@tanstack/react-query';
 import {LinkButton} from './components/LinkButton';
+import {QueryClientProvider} from '@tanstack/react-query';
 import ReactDOM from 'react-dom/client';
-import {routeTree} from './routeTree.gen';
+import {Spinner} from './components/Spinner';
 import {queryClient} from './queryClient';
+import {routeTree} from './routeTree.gen';
 
 const router = createRouter({
   routeTree,
   context: {queryClient},
   defaultPendingMs: 0,
-  defaultPendingMinMs: 0,
-  defaultPendingComponent: () => null,
+  defaultPendingComponent: () => (
+    <div className="flex w-full h-full items-center justify-center">
+      <Spinner className="w-16 h-16" />
+    </div>
+  ),
   defaultPreloadStaleTime: 0,
   defaultNotFoundComponent: () => (
     <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />

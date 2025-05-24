@@ -9,8 +9,8 @@ import {
 } from '@/atoms/playerAtoms';
 import {useLayoutEffect, useRef, useState} from 'react';
 import {Scrollbar} from '@/components/Scrollbar';
-import type {TimerId} from '@/types';
 import {TimelineCard} from '@/components/TimelineCard';
+import type {TimerId} from '@/types';
 import {YouTubePlayer} from '@/components/YouTubePlayer';
 import {useAtom} from 'jotai';
 
