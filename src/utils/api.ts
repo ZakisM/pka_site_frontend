@@ -7,7 +7,7 @@ import {
 import ky from 'ky';
 
 const client = ky.create({
-  prefixUrl: '/v1/api',
+  prefixUrl: '/api/v1',
 });
 
 type PkaEpisode = {
@@ -48,7 +48,7 @@ type PkaEpisodeWithAll = {
 };
 
 export const fetchEpisodeById = async (episodeId: string) => {
-  const response = await client.get(`episode/watch/${episodeId}`);
+  const response = await client.get(`episodes/${episodeId}`);
 
   const responsePayload = await response.json<{data: PkaEpisodeWithAll}>();
 
@@ -67,7 +67,7 @@ export const searchEpisodes = async (
   signal: AbortSignal,
   searchQuery: string,
 ): Promise<PkaEpisodeSearchResult[]> => {
-  const response = await client.post('search/search_pka_episode', {
+  const response = await client.post('search/episodes', {
     signal,
     json: {
       query: searchQuery,
@@ -85,7 +85,7 @@ export const searchEvents = async (
   signal: AbortSignal,
   searchQuery: string,
 ): Promise<PkaEventSearchResult[]> => {
-  const response = await client.post('search/search_pka_event', {
+  const response = await client.post('search/events', {
     signal,
     json: {
       query: searchQuery,
