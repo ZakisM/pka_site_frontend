@@ -1,4 +1,5 @@
 import {Milestone, Podcast, Search, SearchX, X} from 'lucide-react';
+import {Activity} from 'react';
 import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
 import {
   SearchTab,
@@ -43,7 +44,9 @@ export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
           Search...
         </button>
       </div>
-      {searchOpen && <NavSearchModal />}
+      <Activity mode={searchOpen ? 'visible' : 'hidden'}>
+        <NavSearchModal />
+      </Activity>
     </>
   );
 };
