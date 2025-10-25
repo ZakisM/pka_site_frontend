@@ -1,5 +1,5 @@
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import type {DataComponentProps} from '@/types';
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import type { DataComponentProps } from "@/types";
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
@@ -27,4 +27,4 @@ const Tooltip = ({
   </TooltipProvider>
 );
 
-export {Tooltip, TooltipTrigger, TooltipContent, TooltipProvider};
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

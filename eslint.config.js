@@ -1,12 +1,12 @@
-import reactCompilerPlugin from 'eslint-plugin-react-compiler';
+import reactCompilerPlugin from "eslint-plugin-react-compiler";
 
 export default [
   {
     plugins: {
-      'react-compiler': reactCompilerPlugin,
+      "react-compiler": reactCompilerPlugin,
     },
     rules: {
-      'react-compiler/react-compiler': 'error',
+      "react-compiler/react-compiler": "error",
     },
   },
 ];

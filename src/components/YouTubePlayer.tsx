@@ -1,9 +1,9 @@
-import type {DataComponentProps, TimerId} from '@/types';
-import YouTube, {type YouTubeEvent} from 'react-youtube';
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import {playerTimestampAtom} from '@/atoms/playerAtoms';
-import {useRouterState} from '@tanstack/react-router';
-import {useSetAtom} from 'jotai';
+import type { DataComponentProps, TimerId } from "@/types";
+import YouTube, { type YouTubeEvent } from "react-youtube";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { playerTimestampAtom } from "@/atoms/playerAtoms";
+import { useRouterState } from "@tanstack/react-router";
+import { useSetAtom } from "jotai";
 
 enum State {
   UNSTARTED = -1,
@@ -29,7 +29,10 @@ export const YouTubePlayer = ({
 
   const routerTimestampMeta = useRouterState({
     select(state) {
-      return {timestamp: state.location.search.timestamp, status: state.status};
+      return {
+        timestamp: state.location.search.timestamp,
+        status: state.status,
+      };
     },
   });
 
@@ -40,7 +43,7 @@ export const YouTubePlayer = ({
   }, []);
 
   useEffect(() => {
-    if (routerTimestampMeta.status === 'idle') {
+    if (routerTimestampMeta.status === "idle") {
       youtubeRef.current
         ?.getInternalPlayer()
         ?.seekTo(routerTimestampMeta.timestamp);
