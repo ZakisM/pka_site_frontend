@@ -22,7 +22,6 @@ const WatchWrapper = () => {
 
 const Watch = () => {
   const params = Route.useParams();
-  const search = Route.useSearch();
 
   const { data } = useSuspenseQuery(episodeQueryOptions(params.episodeId));
 
@@ -36,7 +35,7 @@ const Watch = () => {
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
 
   const specificTimestampAtom = playerTimestampAtomFamily(data.youtubeDetails.videoId);
-  const [playerTimestamp, setPlayerTimestamp] = useAtom(specificTimestampAtom);
+  const [playerTimestamp] = useAtom(specificTimestampAtom);
 
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
@@ -44,12 +43,6 @@ const Watch = () => {
     fromUnixTime(data.episode.uploadDate),
     "EEEE do MMMM yyyy",
   );
-
-  useLayoutEffect(() => {
-    if (search.timestamp) {
-      setPlayerTimestamp(search.timestamp);
-    }
-  }, [setPlayerTimestamp, search.timestamp]);
 
   useLayoutEffect(() => {
     for (const [index, event] of data.events.entries()) {
