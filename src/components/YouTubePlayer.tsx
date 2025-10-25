@@ -1,9 +1,9 @@
 import type { DataComponentProps, TimerId } from "@/types";
 import YouTube, { type YouTubeEvent } from "react-youtube";
+import { playerScrollRequestTriggerAtom, playerTimestampAtomFamily } from "@/atoms/playerAtoms";
+import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { playerTimestampAtom } from "@/atoms/playerAtoms";
 import { useRouterState } from "@tanstack/react-router";
-import { useSetAtom } from "jotai";
 
 enum State {
   UNSTARTED = -1,
@@ -21,7 +21,11 @@ export const YouTubePlayer = ({
   // eslint-disable-next-line no-useless-undefined
   const intervalRef = useRef<TimerId>(undefined);
 
-  const setPlayerTimestamp = useSetAtom(playerTimestampAtom);
+  const setPlayerScrollRequestTrigger = useSetAtom(
+    playerScrollRequestTriggerAtom,
+  );
+  const specificTimestampAtom = playerTimestampAtomFamily(videoId);
+  const [playerTimestamp, setPlayerTimestamp] = useAtom(specificTimestampAtom);
 
   const updatePlayerTimestamp = (event: YouTubeEvent<number>) => {
     setPlayerTimestamp(event.target.getCurrentTime());
@@ -43,10 +47,12 @@ export const YouTubePlayer = ({
   }, []);
 
   useEffect(() => {
-    if (routerTimestampMeta.status === "idle") {
+    if (routerTimestampMeta.status === "idle" && routerTimestampMeta.timestamp) {
       youtubeRef.current
         ?.getInternalPlayer()
         ?.seekTo(routerTimestampMeta.timestamp);
+      setPlayerTimestamp(routerTimestampMeta.timestamp);
+      setPlayerScrollRequestTrigger(Date.now());
     }
   }, [routerTimestampMeta]);
 
@@ -62,7 +68,7 @@ export const YouTubePlayer = ({
         },
       }}
       onReady={(event) => {
-        event.target.seekTo(routerTimestampMeta.timestamp);
+        event.target.seekTo(playerTimestamp);
       }}
       onStateChange={(event) => {
         clearInterval(intervalRef.current);

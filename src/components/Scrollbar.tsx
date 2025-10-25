@@ -10,7 +10,7 @@ import {
 } from "react";
 import { VList, type VListHandle } from "virtua";
 import type { DataComponentProps } from "@/types";
-import { scrollbarStateAtom } from "@/atoms/scrollbarAtoms";
+import { scrollbarStateAtom } from "@/atoms/searchAtoms";
 import { useAtom } from "jotai";
 
 interface ScrollbarProps extends OverlayScrollbarsComponentProps {

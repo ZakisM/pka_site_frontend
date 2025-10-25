@@ -1,18 +1,20 @@
 import type { DataComponentProps } from "@/types";
 import { ProgressBar } from "./ProgressBar";
-import { playerTimestampAtom } from "@/atoms/playerAtoms";
+import { playerTimestampAtomFamily } from "@/atoms/playerAtoms";
 import { useAtom } from "jotai";
 
 interface TimelineCardProps extends DataComponentProps<"div"> {
   description: string;
   timestamp: number;
   lengthSeconds: number;
+  videoId: string;
 }
 
 export const TimelineCard = ({
   description,
   timestamp,
   lengthSeconds,
+  videoId,
   ...rest
 }: TimelineCardProps) => {
   const formatTimestamp = (timestamp: number) => {
@@ -23,7 +25,8 @@ export const TimelineCard = ({
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
-  const [playerTimestamp] = useAtom(playerTimestampAtom);
+  const specificTimestampAtom = playerTimestampAtomFamily(videoId);
+  const [playerTimestamp] = useAtom(specificTimestampAtom);
 
   return (
     <div

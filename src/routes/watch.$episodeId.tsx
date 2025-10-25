@@ -3,10 +3,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { episodeQueryKeyFn, episodeQueryOptions } from "@/utils/queryOptions";
 import { fetchEpisodeById, fetchRandomEvent } from "@/utils/api";
 import { format, fromUnixTime } from "date-fns";
-import {
-  playerScrollRequestTriggerAtom,
-  playerTimestampAtom,
-} from "@/atoms/playerAtoms";
+import { playerScrollRequestTriggerAtom, playerTimestampAtomFamily } from "@/atoms/playerAtoms";
 import { useLayoutEffect, useRef, useState } from "react";
 import { Scrollbar } from "@/components/Scrollbar";
 import { TimelineCard } from "@/components/TimelineCard";
@@ -37,7 +34,9 @@ const Watch = () => {
   const scrollDebounceRef = useRef<TimerId>(undefined);
 
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
-  const [playerTimestamp, setPlayerTimestamp] = useAtom(playerTimestampAtom);
+
+  const specificTimestampAtom = playerTimestampAtomFamily(data.youtubeDetails.videoId);
+  const [playerTimestamp, setPlayerTimestamp] = useAtom(specificTimestampAtom);
 
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
@@ -51,12 +50,6 @@ const Watch = () => {
       setPlayerTimestamp(search.timestamp);
     }
   }, [setPlayerTimestamp, search.timestamp]);
-
-  useLayoutEffect(() => {
-    return () => {
-      setPlayerTimestamp(0);
-    };
-  }, [setPlayerTimestamp]);
 
   useLayoutEffect(() => {
     for (const [index, event] of data.events.entries()) {
@@ -112,6 +105,7 @@ const Watch = () => {
                   description={event.description}
                   timestamp={event.timestamp}
                   lengthSeconds={event.lengthSeconds}
+                  videoId={data.youtubeDetails.videoId}
                   data-active={index === activeCardIndex ? true : undefined}
                 />
               );

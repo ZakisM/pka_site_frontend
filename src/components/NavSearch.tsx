@@ -1,5 +1,4 @@
 import { Milestone, Podcast, Search, SearchX, X } from "lucide-react";
-import { Activity } from "react";
 import type {
   PkaEpisodeSearchResult,
   PkaEventSearchResult,
@@ -7,6 +6,7 @@ import type {
 import {
   SearchTab,
   debouncedSearchQueryAtom,
+  scrollbarStateAtom,
   searchCountAtom,
   searchOpenAtom,
   searchQueryAtom,
@@ -22,7 +22,7 @@ import {
   searchEventQueryOptions,
 } from "@/utils/queryOptions.ts";
 import { useAtom, useSetAtom } from "jotai";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { Activity, useEffect, useLayoutEffect, useRef } from "react";
 import type { DataComponentProps } from "@/types.ts";
 import { EpisodeSearchResult } from "./EpisodeSearchResult.tsx";
 import { EventSearchResult } from "./EventSearchResult.tsx";
@@ -31,7 +31,6 @@ import { TabButton } from "./TabButton.tsx";
 import type { VListHandle } from "virtua";
 import { VirtualizedScrollbar } from "./Scrollbar.tsx";
 import { debounce } from "@/utils/index.ts";
-import { scrollbarStateAtom } from "@/atoms/scrollbarAtoms.ts";
 
 export const NavSearch = ({ ...rest }: DataComponentProps<"div">) => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);

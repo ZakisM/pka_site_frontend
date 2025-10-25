@@ -3,7 +3,6 @@ import type { DataComponentProps } from "@/types";
 import { LinkButton } from "./LinkButton";
 import type { PkaEventSearchResult } from "@/lib_wasm";
 import { Play } from "lucide-react";
-import { playerScrollRequestTriggerAtom } from "@/atoms/playerAtoms";
 import { searchOpenAtom } from "@/atoms/searchAtoms";
 import { useSetAtom } from "jotai";
 
@@ -13,9 +12,6 @@ interface EventResultProps extends DataComponentProps<"div"> {
 
 export const EventSearchResult = ({ item, ...rest }: EventResultProps) => {
   const setSearchOpen = useSetAtom(searchOpenAtom);
-  const setPlayerScrollRequestTrigger = useSetAtom(
-    playerScrollRequestTriggerAtom,
-  );
 
   const formattedUploadDate = format(
     fromUnixTime(item.uploadDate),
@@ -51,7 +47,6 @@ export const EventSearchResult = ({ item, ...rest }: EventResultProps) => {
           <LinkButton
             onClick={() => {
               setSearchOpen(false);
-              setPlayerScrollRequestTrigger(Date.now());
             }}
             className="flex  gap-1 items-center"
             to="/watch/$episodeId"

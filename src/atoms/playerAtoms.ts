@@ -1,4 +1,6 @@
-import { atom } from "jotai";
+import { atomFamily, atomWithStorage } from 'jotai/utils'
+import { atom } from 'jotai';
 
-export const playerTimestampAtom = atom(0);
 export const playerScrollRequestTriggerAtom = atom(Date.now());
+
+export const playerTimestampAtomFamily = atomFamily((videoId: string) => atomWithStorage(videoId, 0))
