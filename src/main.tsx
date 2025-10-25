@@ -1,20 +1,20 @@
-import '@fontsource-variable/raleway';
-import '@fontsource-variable/roboto';
-import 'core-js/stable';
-import 'overlayscrollbars/overlayscrollbars.css';
-import './styles.css';
-import * as React from 'react';
-import {Navigate, RouterProvider, createRouter} from '@tanstack/react-router';
-import {LinkButton} from './components/LinkButton';
-import {QueryClientProvider} from '@tanstack/react-query';
-import ReactDOM from 'react-dom/client';
-import {Spinner} from './components/Spinner';
-import {queryClient} from './queryClient';
-import {routeTree} from './routeTree.gen';
+import "@fontsource-variable/raleway";
+import "@fontsource-variable/roboto";
+import "core-js/stable";
+import "overlayscrollbars/overlayscrollbars.css";
+import "./styles.css";
+import * as React from "react";
+import { Navigate, RouterProvider, createRouter } from "@tanstack/react-router";
+import { LinkButton } from "./components/LinkButton";
+import { QueryClientProvider } from "@tanstack/react-query";
+import ReactDOM from "react-dom/client";
+import { Spinner } from "./components/Spinner";
+import { queryClient } from "./queryClient";
+import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
   routeTree,
-  context: {queryClient},
+  context: { queryClient },
   defaultPendingMs: 0,
   defaultPendingComponent: () => (
     <div className="flex w-full h-full items-center justify-center">
@@ -23,7 +23,7 @@ const router = createRouter({
   ),
   defaultPreloadStaleTime: 0,
   defaultNotFoundComponent: () => (
-    <Navigate to="/watch/$episodeId" params={{episodeId: 'latest'}} replace />
+    <Navigate to="/watch/$episodeId" params={{ episodeId: "latest" }} replace />
   ),
   defaultErrorComponent: (err) => {
     console.error(err.error);
@@ -34,7 +34,8 @@ const router = createRouter({
         <LinkButton
           className="text-sm"
           to="/watch/$episodeId"
-          params={{episodeId: 'latest'}}>
+          params={{ episodeId: "latest" }}
+        >
           Go Home
         </LinkButton>
       </div>
@@ -43,18 +44,18 @@ const router = createRouter({
 });
 
 // Register the router instance for type safety
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
 
-const container = document.querySelector('#root');
+const container = document.querySelector("#root");
 if (!container) {
-  throw new Error('Failed to find element for createRoot.');
+  throw new Error("Failed to find element for createRoot.");
 }
 
-const rootElement = document.querySelector('#root') as HTMLElement;
+const rootElement = document.querySelector("#root") as HTMLElement;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(

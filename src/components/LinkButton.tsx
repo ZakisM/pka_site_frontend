@@ -1,9 +1,9 @@
-import {type ButtonStyleProps, buttonStyles} from './Button';
-import {type LinkComponent, createLink} from '@tanstack/react-router';
-import type {DataComponentProps} from '@/types';
+import { type ButtonStyleProps, buttonStyles } from "./Button";
+import { type LinkComponent, createLink } from "@tanstack/react-router";
+import type { DataComponentProps } from "@/types";
 
 interface BasicLinkComponentProps
-  extends DataComponentProps<'a'>,
+  extends DataComponentProps<"a">,
     ButtonStyleProps {}
 
 const BasicLinkComponent = ({
@@ -11,7 +11,7 @@ const BasicLinkComponent = ({
   className,
   ...rest
 }: BasicLinkComponentProps) => {
-  return <a {...rest} className={buttonStyles({intent, className})} />;
+  return <a {...rest} className={buttonStyles({ intent, className })} />;
 };
 
 const CreatedLinkComponent = createLink(BasicLinkComponent);

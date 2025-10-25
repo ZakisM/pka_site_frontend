@@ -1,36 +1,38 @@
-import {Milestone, Podcast, Search, SearchX, X} from 'lucide-react';
-import {Activity} from 'react';
-import type {PkaEpisodeSearchResult, PkaEventSearchResult} from '@/lib_wasm.ts';
+import { Milestone, Podcast, Search, SearchX, X } from "lucide-react";
+import type {
+  PkaEpisodeSearchResult,
+  PkaEventSearchResult,
+} from "@/lib_wasm.ts";
 import {
   SearchTab,
   debouncedSearchQueryAtom,
+  scrollbarStateAtom,
   searchCountAtom,
   searchOpenAtom,
   searchQueryAtom,
   searchTabAtom,
-} from '@/atoms/searchAtoms.ts';
+} from "@/atoms/searchAtoms.ts";
 import {
   type UseQueryOptions,
   useIsFetching,
   useQuery,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 import {
   searchEpisodeQueryOptions,
   searchEventQueryOptions,
-} from '@/utils/queryOptions.ts';
-import {useAtom, useSetAtom} from 'jotai';
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import type {DataComponentProps} from '@/types.ts';
-import {EpisodeSearchResult} from './EpisodeSearchResult.tsx';
-import {EventSearchResult} from './EventSearchResult.tsx';
-import {Spinner} from './Spinner.tsx';
-import {TabButton} from './TabButton.tsx';
-import type {VListHandle} from 'virtua';
-import {VirtualizedScrollbar} from './Scrollbar.tsx';
-import {debounce} from '@/utils/index.ts';
-import {scrollbarStateAtom} from '@/atoms/scrollbarAtoms.ts';
+} from "@/utils/queryOptions.ts";
+import { useAtom, useSetAtom } from "jotai";
+import { Activity, useEffect, useLayoutEffect, useRef } from "react";
+import type { DataComponentProps } from "@/types.ts";
+import { EpisodeSearchResult } from "./EpisodeSearchResult.tsx";
+import { EventSearchResult } from "./EventSearchResult.tsx";
+import { Spinner } from "./Spinner.tsx";
+import { TabButton } from "./TabButton.tsx";
+import type { VListHandle } from "virtua";
+import { VirtualizedScrollbar } from "./Scrollbar.tsx";
+import { debounce } from "@/utils/index.ts";
 
-export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
+export const NavSearch = ({ ...rest }: DataComponentProps<"div">) => {
   const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
 
   return (
@@ -39,12 +41,13 @@ export const NavSearch = ({...rest}: DataComponentProps<'div'>) => {
         <button
           className="flex w-full items-center justify-center rounded-lg bg-zinc-900/50 p-1.5 text-left text-sm text-zinc-500 border border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700/75 hover:cursor-pointer"
           onClick={() => setSearchOpen(true)}
-          type="button">
+          type="button"
+        >
           <Search className="mr-1.5 h-4 w-4 stroke-2 text-zinc-500" />
           Search...
         </button>
       </div>
-      <Activity mode={searchOpen ? 'visible' : 'hidden'}>
+      <Activity mode={searchOpen ? "visible" : "hidden"}>
         <NavSearchModal />
       </Activity>
     </>
@@ -65,14 +68,14 @@ const searchConfigMap = {
     searchTab: SearchTab.EPISODES,
     Component: EpisodeSearchResult,
     queryFn: searchEpisodeQueryOptions,
-    itemKey: ({episodeNumber}: PkaEpisodeSearchResult) =>
+    itemKey: ({ episodeNumber }: PkaEpisodeSearchResult) =>
       episodeNumber.toString(),
   },
   [SearchTab.EVENTS]: {
     searchTab: SearchTab.EVENTS,
     Component: EventSearchResult,
     queryFn: searchEventQueryOptions,
-    itemKey: ({episodeNumber, timestamp}: PkaEventSearchResult) =>
+    itemKey: ({ episodeNumber, timestamp }: PkaEventSearchResult) =>
       `${episodeNumber}-${timestamp}`,
   },
 } as const satisfies Record<SearchTab, SearchConfig>;
@@ -87,7 +90,7 @@ const GenericSearchContent = ({
   const prevSearchQuery = useRef(searchQuery);
   const vScrollBarRef = useRef<VListHandle | null>(null);
 
-  const {data, isFetched, isFetching} = useQuery(config.queryFn(searchQuery));
+  const { data, isFetched, isFetching } = useQuery(config.queryFn(searchQuery));
 
   const setSearchCount = useSetAtom(searchCountAtom);
   const setScrollbarState = useSetAtom(scrollbarStateAtom);
@@ -122,7 +125,8 @@ const GenericSearchContent = ({
     <VirtualizedScrollbar
       scrollKey={config.searchTab}
       className="flex grow mb-6 px-6"
-      vScrollbarRef={vScrollBarRef}>
+      vScrollbarRef={vScrollBarRef}
+    >
       {data.map((item) => (
         <config.Component key={config.itemKey(item)} item={item} />
       ))}
@@ -131,7 +135,7 @@ const GenericSearchContent = ({
 };
 
 const NavSearchModal = () => {
-  const searchFetching = useIsFetching({queryKey: ['search']});
+  const searchFetching = useIsFetching({ queryKey: ["search"] });
 
   const [searchCount] = useAtom(searchCountAtom);
   const setSearchOpen = useSetAtom(searchOpenAtom);
@@ -150,15 +154,17 @@ const NavSearchModal = () => {
       className="fixed top-0 left-0 z-10 size-full bg-black/25 sm:p-16 backdrop-blur-md animate-in fade-in duration-250"
       onMouseDown={() => {
         setSearchOpen(false);
-      }}>
+      }}
+    >
       <div
         className="mx-auto flex h-full max-w-2xl flex-col rounded-lg border border-zinc-800/50 bg-night"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(event) => {
-          if (event.key === 'Escape') {
+          if (event.key === "Escape") {
             setSearchOpen(false);
           }
-        }}>
+        }}
+      >
         <div className="flex items-center border-zinc-800/50 border-b pr-4 px-2.75">
           <div className="flex w-8 h-8 items-center justify-center">
             {searchFetching > 0 ? (
@@ -179,7 +185,8 @@ const NavSearchModal = () => {
           <button
             className="sm:hidden"
             type="button"
-            onClick={() => setSearchOpen(false)}>
+            onClick={() => setSearchOpen(false)}
+          >
             <X className="stroke-2 text-zinc-300 hover:cursor-pointer" />
           </button>
         </div>
@@ -190,13 +197,15 @@ const NavSearchModal = () => {
           <div className="flex gap-2 mt-2.5">
             <TabButton
               active={searchTab === SearchTab.EPISODES}
-              onClick={() => setSearchTab(SearchTab.EPISODES)}>
+              onClick={() => setSearchTab(SearchTab.EPISODES)}
+            >
               <span>Episodes</span>
               <Podcast className="w-3 h-3" />
             </TabButton>
             <TabButton
               active={searchTab === SearchTab.EVENTS}
-              onClick={() => setSearchTab(SearchTab.EVENTS)}>
+              onClick={() => setSearchTab(SearchTab.EVENTS)}
+            >
               <span>Events</span>
               <Milestone className="w-3 h-3" />
             </TabButton>

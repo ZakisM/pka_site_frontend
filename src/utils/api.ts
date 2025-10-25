@@ -3,11 +3,11 @@ import {
   type PkaEventSearchResult,
   deserialize_episodes,
   deserialize_events,
-} from '@/lib_wasm';
-import ky from 'ky';
+} from "@/lib_wasm";
+import ky from "ky";
 
 const client = ky.create({
-  prefixUrl: '/api/v1',
+  prefixUrl: "/api/v1",
 });
 
 type PkaEpisode = {
@@ -50,15 +50,15 @@ type PkaEpisodeWithAll = {
 export const fetchEpisodeById = async (episodeId: string) => {
   const response = await client.get(`episodes/${episodeId}`);
 
-  const responsePayload = await response.json<{data: PkaEpisodeWithAll}>();
+  const responsePayload = await response.json<{ data: PkaEpisodeWithAll }>();
 
   return responsePayload.data;
 };
 
 export const fetchRandomEvent = async () => {
-  const response = await client.get('events/random');
+  const response = await client.get("events/random");
 
-  const responsePayload = await response.json<{data: RandomPkaEvent}>();
+  const responsePayload = await response.json<{ data: RandomPkaEvent }>();
 
   return responsePayload.data;
 };
@@ -67,7 +67,7 @@ export const searchEpisodes = async (
   signal: AbortSignal,
   searchQuery: string,
 ): Promise<PkaEpisodeSearchResult[]> => {
-  const response = await client.post('search/episodes', {
+  const response = await client.post("search/episodes", {
     signal,
     json: {
       query: searchQuery,
@@ -85,7 +85,7 @@ export const searchEvents = async (
   signal: AbortSignal,
   searchQuery: string,
 ): Promise<PkaEventSearchResult[]> => {
-  const response = await client.post('search/events', {
+  const response = await client.post("search/events", {
     signal,
     json: {
       query: searchQuery,

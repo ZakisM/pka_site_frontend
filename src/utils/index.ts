@@ -1,4 +1,4 @@
-import type {TimerId} from '@/types';
+import type { TimerId } from "@/types";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,

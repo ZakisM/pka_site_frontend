@@ -1,24 +1,21 @@
-import {type QueryClient, useSuspenseQuery} from '@tanstack/react-query';
-import {createFileRoute, redirect} from '@tanstack/react-router';
-import {episodeQueryKeyFn, episodeQueryOptions} from '@/utils/queryOptions';
-import {fetchEpisodeById, fetchRandomEvent} from '@/utils/api';
-import {format, fromUnixTime} from 'date-fns';
-import {
-  playerScrollRequestTriggerAtom,
-  playerTimestampAtom,
-} from '@/atoms/playerAtoms';
-import {useLayoutEffect, useRef, useState} from 'react';
-import {Scrollbar} from '@/components/Scrollbar';
-import {TimelineCard} from '@/components/TimelineCard';
-import type {TimerId} from '@/types';
-import {YouTubePlayer} from '@/components/YouTubePlayer';
-import {useAtom} from 'jotai';
+import { type QueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { episodeQueryKeyFn, episodeQueryOptions } from "@/utils/queryOptions";
+import { fetchEpisodeById, fetchRandomEvent } from "@/utils/api";
+import { format, fromUnixTime } from "date-fns";
+import { playerScrollRequestTriggerAtom, playerTimestampAtomFamily } from "@/atoms/playerAtoms";
+import { useLayoutEffect, useRef, useState } from "react";
+import { Scrollbar } from "@/components/Scrollbar";
+import { TimelineCard } from "@/components/TimelineCard";
+import type { TimerId } from "@/types";
+import { YouTubePlayer } from "@/components/YouTubePlayer";
+import { useAtom } from "jotai";
 
 // To ensure state gets reset correctly.
 const WatchWrapper = () => {
   const params = Route.useParams();
 
-  const {data} = useSuspenseQuery(episodeQueryOptions(params.episodeId));
+  const { data } = useSuspenseQuery(episodeQueryOptions(params.episodeId));
 
   return <Watch key={data.episode.number} />;
 };
@@ -27,23 +24,25 @@ const Watch = () => {
   const params = Route.useParams();
   const search = Route.useSearch();
 
-  const {data} = useSuspenseQuery(episodeQueryOptions(params.episodeId));
+  const { data } = useSuspenseQuery(episodeQueryOptions(params.episodeId));
 
   const cardRefs = useRef<(HTMLDivElement | null)[]>(
-    Array.from({length: data.events.length}, () => null),
+    Array.from({ length: data.events.length }, () => null),
   );
 
   // eslint-disable-next-line no-useless-undefined
   const scrollDebounceRef = useRef<TimerId>(undefined);
 
   const [playerScrollRequestTrigger] = useAtom(playerScrollRequestTriggerAtom);
-  const [playerTimestamp, setPlayerTimestamp] = useAtom(playerTimestampAtom);
+
+  const specificTimestampAtom = playerTimestampAtomFamily(data.youtubeDetails.videoId);
+  const [playerTimestamp, setPlayerTimestamp] = useAtom(specificTimestampAtom);
 
   const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   const formattedDate = format(
     fromUnixTime(data.episode.uploadDate),
-    'EEEE do MMMM yyyy',
+    "EEEE do MMMM yyyy",
   );
 
   useLayoutEffect(() => {
@@ -51,12 +50,6 @@ const Watch = () => {
       setPlayerTimestamp(search.timestamp);
     }
   }, [setPlayerTimestamp, search.timestamp]);
-
-  useLayoutEffect(() => {
-    return () => {
-      setPlayerTimestamp(0);
-    };
-  }, [setPlayerTimestamp]);
 
   useLayoutEffect(() => {
     for (const [index, event] of data.events.entries()) {
@@ -75,9 +68,9 @@ const Watch = () => {
 
     scrollDebounceRef.current = setTimeout(() => {
       cardRefs.current[activeCardIndex]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'start',
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
       });
     }, 50);
   }, [activeCardIndex, playerScrollRequestTrigger]);
@@ -85,7 +78,8 @@ const Watch = () => {
   return (
     <div
       key={data.episode.number}
-      className="flex h-full flex-col gap-4 xl:flex-row">
+      className="flex h-full flex-col gap-4 xl:flex-row"
+    >
       <div className="flex grow flex-col rounded-lg border border-zinc-900 bg-night overflow-hidden">
         <YouTubePlayer videoId={data.youtubeDetails.videoId} />
         <div className="m-4">
@@ -111,6 +105,7 @@ const Watch = () => {
                   description={event.description}
                   timestamp={event.timestamp}
                   lengthSeconds={event.lengthSeconds}
+                  videoId={data.youtubeDetails.videoId}
                   data-active={index === activeCardIndex ? true : undefined}
                 />
               );
@@ -123,7 +118,7 @@ const Watch = () => {
 };
 
 const fetchAndCacheEpisode = async (
-  context: {queryClient: QueryClient},
+  context: { queryClient: QueryClient },
   episodeId: string,
 ) => {
   const episodeData = await fetchEpisodeById(episodeId);
@@ -138,22 +133,24 @@ const fetchAndCacheEpisode = async (
   return episodeNumber;
 };
 
-export const Route = createFileRoute('/watch/$episodeId')({
+export const Route = createFileRoute("/watch/$episodeId")({
   component: WatchWrapper,
-  validateSearch: (search: {[key: string]: unknown}): {timestamp?: number} => {
+  validateSearch: (search: {
+    [key: string]: unknown;
+  }): { timestamp?: number } => {
     return search;
   },
-  loader: async ({context, params}) => {
-    if (params.episodeId === 'latest' || params.episodeId === 'random') {
+  loader: async ({ context, params }) => {
+    if (params.episodeId === "latest" || params.episodeId === "random") {
       const episodeId = await fetchAndCacheEpisode(context, params.episodeId);
 
       throw redirect({
-        to: '/watch/$episodeId',
-        params: {episodeId},
+        to: "/watch/$episodeId",
+        params: { episodeId },
       });
     }
 
-    if (params.episodeId === 'random-event') {
+    if (params.episodeId === "random-event") {
       const eventData = await fetchRandomEvent();
       const episodeId = await fetchAndCacheEpisode(
         context,
@@ -161,8 +158,8 @@ export const Route = createFileRoute('/watch/$episodeId')({
       );
 
       throw redirect({
-        to: '/watch/$episodeId',
-        params: {episodeId},
+        to: "/watch/$episodeId",
+        params: { episodeId },
         search: {
           timestamp: eventData.timestamp,
         },
