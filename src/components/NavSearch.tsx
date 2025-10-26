@@ -138,16 +138,23 @@ const NavSearchModal = () => {
   const searchFetching = useIsFetching({ queryKey: ["search"] });
 
   const [searchCount] = useAtom(searchCountAtom);
-  const setSearchOpen = useSetAtom(searchOpenAtom);
+  const [searchOpen, setSearchOpen] = useAtom(searchOpenAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [searchTab, setSearchTab] = useAtom(searchTabAtom);
 
   const [debouncedQuery, setDebouncedQuery] = useAtom(debouncedSearchQueryAtom);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedSetQuery = debounce(setDebouncedQuery, 250);
 
   useEffect(() => {
     debouncedSetQuery(searchQuery);
   }, [searchQuery, debouncedSetQuery]);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchOpen, searchTab]);
 
   return (
     <div
@@ -174,7 +181,7 @@ const NavSearchModal = () => {
             )}
           </div>
           <input
-            autoFocus
+            ref={searchInputRef}
             className="w-full bg-transparent p-4 pl-2.75 text-base text-zinc-300 caret-primary outline-none selection:bg-zinc-700 placeholder:text-zinc-400"
             placeholder="Search..."
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
