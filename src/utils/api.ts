@@ -7,7 +7,7 @@ import {
 import ky from "ky";
 
 const client = ky.create({
-  prefixUrl: "/api/v1",
+  prefix: "/api/v1",
 });
 
 type PkaEpisode = {

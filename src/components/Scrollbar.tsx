@@ -41,11 +41,11 @@ export const Scrollbar = ({ children, ...rest }: DataComponentProps<"div">) => {
     }
   }, [initialize]);
 
-  useLayoutEffect(() => {
-    return () => {
+  useLayoutEffect(() => 
+    () => {
       instance()?.destroy();
-    };
-  }, [instance]);
+    }
+  , [instance]);
 
   return (
     <div {...rest} data-overlayscrollbars-initialize="" ref={osRef}>
@@ -80,9 +80,9 @@ export const VirtualizedScrollbar = ({
     },
   });
 
-  useImperativeHandle(vScrollbarRef, () => {
-    return vListRef.current as VListHandle;
-  }, []);
+  useImperativeHandle(vScrollbarRef, () => 
+    vListRef.current as VListHandle
+  , []);
 
   useLayoutEffect(() => {
     if (osRef.current) {
@@ -123,7 +123,8 @@ export const VirtualizedScrollbar = ({
       <VList
         ref={vListRef}
         cache={scrollbarState[scrollKey]?.cache}
-        itemSize={98}
+        itemSize={64}
+        bufferSize={48}
       >
         {children}
       </VList>

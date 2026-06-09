@@ -4,7 +4,7 @@
 The React + Vite app lives under `src`, with routing defined in `routes/*` and generated helpers in `routeTree.gen.ts`. UI building blocks live in `components/` and shareable state/hooks sit in `atoms/`, `utils/`, and `queryClient.ts`. WebAssembly bindings compiled from `lib_wasm` are committed to `src/lib_wasm_out/`; static assets remain in `public/`, while production bundles land in `dist/`.
 
 ## Build, Test, and Development Commands
-Install dependencies with `bun install` (preferred) or `yarn install` if Bun is unavailable. Use `bun run dev` to start Vite on port 5678, and `bun run serve` for a production-like preview after `bun run build`. Docker users can reuse `docker build -t zakism/pka-site-frontend:latest .` followed by `docker run -p 5678:5678 zakism/pka-site-frontend:latest` for smoke tests.
+Install dependencies with `bun install`. Use `bun run dev` to start Vite on port 5678, and `bun run serve` for a production-like preview after `bun run build`. Check types with `bun run typecheck` (tsgo) and lint with `bun run lint` (oxlint). Docker users can reuse `docker build -t zakism/pka-site-frontend:latest .` followed by `docker run -p 5678:5678 zakism/pka-site-frontend:latest` for smoke tests.
 
 ## Coding Style & Naming Conventions
 Write TypeScript with strict typing and 2-space indentation to match existing modules. Components and hooks should use PascalCase files (`Spinner.tsx`, `useEpisode.ts`) and default to named exports for tree-shaking. Tailwind utility classes drive styling; keep shared tokens in `styles.css` and prefer the `@` alias for deep imports (`@/components/LinkButton`).
