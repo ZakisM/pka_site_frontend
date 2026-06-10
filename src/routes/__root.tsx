@@ -5,14 +5,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 const RootComponent = () => (
-  <>
+  <div className="flex h-dvh flex-col lg:flex-row">
     <NavBar />
-    <div className="p-4 content-area overflow-hidden">
+    <div className="min-h-0 min-w-0 flex-1 max-xl:overflow-y-auto xl:p-6">
       <Outlet />
     </div>
     <ReactQueryDevtools buttonPosition="bottom-left" />
     <TanStackRouterDevtools position="bottom-right" />
-  </>
+  </div>
 );
 
 export interface RouterContext {

@@ -10,14 +10,14 @@ const BasicLinkComponent = ({
   intent,
   className,
   ...rest
-}: BasicLinkComponentProps) => {
-  return <a {...rest} className={buttonStyles({ intent, className })} />;
-};
+}: BasicLinkComponentProps) => 
+  <a {...rest} className={buttonStyles({ intent, className })} />
+;
 
 const CreatedLinkComponent = createLink(BasicLinkComponent);
 
 export const LinkButton: LinkComponent<typeof BasicLinkComponent> = ({
   ...rest
-}) => {
-  return <CreatedLinkComponent {...rest} />;
-};
+}) => 
+  <CreatedLinkComponent {...rest} />
+;

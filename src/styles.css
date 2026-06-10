@@ -5,10 +5,9 @@
   --font-sans: Roboto Variable;
   --font-raleway: Raleway Variable;
 
-  --height-nav-height: 50px;
-
   --color-primary: oklch(0.59 0.1973 24.83);
-  --color-night: #101114;
+  --color-accent: oklch(0.68 0.185 25);
+  --color-night: #0e0f12;
 }
 
 @layer base {
@@ -21,18 +20,15 @@
   }
 
   body {
-    @apply bg-zinc-950 text-white;
+    @apply bg-zinc-950 text-white antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid oklch(0.59 0.1973 24.83 / 0.7);
+    outline-offset: 2px;
   }
 
   iframe:focus-visible {
     outline: none;
   }
-}
-
-@utility content-area {
-  height: calc(100vh - (var(--height-nav-height)));
-}
-
-@utility bg-timeline-card {
-  background-color: oklch(0.24 0.1036 19.47);
 }

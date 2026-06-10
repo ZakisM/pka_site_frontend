@@ -6,7 +6,9 @@ RUN apt update && \
     apt install clang llvm -y && \
     curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-RUN cargo binstall wasm-bindgen-cli just -y
+# Must match the wasm-bindgen version in lib_wasm/Cargo.lock exactly —
+# the bindgen schema is unstable across versions.
+RUN cargo binstall wasm-bindgen-cli@0.2.123 just -y
 RUN rustup target add wasm32-unknown-unknown
 
 COPY justfile .

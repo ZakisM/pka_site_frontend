@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       viteCompression({
         verbose: true,
         disable: !isProduction,
-        filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
+        filter: /\.(?:js|mjs|json|css|html|svg|wasm)$/iu,
         threshold: 10_240,
         algorithm: "gzip",
         ext: ".gz",
@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
       viteCompression({
         verbose: true,
         disable: !isProduction,
-        filter: /\.(js|mjs|json|css|html|svg|wasm)$/i,
+        filter: /\.(?:js|mjs|json|css|html|svg|wasm)$/iu,
         threshold: 10_240,
         algorithm: "brotliCompress",
         ext: ".br",
@@ -54,8 +54,8 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
-        LibWasm: path.resolve(__dirname, "src/lib_wasm"),
+        "@": path.resolve(import.meta.dirname, "./src"),
+        LibWasm: path.resolve(import.meta.dirname, "src/lib_wasm"),
       },
     },
     define: {

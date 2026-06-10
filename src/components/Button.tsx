@@ -3,12 +3,14 @@ import type { DataComponentProps } from "@/types";
 import { twMerge } from "tailwind-merge";
 
 export const buttonStyles = cva(
-  "py-1.25 px-3 tracking-wider font-[425] text-white text-xs uppercase hover:cursor-pointer rounded-[10px]",
+  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:cursor-pointer",
   {
     variants: {
       intent: {
-        primary: ["bg-primary/75"],
-        secondary: ["bg-zinc-800"],
+        primary: ["bg-primary/90 text-white hover:bg-primary"],
+        secondary: [
+          "bg-white/5 text-zinc-300 ring-1 ring-white/10 hover:bg-white/10 hover:text-white",
+        ],
       },
     },
     defaultVariants: {
@@ -21,12 +23,12 @@ export type ButtonStyleProps = VariantProps<typeof buttonStyles>;
 
 interface ButtonProps extends DataComponentProps<"button">, ButtonStyleProps {}
 
-export const Button = ({ intent, className, ...rest }: ButtonProps) => {
-  return (
+export const Button = ({ intent, className, ...rest }: ButtonProps) => 
+  (
     <button
       type="button"
       {...rest}
       className={twMerge(buttonStyles({ intent, className }))}
     />
-  );
-};
+  )
+;
