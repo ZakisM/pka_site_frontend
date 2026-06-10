@@ -5,6 +5,11 @@ import { NavSearch } from "./NavSearch.tsx";
 import { searchOpenAtom } from "@/atoms/searchAtoms.ts";
 import { useSetAtom } from "jotai";
 
+// Radix tooltips also open on focus; the native dialog returns focus to its
+// Trigger on close, which on touch devices left the tooltip stuck open.
+const preventTooltipFocusOpen = (event: React.FocusEvent) =>
+  event.preventDefault();
+
 const railButtonStyles =
   "flex size-10 items-center justify-center rounded-xl text-zinc-500 transition-colors hover:bg-white/5 hover:text-white hover:cursor-pointer";
 
@@ -24,9 +29,10 @@ export const NavBar = () => {
           <img alt="PKA Index" className="size-9" src="/favicon.svg" />
         </Link>
         <Tooltip>
-          <TooltipTrigger
+          <TooltipTrigger onFocus={preventTooltipFocusOpen}
             className={railButtonStyles}
             onClick={() => setSearchOpen(true)}
+            aria-label="Search"
           >
             <Search className="size-5 stroke-2" />
           </TooltipTrigger>
@@ -38,7 +44,7 @@ export const NavBar = () => {
           </TooltipContent>
         </Tooltip>
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
             <Link
               className={railButtonStyles}
               to="/watch/$episodeId"
@@ -50,7 +56,7 @@ export const NavBar = () => {
           <TooltipContent side="right">Random Episode</TooltipContent>
         </Tooltip>
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
             <Link
               className={railButtonStyles}
               to="/watch/$episodeId"
@@ -78,7 +84,7 @@ export const NavBar = () => {
         </Link>
         <div className="flex gap-1">
           <Tooltip>
-            <TooltipTrigger
+            <TooltipTrigger onFocus={preventTooltipFocusOpen}
               className={railButtonStyles}
               onClick={() => setSearchOpen(true)}
             >
@@ -87,11 +93,12 @@ export const NavBar = () => {
             <TooltipContent side="bottom">Search</TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
               <Link
                 className={railButtonStyles}
                 to="/watch/$episodeId"
                 params={{ episodeId: "random" }}
+                aria-label="Random Episode"
               >
                 <Shuffle className="size-5 stroke-2" />
               </Link>
@@ -99,11 +106,12 @@ export const NavBar = () => {
             <TooltipContent side="bottom">Random Episode</TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
               <Link
                 className={railButtonStyles}
                 to="/watch/$episodeId"
                 params={{ episodeId: "random-event" }}
+                aria-label="Random Event"
               >
                 <Dices className="size-5 stroke-2" />
               </Link>
