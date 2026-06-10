@@ -35,7 +35,10 @@ const NavSearchPanel = () => {
 
   useEffect(() => {
     if (searchOpen) {
-      searchInputRef.current?.focus();
+      // The preventScroll option stops mobile browsers panning the page when the
+      // Virtual keyboard opens; the input sits at the top of a fullscreen dialog
+      // So no scroll is ever needed to reveal it.
+      searchInputRef.current?.focus({ preventScroll: true });
     }
   }, [searchOpen, searchTab]);
 
