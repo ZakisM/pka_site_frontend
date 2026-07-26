@@ -1,13 +1,61 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
+/* The desktop UI is the two-column layout: it needs width for the moments rail
+   And height for a player above it. Width alone is not enough — a phone in
+   Landscape is wide but short, while a tablet or an unfolded Galaxy Fold
+   (~850px wide) is both and should get the full layout. */
+@custom-variant desktop {
+  @media (min-width: 768px) and (min-height: 600px) {
+    @slot;
+  }
+}
+
+@custom-variant mobile {
+  @media (max-width: 767.98px) {
+    @slot;
+  }
+
+  @media (max-height: 599.98px) {
+    @slot;
+  }
+}
 
 @theme {
-  --font-sans: Roboto Variable;
+  /* Roboto carries all body copy; Raleway is display only (wordmark,
+     Headings, episode numbers). */
+  --font-sans: "Roboto Variable", system-ui, sans-serif;
   --font-raleway: Raleway Variable;
 
-  --color-primary: oklch(0.59 0.1973 24.83);
-  --color-accent: oklch(0.68 0.185 25);
+  /* High-chroma oklch, deliberately outside sRGB so wide-gamut (P3) displays
+     Render it more vividly than any hex could. The brand pack specifies
+     Oklch(0.59 0.1973 24.83) / #D02F35, but that reads duller on a P3 screen
+     And the user wants the vivid version — keep these values. */
+  --color-primary: oklch(0.64 0.245 27);
+  --color-primary-hover: oklch(0.57 0.225 27);
+  --color-accent: oklch(0.72 0.2 25);
   --color-night: #0e0f12;
+
+  /* Redesign surfaces: warm near-black, flat, hard edges — no gradients,
+     No glass, no radius. */
+  --color-bg: #0b0a0a;
+  --color-raised: #0e0d0c;
+  --color-row-active: #191716;
+  --color-row-hover: #1a1817;
+  --color-row-selected: #141312;
+  --color-cell-hover: #131211;
+
+  /* Warm ink ramp. */
+  --color-ink: #f2efea;
+  --color-secondary: #b6b0ab;
+  --color-muted: #8a8480;
+  --color-dim: #6b6663;
+  --color-dimmer: #5c5754;
+  --color-faint: #4a4543;
+  --color-fainter: #3a3634;
+
+  --color-hairline: rgb(242 239 234 / 0.1);
+  --color-hairline-soft: rgb(242 239 234 / 0.06);
+  --color-control: rgb(242 239 234 / 0.14);
 }
 
 @layer base {
@@ -20,15 +68,200 @@
   }
 
   body {
-    @apply bg-zinc-950 text-white antialiased;
+    @apply bg-bg text-ink antialiased;
+    /* The design gives explicit leading only where text wraps (headings,
+       Row titles); every label sits on the browser default. Tailwind's
+       Preflight would otherwise impose 1.5 and inflate every band. */
+    line-height: normal;
   }
 
+  /* Drawn inside the element: header cells and rows are full-height and
+     Edge-to-edge, so an outset ring showed up as red bars floating in the
+     Gaps between them instead of framing the target. */
   :focus-visible {
-    outline: 2px solid oklch(0.59 0.1973 24.83 / 0.7);
-    outline-offset: 2px;
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
   }
 
   iframe:focus-visible {
     outline: none;
+  }
+}
+
+/* PKA Index loading states, from pka_index_brand_assets/loaders/pka-loaders.css.
+   Pure CSS: no runtime, no images. Wired to the theme tokens rather than the
+   Pack's literals so there is one source of truth for the red. */
+@layer components {
+  .pka-scan {
+    position: relative;
+    height: 2px;
+    overflow: hidden;
+    background: var(--color-row-hover);
+  }
+
+  .pka-scan::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 38%;
+    background: var(--color-primary);
+    animation: pka-scan 1.15s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  /* The general-purpose spinner: three timecode ticks pulsing out of phase.
+     Size it by setting the height; the bars scale to it. */
+  .pka-ticks {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 16px;
+  }
+
+  .pka-ticks > i {
+    display: block;
+    width: 3px;
+    height: 100%;
+    background: var(--color-primary);
+    animation: pka-tick 0.9s ease-in-out infinite;
+  }
+
+  .pka-ticks > i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .pka-ticks > i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .pka-ticks--lg {
+    height: 24px;
+    gap: 4px;
+  }
+
+  .pka-ticks--lg > i {
+    width: 4px;
+  }
+
+  .pka-ticks--sm {
+    height: 12px;
+    gap: 2px;
+  }
+
+  .pka-ticks--sm > i {
+    width: 2px;
+  }
+
+  .pka-ticks--muted > i {
+    background: var(--color-muted);
+  }
+
+  .pka-ticks--dim > i {
+    background: var(--color-faint);
+  }
+
+  /* Skeletons hold the real column positions so nothing jumps when data
+     Lands. Give each an explicit size and stagger rows with --d. */
+  .pka-sk {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--color-row-hover);
+  }
+
+  .pka-sk--soft {
+    background: #161514;
+  }
+
+  .pka-sk::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(242 239 234 / 0.07),
+      transparent
+    );
+    animation: pka-sweep 1.5s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+
+  .pka-fade-in {
+    animation: pka-fade-in 0.15s ease-out;
+  }
+
+  .pka-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--color-primary);
+    animation: pka-blink 1.06s steps(1) infinite;
+  }
+}
+
+@keyframes pka-scan {
+  0% {
+    left: -38%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes pka-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes pka-tick {
+  0%,
+  100% {
+    transform: scaleY(0.32);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes pka-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pka-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0.12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pka-scan::after,
+  .pka-ticks > i,
+  .pka-sk::after,
+  .pka-caret {
+    animation: none;
+  }
+
+  .pka-ticks > i {
+    transform: scaleY(0.66);
   }
 }

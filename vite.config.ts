@@ -1,5 +1,4 @@
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import arraybuffer from "vite-plugin-arraybuffer";
 import browserslist from "browserslist";
 import { browserslistToTargets } from "lightningcss";
 import { defineConfig } from "vite";
@@ -25,7 +24,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       wasm(),
-      arraybuffer(),
       TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
       tailwindcss(),
       react({
@@ -69,6 +67,12 @@ export default defineConfig(({ mode }) => {
       hmr: {
         protocol: "ws",
       },
+    },
+    preview: {
+      port: 5678,
+      strictPort: true,
+      host: "0.0.0.0",
+      allowedHosts: ["www.pkaindextest.com"],
     },
     build: {
       outDir: "dist",
