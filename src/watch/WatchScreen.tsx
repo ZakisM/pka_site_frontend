@@ -39,7 +39,12 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
         />
         <EpisodeMeta episode={episode} />
       </main>
+      {/* Keyed per episode: virtua otherwise carries the previous episode's
+          scroll offset and its cache of row heights, which are indexed by
+          position and so get applied to the new episode's rows until they are
+          re-measured — leaving scrollToIndex computing against stale sizes. */}
       <MomentsRail
+        key={episode.episode.number}
         events={episode.events}
         episodeNumber={episode.episode.number}
         activeIndex={activeIndex}
