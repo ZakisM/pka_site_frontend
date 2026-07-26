@@ -70,13 +70,20 @@ const useFollowActive = (
       return;
     }
 
+    // Playback walks one moment at a time, and gliding to the next row reads
+    // Nicely. Anything further — a rail click, or a new episode landing on a
+    // Different part of a differently sized list — snaps instead: a smooth
+    // Scroll animates towards an offset derived from row heights that may
+    // Still be settling, and lands short.
+    const adjacent = Math.abs(activeIndex - previousRef.current) === 1;
+
     previousRef.current = activeIndex;
     clearTimeout(timerRef.current);
 
     timerRef.current = setTimeout(() => {
       listRef.current?.scrollToIndex(activeIndex, {
-        align: "start",
-        smooth: true,
+        align: adjacent ? "start" : "center",
+        smooth: adjacent,
       });
     }, FOLLOW_DELAY_MS);
   }, [listRef, activeIndex]);
