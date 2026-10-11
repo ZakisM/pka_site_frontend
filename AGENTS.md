@@ -20,7 +20,7 @@ Only `player/controller` touches the YouTube player: ask it (`request`, `seek`),
 Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. Static assets live in `public/`, production bundles in `dist/`.
 
 ## Build, Test, and Development Commands
-Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7) and lint with `bun run lint` (oxlint).
+Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint) and format with `bun run format` (oxfmt, 120 columns).
 
 **Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
@@ -35,4 +35,4 @@ Tokens live in `@theme` in `src/styles.css`. Two rules bite often:
 Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths: the two-column UI needs width *and* height, so a tablet or unfolded foldable gets it while a landscape phone does not.
 
 ## Commit & Pull Request Guidelines
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.

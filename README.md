@@ -20,6 +20,7 @@ reverse proxy as [the backend](https://github.com/ZakisM/pka_site_backend/):
 | `bun run serve`     | Production build, previewed on port 5678           |
 | `bun run typecheck` | TypeScript, app and tooling configs                |
 | `bun run lint`      | oxlint                                             |
+| `bun run format`    | oxfmt; CI runs `bun run format:check`              |
 | `bun run build`     | Production bundle in `dist/`                       |
 
 Measure performance against `bun run serve`, never `dev`: React's development
