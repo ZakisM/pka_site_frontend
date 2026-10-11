@@ -25,21 +25,12 @@ interface TicksProps {
 
 // The general-purpose spinner — for where the shape of what is loading is not
 // Known, or inline in a button.
-export const Ticks = ({
-  size = "md",
-  tone = "red",
-  className = "",
-  label = "Loading",
-}: TicksProps) => (
-  <span
-    role="status"
-    aria-label={label}
-    className={`pka-ticks ${SIZES[size]} ${TONES[tone]} ${className}`}
-  >
+export const Ticks = ({ size = "md", tone = "red", className = "", label = "Loading" }: TicksProps) => (
+  <output aria-label={label} className={`pka-ticks ${SIZES[size]} ${TONES[tone]} ${className}`}>
     <i />
     <i />
     <i />
-  </span>
+  </output>
 );
 
 // Route / page load. 2px tall, sits under the header, never shifts layout.
@@ -55,20 +46,13 @@ interface SkeletonProps {
 
 // Use wherever the shape of the result is already known, so nothing jumps when
 // The data lands.
-export const Skeleton = ({
-  className = "",
-  soft = false,
-  delay = 0,
-  style,
-}: SkeletonProps) => (
+export const Skeleton = ({ className = "", soft = false, delay = 0, style }: SkeletonProps) => (
   <span
     aria-hidden
     className={`pka-sk ${soft ? "pka-sk--soft" : ""} ${className}`}
-    style={
-      {
-        ...style,
-        ...(delay ? { "--d": `${delay}s` } : {}),
-      } as React.CSSProperties
-    }
+    style={{
+      ...style,
+      ...(delay ? { "--d": `${delay}s` } : {}),
+    }}
   />
 );

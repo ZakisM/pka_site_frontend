@@ -43,7 +43,9 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
           aria-label={copied ? "Link copied" : `Copy a link to ${formatTimestamp(shareFrom)}`}
           title={copied ? "Link copied" : `Copy a link to ${formatTimestamp(shareFrom)}`}
           className="-my-1.5 -mr-2 ml-auto grid size-8 shrink-0 cursor-pointer place-items-center text-muted transition-colors duration-150 hover:bg-raised hover:text-ink"
-          onClick={copyLink}
+          onClick={() => {
+            void copyLink();
+          }}
         >
           {copied ? (
             <Check className="size-4 animate-fade-in stroke-2 text-ink" />

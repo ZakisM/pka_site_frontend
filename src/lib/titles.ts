@@ -5,8 +5,7 @@
 // Episode number is already on screen, so a leading "PKA 825" goes, and a
 // Trailing ": PKA 719 W/ Harley" keeps its guest but loses the number.
 
-const LEADING_NUMBER =
-  /^(?:PKA|Painkiller(?: Already)?)\s*(?:Ep\.?|Episode)?\s*#?\d+(?:\.\d+)?\s*(?:[-:|–—]\s*)?/iu;
+const LEADING_NUMBER = /^(?:PKA|Painkiller(?: Already)?)\s*(?:Ep\.?|Episode)?\s*#?\d+(?:\.\d+)?\s*(?:[-:|–—]\s*)?/iu;
 const TRAILING_NUMBER = /^(?<before>.+?)\s*[:|]?\s*PKA\s*\d+\s*(?<after>.*)$/u;
 
 export const displayTitle = (raw: string) => {
@@ -14,8 +13,8 @@ export const displayTitle = (raw: string) => {
   let title = collapsed.replace(LEADING_NUMBER, "");
   const { before, after } = TRAILING_NUMBER.exec(title)?.groups ?? {};
 
-  if (before) {
-    title = `${before.replace(/[\s:|]+$/u, "")}${after ? ` ${after}` : ""}`;
+  if (before !== undefined) {
+    title = `${before.replace(/[\s:|]+$/u, "")}${after === undefined || after === "" ? "" : ` ${after}`}`;
   }
 
   // Untitled early episodes are nothing but the number; keep them as written.

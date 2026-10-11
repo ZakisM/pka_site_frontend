@@ -36,12 +36,11 @@ export const savePosition = (videoId: string, seconds: number) => {
     return;
   }
 
-  positions.set((previous) => new Map(previous).set(videoId, seconds));
+  positions.update((previous) => new Map(previous).set(videoId, seconds));
   writeJson(local, videoId, seconds);
 };
 
-export const usePosition = (videoId: string) =>
-  useSyncExternalStore(positions.subscribe, () => positionOf(videoId));
+export const usePosition = (videoId: string) => useSyncExternalStore(positions.subscribe, () => positionOf(videoId));
 
 export const usePositions = () => useStore(positions);
 
@@ -56,9 +55,7 @@ const loadRecent = () => {
 
 // Episode numbers, most recently opened first: the order of the home page's
 // "Continue watching". Positions alone carry no time, so they can't order it.
-const recentEpisodes = createStore<readonly number[]>(loadRecent(), (value) =>
-  writeJson(local, RECENT_KEY, value),
-);
+const recentEpisodes = createStore<readonly number[]>(loadRecent(), (value) => writeJson(local, RECENT_KEY, value));
 
 export const useRecentEpisodes = () => useStore(recentEpisodes);
 
@@ -75,13 +72,13 @@ globalThis.addEventListener("storage", ({ storageArea, key, newValue }) => {
     const value = Number(newValue);
 
     if (newValue !== null && Number.isFinite(value) && value >= 0) {
-      positions.set((previous) => new Map(previous).set(key, value));
+      positions.update((previous) => new Map(previous).set(key, value));
     }
   }
 });
 
 export const markRecent = (episodeNumber: number) => {
-  recentEpisodes.set((recent) =>
+  recentEpisodes.update((recent) =>
     recent[0] === episodeNumber
       ? recent
       : [episodeNumber, ...recent.filter((number) => number !== episodeNumber)].slice(0, RECENT_LIMIT),

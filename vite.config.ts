@@ -1,11 +1,11 @@
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import babel from "@rolldown/plugin-babel";
 import browserslist from "browserslist";
 import { browserslistToTargets } from "lightningcss";
 import { defineConfig } from "vite";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteCompression from "vite-plugin-compression";
 
 export default defineConfig(({ mode }) => {
@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+      tanstackRouter({ target: "react", autoCodeSplitting: true }),
       tailwindcss(),
       react(),
       // Plugin-react 6 dropped its babel option, which silently switched the

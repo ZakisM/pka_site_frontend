@@ -9,7 +9,7 @@ COPY vite.config.ts .
 COPY /public ./public
 COPY /src ./src
 
-RUN bun install
+RUN bun install --frozen-lockfile
 RUN bun run build
 
 FROM fholzer/nginx-brotli

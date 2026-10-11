@@ -52,7 +52,7 @@ export const AppHeader = () => {
           onClick={() => {
             setUnfolded(false);
 
-            if (query) {
+            if (query !== undefined) {
               closeSearch();
             }
           }}

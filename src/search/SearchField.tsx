@@ -1,7 +1,8 @@
-import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { resultsScroll, useCloseSearch } from "./searchState";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import type { RefObject } from "react";
 import { useDebounced } from "@/lib/hooks";
 
 const TYPING_SETTLE_MS = 150;
@@ -36,7 +37,10 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
     if (query !== writtenRef.current) {
       writtenRef.current = query;
 
-      if (query) {
+      if (query !== "") {
+        // Not derived during render: telling our own query from another needs
+        // The ref, which render must not read.
+        // eslint-disable-next-line react/set-state-in-effect
         setValue(query);
       }
     }
@@ -49,7 +53,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
       const opening = writtenRef.current === "";
 
       writtenRef.current = term;
-      navigate({
+      void navigate({
         to: ".",
         search: (previous) => ({ ...previous, q: term }),
         replace: !opening,

@@ -1,10 +1,17 @@
 {
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "promise"],
+  "options": {
+    "typeAware": true,
+    "reportUnusedDisableDirectives": "error"
+  },
   "env": {
     "browser": true
   },
   "globals": {
     "__dirname": "readable"
   },
+  "ignorePatterns": ["src/routeTree.gen.ts"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -22,23 +29,97 @@
     "eslint/max-statements": "off",
     "eslint/new-cap": "off",
     "eslint/no-console": "off",
+    "eslint/no-duplicate-imports": [
+      "error",
+      {
+        "allowSeparateTypeImports": true
+      }
+    ],
     "eslint/no-magic-numbers": "off",
     "eslint/no-ternary": "off",
     "eslint/no-undefined": "off",
+    "eslint/no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
     "eslint/one-var": "off",
-    "eslint/yoda": "off",
+    "eslint/require-await": "off",
     "eslint/sort-keys": "off",
+    "eslint/yoda": "off",
+    "import/exports-last": "off",
+    "import/group-exports": "off",
+    "import/max-dependencies": "off",
+    "import/no-named-export": "off",
+    "import/no-unassigned-import": "off",
+    "import/prefer-default-export": "off",
     "oxc/no-async-await": "off",
     "oxc/no-optional-chaining": "off",
     "oxc/no-rest-spread-properties": "off",
+    "promise/avoid-new": "off",
+    "react/forbid-component-props": "off",
+    "react/function-component-definition": [
+      "error",
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
     "react/jsx-filename-extension": "off",
+    "react/jsx-handler-names": "off",
+    "react/jsx-max-depth": "off",
+    "react/jsx-no-literals": "off",
+    "react/no-multi-comp": "off",
     "react/react-in-jsx-scope": "off",
     "typescript/consistent-indexed-object-style": "off",
+    "typescript/consistent-return": "off",
     "typescript/consistent-type-definitions": "off",
     "typescript/explicit-function-return-type": "off",
     "typescript/explicit-module-boundary-types": "off",
+    "typescript/no-confusing-void-expression": [
+      "error",
+      {
+        "ignoreArrowShorthand": true
+      }
+    ],
     "typescript/no-explicit-any": "off",
+    "typescript/only-throw-error": [
+      "error",
+      {
+        "allow": [
+          {
+            "from": "package",
+            "name": "Redirect",
+            "package": "@tanstack/router-core"
+          }
+        ]
+      }
+    ],
+    "typescript/prefer-readonly-parameter-types": "off",
+    "typescript/require-await": "error",
     "unicorn/filename-case": "off",
     "unicorn/no-null": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["vite.config.ts"],
+      "rules": {
+        "import/no-default-export": "off",
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      "files": ["src/routes/**"],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    },
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "import/unambiguous": "off"
+      }
+    }
+  ]
 }

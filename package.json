@@ -8,7 +8,9 @@
     "build": "vite build",
     "serve": "vite build && vite preview --port 5678",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "browserslist": {
     "production": [
@@ -47,7 +49,9 @@
     "browserslist": "^4.29.3",
     "caniuse-lite": "^1.0.30001815",
     "lightningcss": "^1.33.0",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
+    "oxlint-tsgolint": "^7.0.2004",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",

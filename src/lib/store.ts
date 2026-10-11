@@ -6,7 +6,8 @@ import { useSyncExternalStore } from "react";
  */
 export interface Store<T> {
   get: () => T;
-  set: (next: T | ((previous: T) => T)) => void;
+  set: (next: T) => void;
+  update: (change: (previous: T) => T) => void;
   subscribe: (listener: () => void) => () => void;
 }
 
@@ -14,21 +15,24 @@ export const createStore = <T>(initial: T, onChange?: (value: T) => void): Store
   let value = initial;
   const listeners = new Set<() => void>();
 
+  const set = (next: T) => {
+    if (Object.is(next, value)) {
+      return;
+    }
+
+    value = next;
+    onChange?.(value);
+
+    for (const listener of listeners) {
+      listener();
+    }
+  };
+
   return {
     get: () => value,
-    set: (next) => {
-      const resolved = typeof next === "function" ? (next as (previous: T) => T)(value) : next;
-
-      if (Object.is(resolved, value)) {
-        return;
-      }
-
-      value = resolved;
-      onChange?.(value);
-
-      for (const listener of listeners) {
-        listener();
-      }
+    set,
+    update: (change) => {
+      set(change(value));
     },
     subscribe: (listener) => {
       listeners.add(listener);

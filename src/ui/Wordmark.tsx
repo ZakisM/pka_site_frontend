@@ -8,14 +8,8 @@
 // Lockup is shown at every size; phones fold the search box away instead.
 
 export const Wordmark = ({ className = "" }: { className?: string }) => (
-  <span
-    className={`flex select-none items-stretch font-raleway font-black uppercase ${className}`}
-  >
-    <span className="flex items-center pr-[0.06em] tracking-[0.02em] text-ink">
-      PKA
-    </span>
-    <span className="flex items-center bg-primary px-[0.22em] tracking-[0.02em] text-white">
-      Index
-    </span>
+  <span className={`flex select-none items-stretch font-raleway font-black uppercase ${className}`}>
+    <span className="flex items-center pr-[0.06em] tracking-[0.02em] text-ink">PKA</span>
+    <span className="flex items-center bg-primary px-[0.22em] tracking-[0.02em] text-white">Index</span>
   </span>
 );

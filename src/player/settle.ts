@@ -28,7 +28,7 @@ export const pendingAt = (seconds: number, at: number): Pending => ({
 });
 
 export interface Report {
-  state: number;
+  state: PlayerState;
   time: number;
   at: number;
 }

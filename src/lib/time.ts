@@ -1,9 +1,6 @@
 // Every timecode in the UI is tabular-nums, so these stay fixed-width.
 
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // A position in a video: mm:ss until the hour mark, then h:mm:ss.
 export const formatTimestamp = (seconds: number) => {
@@ -34,11 +31,9 @@ export const formatShortDate = (unixSeconds: number) => {
 };
 
 // The episode number can be fractional for bonus episodes (280.5).
-export const formatEpisodeNumber = (episodeNumber: number) =>
-  Number(episodeNumber.toFixed(1));
+export const formatEpisodeNumber = (episodeNumber: number) => Number(episodeNumber.toFixed(1));
 
-export const yearOf = (unixSeconds: number) =>
-  new Date(unixSeconds * 1000).getFullYear();
+export const yearOf = (unixSeconds: number) => new Date(unixSeconds * 1000).getFullYear();
 
 export const pluralise = (count: number, noun: string) =>
   `${count.toLocaleString("en-GB")} ${noun}${count === 1 ? "" : "s"}`;

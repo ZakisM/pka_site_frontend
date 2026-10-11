@@ -1,5 +1,6 @@
-import { type StartRequest, player, playerReady } from "./controller";
+import { player, playerReady } from "./controller";
 import { useEffect, useRef } from "react";
+import type { StartRequest } from "./controller";
 import { Ticks } from "@/ui/Loaders";
 import { useDebounced } from "@/lib/hooks";
 import { useStore } from "@/lib/store";
@@ -28,17 +29,16 @@ export const Player = ({ videoId, start }: PlayerProps) => {
   const showLoader = useDebounced(!ready, LOADER_DELAY_MS) && !ready;
 
   // Before attaching, so the iframe is created already on the right episode
-  // At the right time. Keyed on the request's id: the same request arriving
-  // Again is not a new one.
+  // At the right time. Sending the same request again is harmless: the
+  // Controller acts on each one once.
   useEffect(() => {
     player.request(videoId, start);
-    // eslint-disable-next-line exhaustive-deps
-  }, [videoId, start?.id]);
+  }, [videoId, start]);
 
   useEffect(() => {
-    if (hostRef.current) {
-      return player.attach(hostRef.current);
-    }
+    const host = hostRef.current;
+
+    return host ? player.attach(host) : undefined;
   }, []);
 
   return (

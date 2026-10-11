@@ -17,12 +17,7 @@ interface ThumbnailProps {
  * Spinner: dozens of these load at once and a field of spinners reads as slow.
  * If YouTube has no thumbnail (a removed video), the episode number stands in.
  */
-export const Thumbnail = ({
-  episodeNumber,
-  lengthSeconds,
-  videoId,
-  progress,
-}: ThumbnailProps) => {
+export const Thumbnail = ({ episodeNumber, lengthSeconds, videoId, progress }: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -46,7 +41,10 @@ export const Thumbnail = ({
       )}
       {/* A plain overlay rather than a filter: filters on dozens of images are
           Expensive to repaint while scrolling, notably in Firefox. */}
-      <span aria-hidden className="absolute inset-0 bg-white/0 transition-colors duration-200 group-hover:bg-white/[0.07]" />
+      <span
+        aria-hidden
+        className="absolute inset-0 bg-white/0 transition-colors duration-200 group-hover:bg-white/[0.07]"
+      />
       {lengthSeconds !== undefined && (
         <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
           {formatTimestamp(lengthSeconds)}

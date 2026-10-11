@@ -1,4 +1,4 @@
-import { EpisodeCard, EpisodeCardSkeleton, gridStyles } from "@/ui/EpisodeCard";
+import { EpisodeCard, EpisodeCardSkeleton } from "@/ui/EpisodeCard";
 import { createStore, useStore } from "@/lib/store";
 import { pluralise, yearOf } from "@/lib/time";
 import { useEffect, useMemo } from "react";
@@ -8,6 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useRevealMore } from "@/lib/hooks";
 
 const PAGE = 24;
+
+const gridStyles =
+  "grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-5 gap-y-9 mobile:grid-cols-1 mobile:gap-y-7 xs:mobile:grid-cols-2 xs:mobile:gap-x-3";
 
 // Kept for the session, so Back from an episode returns to the same year.
 const homeYear = createStore<number | null>(null);
@@ -19,12 +22,10 @@ export const HomeScreen = () => {
   const year = useStore(homeYear);
   const setYear = homeYear.set;
 
-  const years = useMemo(
-    () => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))],
-    [episodes],
-  );
+  const years = useMemo(() => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))], [episodes]);
   const shown = useMemo(
-    () => (year ? (episodes ?? []).filter((episode) => yearOf(episode.uploadDate) === year) : (episodes ?? [])),
+    () =>
+      year === null ? (episodes ?? []) : (episodes ?? []).filter((episode) => yearOf(episode.uploadDate) === year),
     [episodes, year],
   );
   const { count, hasMore, sentinelRef } = useRevealMore(shown.length, PAGE, `home:${year ?? "all"}`);
@@ -42,7 +43,10 @@ export const HomeScreen = () => {
       {episodes && <ContinueWatching episodes={episodes} />}
 
       <div className="mb-6 flex items-center justify-between gap-4">
-        <div role="group" aria-label="Filter by year" className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] mobile:pr-6 mobile:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]">
+        <fieldset
+          aria-label="Filter by year"
+          className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] mobile:pr-6 mobile:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]"
+        >
           {[null, ...years].map((option) => (
             <button
               key={option ?? "all"}
@@ -54,11 +58,9 @@ export const HomeScreen = () => {
               {option ?? "All"}
             </button>
           ))}
-        </div>
+        </fieldset>
         {episodes && (
-          <span className="shrink-0 text-[13px] tabular-nums text-dim">
-            {pluralise(shown.length, "episode")}
-          </span>
+          <span className="shrink-0 text-[13px] tabular-nums text-dim">{pluralise(shown.length, "episode")}</span>
         )}
       </div>
 

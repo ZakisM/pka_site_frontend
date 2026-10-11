@@ -22,7 +22,7 @@ export interface YouTubePlayer {
   pauseVideo: () => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   getCurrentTime: () => number;
-  getPlayerState: () => number;
+  getPlayerState: () => PlayerState;
   getVideoData: () => { video_id?: string } | undefined;
   destroy: () => void;
 }
@@ -32,7 +32,7 @@ export interface PlayerEvent {
   data: number;
 }
 
-interface YouTubeApi {
+export interface YouTubeApi {
   Player: new (
     host: HTMLElement,
     options: {
@@ -47,9 +47,7 @@ interface YouTubeApi {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var YT: YouTubeApi | undefined;
-  // eslint-disable-next-line no-var
   var onYouTubeIframeAPIReady: (() => void) | undefined;
 }
 
@@ -57,13 +55,12 @@ const API_SRC = "https://www.youtube.com/iframe_api";
 
 // YouTube's own 16:9 thumbnail (320×180). Linked rather than proxied, which is
 // How the embed terms expect thumbnails to be used.
-export const thumbnailUrl = (videoId: string) =>
-  `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+export const thumbnailUrl = (videoId: string) => `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
 let apiPromise: Promise<YouTubeApi> | null = null;
 
 // Fetched once per page and shared by every player.
-export const loadYouTubeApi = () => {
+export const loadYouTubeApi = async () => {
   apiPromise ??= new Promise<YouTubeApi>((resolve) => {
     if (globalThis.YT?.Player) {
       resolve(globalThis.YT);
@@ -94,3 +91,27 @@ export const loadYouTubeApi = () => {
 
   return apiPromise;
 };
+
+interface EmbedOptions {
+  videoId: string;
+  startSeconds: number;
+  autoplay: boolean;
+  onReady: () => void;
+  onStateChange: () => void;
+}
+
+/** A player in place of `host`, with the only chrome the embed terms allow. */
+export const embedPlayer = (api: YouTubeApi, host: HTMLElement, options: EmbedOptions) =>
+  new api.Player(host, {
+    videoId: options.videoId,
+    playerVars: {
+      autoplay: options.autoplay ? 1 : 0,
+      // YouTube's own controls are the only in-frame chrome: nothing of ours
+      // May sit over the iframe, per the embed terms.
+      controls: 1,
+      playsinline: 1,
+      rel: 0,
+      start: Math.floor(options.startSeconds),
+    },
+    events: { onReady: options.onReady, onStateChange: options.onStateChange },
+  });

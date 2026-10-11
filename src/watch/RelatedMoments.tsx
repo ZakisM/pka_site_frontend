@@ -10,7 +10,7 @@ interface RelatedMomentsProps {
   episodeNumber: number;
   moment: PkaEvent;
   // Shown instead when nothing elsewhere is close enough to be worth showing.
-  fallback: React.ReactNode;
+  fallback: React.JSX.Element;
 }
 
 /**
@@ -30,7 +30,7 @@ export const RelatedMoments = ({ episodeNumber, moment, fallback }: RelatedMomen
   }
 
   const play = (target: number, seconds: number) => {
-    navigate({
+    void navigate({
       to: "/watch/$episodeId",
       params: { episodeId: String(formatEpisodeNumber(target)) },
       state: playFrom(target, seconds),

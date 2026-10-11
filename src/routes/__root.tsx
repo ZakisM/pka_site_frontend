@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  createRootRouteWithContext,
-  useRouterState,
-  useSearch,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, useRouterState, useSearch } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppHeader } from "@/ui/AppHeader";
 import type { QueryClient } from "@tanstack/react-query";
@@ -57,11 +52,9 @@ const RootComponent = () => {
   // Put under the scan bar until the next one is ready.
   const [loadedOnce, setLoadedOnce] = useState(false);
 
-  useEffect(() => {
-    if (!pending) {
-      setLoadedOnce(true);
-    }
-  }, [pending]);
+  if (!pending && !loadedOnce) {
+    setLoadedOnce(true);
+  }
 
   useSearchOverlay(Boolean(query));
 
@@ -83,7 +76,7 @@ const RootComponent = () => {
   // Them again from the search box, which is a new history entry.)
   useLayoutEffect(() => {
     const layer = resultsRef.current;
-    const saved = query ? resultsScroll.get(query) : undefined;
+    const saved = query === undefined ? undefined : resultsScroll.get(query);
 
     // A query not seen before starts at the top, not at the last one's offset.
     if (layer) {
@@ -98,14 +91,16 @@ const RootComponent = () => {
       <div ref={pageRef} inert={Boolean(query)}>
         {pending && !loadedOnce && onWatch ? <WatchSkeleton /> : <Outlet />}
       </div>
-      {query && (
+      {query !== undefined && (
         // A layer over the page with its own scroll, rather than hiding the
         // Page: hiding it shortened the document and the browser clipped the
         // Page's scroll position. Its own position is restored on Back by id.
         <div
           ref={resultsRef}
           data-scroll-restoration-id="search-results"
-          onScroll={(event) => resultsScroll.set(query, event.currentTarget.scrollTop)}
+          onScroll={(event) => {
+            resultsScroll.set(query, event.currentTarget.scrollTop);
+          }}
           className="fixed inset-x-0 top-(--header-h) bottom-0 z-10 animate-fade-in overflow-y-auto overscroll-contain bg-bg"
         >
           <SearchPage query={query} scrollRoot={resultsRef} />

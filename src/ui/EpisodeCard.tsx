@@ -7,7 +7,7 @@ import { displayTitle } from "@/lib/titles";
 import { useEpisodeProgress } from "@/player/useEpisodeProgress";
 
 const detailFor = (episode: EpisodeSummary, progress: WatchProgress | undefined) => {
-  if (progress?.finished) {
+  if (progress?.finished === true) {
     return "Watched";
   }
 
@@ -36,16 +36,16 @@ export const EpisodeCard = ({ episode }: { episode: EpisodeSummary }) => {
         progress={progress}
       />
       <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-muted">
-        <span className="text-[13px] font-bold text-ink">
-          {formatEpisodeNumber(episode.episodeNumber)}
-        </span>
+        <span className="text-[13px] font-bold text-ink">{formatEpisodeNumber(episode.episodeNumber)}</span>
         {formatShortDate(episode.uploadDate)}
       </span>
       <span className="line-clamp-2 text-[15px]/[1.4] font-medium decoration-line-strong underline-offset-3 group-hover:underline mobile:text-[14px]/[1.4]">
         {displayTitle(episode.title)}
       </span>
-      {detail && (
-        <span className={`-mt-1 text-[12px] tabular-nums ${progress && !progress.finished ? "text-secondary" : "text-dim"}`}>
+      {detail !== undefined && (
+        <span
+          className={`-mt-1 text-[12px] tabular-nums ${progress && !progress.finished ? "text-secondary" : "text-dim"}`}
+        >
           {detail}
         </span>
       )}
@@ -60,6 +60,3 @@ export const EpisodeCardSkeleton = () => (
     <span className="pka-sk h-4 w-4/5" />
   </div>
 );
-
-export const gridStyles =
-  "grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-5 gap-y-9 mobile:grid-cols-1 mobile:gap-y-7 xs:mobile:grid-cols-2 xs:mobile:gap-x-3";
