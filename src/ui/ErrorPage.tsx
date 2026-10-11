@@ -12,7 +12,9 @@ const isApiUnreachable = (error: Error) =>
 const actionStyles =
   "cursor-pointer border border-line px-3.5 py-2 text-[13px] text-muted transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink";
 
-export const ErrorPage = ({ error }: { error: Error }) => {
+// Router errors are typed unknown: anything can be thrown.
+export const ErrorPage = ({ error: thrown }: { error: unknown }) => {
+  const error = thrown instanceof Error ? thrown : new Error(String(thrown));
   const unreachable = isApiUnreachable(error);
 
   return (

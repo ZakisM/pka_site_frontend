@@ -1,6 +1,5 @@
 import "@fontsource-variable/geist";
 import "@fontsource-variable/raleway";
-import "core-js/stable";
 import "./styles.css";
 import { Navigate, RouterProvider, createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "@/ui/ErrorPage";

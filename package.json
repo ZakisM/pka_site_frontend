@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite build && vite preview --port 5678",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "lint": "oxlint"
   },
   "browserslist": {
@@ -28,7 +28,6 @@
     "@tanstack/react-query": "^5.104.1",
     "@tanstack/react-router": "^1.170.42",
     "@tanstack/react-router-devtools": "^1.167.2",
-    "core-js": "^3.50.0",
     "jotai": "^3.0.0",
     "ky": "^2.2.0",
     "lucide-react": "^1.55.0",
@@ -36,6 +35,8 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@rolldown/plugin-babel": "^0.2.4",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query-devtools": "^5.104.1",
     "@tanstack/router-plugin": "^1.168.43",
@@ -51,7 +52,6 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
-    "vite-plugin-compression": "^0.5.1",
-    "vite-plugin-wasm": "^3.6.0"
+    "vite-plugin-compression": "^0.5.1"
   }
 }

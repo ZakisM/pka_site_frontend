@@ -1,12 +1,12 @@
 import { formatDuration, formatEpisodeNumber, formatShortDate, formatTimestamp, pluralise } from "@/lib/time";
+import type { EpisodeSummary } from "@/lib/api";
 import { Link } from "@tanstack/react-router";
-import type { PkaEpisodeSearchResult } from "@/lib_wasm";
 import { Thumbnail } from "@/ui/Thumbnail";
 import type { WatchProgress } from "@/lib/progress";
 import { displayTitle } from "@/lib/titles";
 import { useEpisodeProgress } from "@/player/useEpisodeProgress";
 
-const detailFor = (episode: PkaEpisodeSearchResult, progress: WatchProgress | undefined) => {
+const detailFor = (episode: EpisodeSummary, progress: WatchProgress | undefined) => {
   if (progress?.finished) {
     return "Watched";
   }
@@ -19,7 +19,7 @@ const detailFor = (episode: PkaEpisodeSearchResult, progress: WatchProgress | un
 };
 
 /** Thumbnail, number and date, title. Opening it resumes where you left off. */
-export const EpisodeCard = ({ episode }: { episode: PkaEpisodeSearchResult }) => {
+export const EpisodeCard = ({ episode }: { episode: EpisodeSummary }) => {
   const progress = useEpisodeProgress(episode);
   const detail = detailFor(episode, progress);
 

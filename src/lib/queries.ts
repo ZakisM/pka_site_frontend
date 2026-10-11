@@ -1,9 +1,10 @@
 import {
   QueryClient,
+  infiniteQueryOptions,
   keepPreviousData,
   queryOptions,
 } from "@tanstack/react-query";
-import { fetchEpisodeById, searchEpisodes, searchEvents } from "./api";
+import { type SearchSort, fetchEpisodeById, fetchEpisodes, searchPage } from "./api";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000 } },
@@ -18,27 +19,20 @@ export const episodeQuery = (episodeId: string) =>
   });
 
 // Every episode, newest first: the home grid, prev/next on the watch page and
-// The episode details beside each search hit all read this one list. An empty
-// Query returns the whole archive (~800 rows, ~30KB).
+// Continue watching all read this one list.
 export const allEpisodesQuery = queryOptions({
   queryKey: ["episodes", "all"],
-  queryFn: ({ signal }) => searchEpisodes(signal, ""),
-  select: (episodes) => episodes.toSorted((a, b) => b.episodeNumber - a.episodeNumber),
+  queryFn: ({ signal }) => fetchEpisodes(signal),
   staleTime: 5 * 60 * 1000,
 });
 
-// KeepPreviousData holds the last results on screen while the next term is in
-// Flight, so the list never blinks empty mid-type.
-export const momentSearchQuery = (query = "") =>
-  queryOptions({
-    queryKey: ["search", "moments", query],
-    queryFn: ({ signal }) => searchEvents(signal, query),
-    placeholderData: keepPreviousData,
-  });
-
-export const episodeSearchQuery = (query = "") =>
-  queryOptions({
-    queryKey: ["search", "episodes", query],
-    queryFn: ({ signal }) => searchEpisodes(signal, query),
+// Pages of grouped results. keepPreviousData holds the last term's results on
+// Screen while the next one loads, so the list never blinks empty mid-type.
+export const searchQuery = (query: string, sort: SearchSort) =>
+  infiniteQueryOptions({
+    queryKey: ["search", query, sort],
+    queryFn: ({ signal, pageParam }) => searchPage({ signal, query, sort, page: pageParam }),
+    initialPageParam: 0,
+    getNextPageParam: (last) => last.nextPage ?? undefined,
     placeholderData: keepPreviousData,
   });

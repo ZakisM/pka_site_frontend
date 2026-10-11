@@ -1,12 +1,12 @@
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import babel from "@rolldown/plugin-babel";
 import browserslist from "browserslist";
 import { browserslistToTargets } from "lightningcss";
 import { defineConfig } from "vite";
 import path from "node:path";
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import viteCompression from "vite-plugin-compression";
-import wasm from "vite-plugin-wasm";
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === "production";
@@ -23,18 +23,16 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      wasm(),
       TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
       tailwindcss(),
-      react({
-        babel: {
-          plugins: [["babel-plugin-react-compiler", { target: "19" }]],
-        },
-      }),
+      react(),
+      // Plugin-react 6 dropped its babel option, which silently switched the
+      // React Compiler off; it now runs through its own Babel plugin.
+      babel({ presets: [reactCompilerPreset()] }),
       viteCompression({
         verbose: true,
         disable: !isProduction,
-        filter: /\.(?:js|mjs|json|css|html|svg|wasm)$/iu,
+        filter: /\.(?:js|mjs|json|css|html|svg)$/iu,
         threshold: 10_240,
         algorithm: "gzip",
         ext: ".gz",
@@ -43,7 +41,7 @@ export default defineConfig(({ mode }) => {
       viteCompression({
         verbose: true,
         disable: !isProduction,
-        filter: /\.(?:js|mjs|json|css|html|svg|wasm)$/iu,
+        filter: /\.(?:js|mjs|json|css|html|svg)$/iu,
         threshold: 10_240,
         algorithm: "brotliCompress",
         ext: ".br",
@@ -53,7 +51,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(import.meta.dirname, "./src"),
-        LibWasm: path.resolve(import.meta.dirname, "src/lib_wasm"),
       },
     },
     define: {

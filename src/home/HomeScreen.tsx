@@ -37,7 +37,7 @@ export const HomeScreen = () => {
       {episodes && <ContinueWatching episodes={episodes} />}
 
       <div className="mb-6 flex items-center justify-between gap-4">
-        <div role="group" aria-label="Filter by year" className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none]">
+        <div role="group" aria-label="Filter by year" className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] mobile:pr-6 mobile:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]">
           {[null, ...years].map((option) => (
             <button
               key={option ?? "all"}

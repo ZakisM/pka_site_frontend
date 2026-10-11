@@ -1,7 +1,7 @@
 import { EpisodeCard, gridStyles } from "./EpisodeCard";
 import { atom, useAtomValue } from "jotai";
 import { positionAtom, recentEpisodesAtom } from "@/player/playerState";
-import type { PkaEpisodeSearchResult } from "@/lib_wasm";
+import type { EpisodeSummary } from "@/lib/api";
 import { formatEpisodeNumber } from "@/lib/time";
 import { useMemo } from "react";
 import { watchProgress } from "@/lib/progress";
@@ -9,7 +9,7 @@ import { watchProgress } from "@/lib/progress";
 const MAX_CARDS = 4;
 
 /** Episodes started but not finished, most recently opened first. */
-export const ContinueWatching = ({ episodes }: { episodes: PkaEpisodeSearchResult[] }) => {
+export const ContinueWatching = ({ episodes }: { episodes: EpisodeSummary[] }) => {
   const recent = useAtomValue(recentEpisodesAtom);
 
   const started = useMemo(() => {

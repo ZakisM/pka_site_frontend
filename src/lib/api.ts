@@ -1,9 +1,3 @@
-import {
-  type PkaEpisodeSearchResult,
-  type PkaEventSearchResult,
-  deserialize_episodes,
-  deserialize_events,
-} from "@/lib_wasm";
 import ky from "ky";
 
 const client = ky.create({ prefix: "/api/v1" });
@@ -60,26 +54,65 @@ export const fetchRandomEvent = async () => {
   return payload.data;
 };
 
-// Search responses are bincode, decoded by the wasm module: an unfiltered
-// Query is ~35k moments and JSON parsing that is far slower.
-const searchBytes = async (
-  path: string,
-  signal: AbortSignal,
-  query: string,
-) => {
-  const response = await client.post(path, { signal, json: { query } });
+// An episode as lists and search results show it.
+export interface EpisodeSummary {
+  episodeNumber: number;
+  uploadDate: number;
+  title: string;
+  lengthSeconds: number;
+  videoId: string;
+  eventCount: number;
+}
 
-  return new Uint8Array(await response.arrayBuffer());
+export interface SearchHit {
+  timestamp: number;
+  description: string;
+  lengthSeconds: number;
+}
+
+// One episode in the results: its first few matching moments, in order, and
+// How many matched altogether.
+export interface SearchGroup {
+  episode: EpisodeSummary;
+  matchCount: number;
+  hits: SearchHit[];
+}
+
+export interface SearchPage {
+  totalMoments: number;
+  totalEpisodes: number;
+  groups: SearchGroup[];
+  nextPage: number | null;
+}
+
+export type SearchSort = "newest" | "matches";
+
+// Every episode, newest first.
+export const fetchEpisodes = async (signal: AbortSignal) => {
+  const response = await client.get("episodes", { signal });
+  const payload = await response.json<{ data: EpisodeSummary[] }>();
+
+  return payload.data;
 };
 
-export const searchEpisodes = async (
-  signal: AbortSignal,
-  query: string,
-): Promise<PkaEpisodeSearchResult[]> =>
-  deserialize_episodes(await searchBytes("search/episodes", signal, query));
+// Searching and grouping happen on the server, which returns one page of
+// Episode groups at a time — the device only ever handles a page.
+export const searchPage = async ({
+  signal,
+  query,
+  sort,
+  page,
+}: {
+  signal: AbortSignal;
+  query: string;
+  sort: SearchSort;
+  page: number;
+}) => {
+  const response = await client.get("search", {
+    signal,
+    searchParams: { q: query, sort, page },
+  });
+  const payload = await response.json<{ data: SearchPage }>();
 
-export const searchEvents = async (
-  signal: AbortSignal,
-  query: string,
-): Promise<PkaEventSearchResult[]> =>
-  deserialize_events(await searchBytes("search/events", signal, query));
+  return payload.data;
+};

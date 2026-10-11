@@ -73,7 +73,7 @@ export const AppHeader = () => {
         <SearchField inputRef={inputRef} onEscape={() => setUnfolded(false)} />
         <button
           type="button"
-          className="hidden h-10 shrink-0 cursor-pointer px-1 text-[14px] text-secondary mobile:block"
+          className="hidden h-10 shrink-0 cursor-pointer items-center px-1 text-[14px] text-secondary mobile:flex"
           onClick={() => {
             setUnfolded(false);
             navigate({ to: ".", search: (previous) => ({ ...previous, q: undefined }), replace: true });

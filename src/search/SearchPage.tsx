@@ -1,19 +1,20 @@
 import { ResultGroup, ResultGroupSkeleton } from "./ResultGroup";
-import { type ResultSort, useGroupedResults } from "./useGroupedResults";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { SearchSort } from "@/lib/api";
 import { Ticks } from "@/ui/Loaders";
 import { pluralise } from "@/lib/time";
 import { railFilterIntentAtom } from "@/lib/intents";
+import { searchQuery } from "@/lib/queries";
 import { searchTerms } from "@/ui/Highlight";
 import { startIntentAtom } from "@/player/playerState";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useRevealMore } from "@/lib/hooks";
+import { useSentinel } from "@/lib/hooks";
 import { useSetAtom } from "jotai";
 
-const PAGE = 12;
 const SKELETON_GROUPS = [0, 1, 2, 3];
 
-const SORTS: { value: ResultSort; label: string }[] = [
+const SORTS: { value: SearchSort; label: string }[] = [
   { value: "newest", label: "Newest" },
   { value: "matches", label: "Most matches" },
 ];
@@ -75,9 +76,18 @@ export const SearchPage = ({ query }: { query: string }) => {
   const navigate = useNavigate();
   const setStartIntent = useSetAtom(startIntentAtom);
   const setFilterIntent = useSetAtom(railFilterIntentAtom);
-  const [sort, setSort] = useState<ResultSort>("newest");
-  const { groups, momentCount, updating, error } = useGroupedResults(query, sort);
-  const { count, hasMore, sentinelRef } = useRevealMore(groups?.length ?? 0, PAGE, `${query}|${sort}`);
+  const [sort, setSort] = useState<SearchSort>("newest");
+  const { data, error, isPlaceholderData, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useInfiniteQuery(searchQuery(query, sort));
+  const groups = data?.pages.flatMap((page) => page.groups);
+  const totals = data?.pages[0];
+  const sentinelRef = useSentinel(
+    useCallback(() => {
+      fetchNextPage();
+    }, [fetchNextPage]),
+    hasNextPage && !isFetchingNextPage && !isPlaceholderData,
+    data?.pages.length ?? 0,
+  );
   const containerRef = useRef<HTMLDivElement | null>(null);
   const terms = searchTerms(query);
 
@@ -125,15 +135,15 @@ export const SearchPage = ({ query }: { query: string }) => {
         <>
           <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
             <p className="flex items-center gap-3 text-[14px] tabular-nums text-muted">
-              {groups ? (
+              {totals ? (
                 <span>
-                  <b className="font-medium text-ink">{pluralise(momentCount, "moment")}</b> in{" "}
-                  <b className="font-medium text-ink">{pluralise(groups.length, "episode")}</b>
+                  <b className="font-medium text-ink">{pluralise(totals.totalMoments, "moment")}</b> in{" "}
+                  <b className="font-medium text-ink">{pluralise(totals.totalEpisodes, "episode")}</b>
                 </span>
               ) : (
                 <span>Searching…</span>
               )}
-              {(updating || !groups) && <Ticks size="sm" tone="muted" label="Updating results" />}
+              {(isPlaceholderData || !totals) && <Ticks size="sm" tone="muted" label="Updating results" />}
             </p>
             <div className="flex items-center gap-4">
               <span className="text-[12px] text-dim mobile:hidden">
@@ -154,9 +164,9 @@ export const SearchPage = ({ query }: { query: string }) => {
               </div>
             </div>
           </div>
-          <div className={updating ? "opacity-60 transition-opacity duration-150" : "transition-opacity duration-150"}>
+          <div className={isPlaceholderData ? "opacity-60 transition-opacity duration-150" : "transition-opacity duration-150"}>
             {groups
-              ? groups.slice(0, count).map((group) => (
+              ? groups.map((group) => (
                   <ResultGroup
                     key={group.episode.episodeNumber}
                     group={group}
@@ -167,7 +177,8 @@ export const SearchPage = ({ query }: { query: string }) => {
                 ))
               : SKELETON_GROUPS.map((key) => <ResultGroupSkeleton key={key} />)}
           </div>
-          {hasMore && <div ref={sentinelRef} aria-hidden className="h-px" />}
+          {hasNextPage && <div ref={sentinelRef} aria-hidden className="h-px" />}
+          {isFetchingNextPage && <ResultGroupSkeleton />}
         </>
       )}
     </div>

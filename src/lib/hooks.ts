@@ -34,34 +34,25 @@ export const useMediaQuery = (query: string) => {
 };
 
 /**
- * How many of `total` items to render. Grows by `page` whenever the sentinel
- * Comes within a screen or so of view, and resets when `resetKey` changes.
- * The observer is rebuilt after each page, which makes it report again if the
- * Sentinel is still in range — so a tall screen keeps filling itself.
+ * A ref for an element at the end of a list; `onReach` runs whenever it comes
+ * Within a screen or so of view. `generation` should change each time the
+ * List grows: re-observing makes the observer report again if the end is
+ * Still in range, so a tall screen keeps filling itself.
  */
-export const useRevealMore = (total: number, page: number, resetKey: unknown) => {
-  const [count, setCount] = useState(page);
-  const [key, setKey] = useState(resetKey);
+export const useSentinel = (onReach: () => void, enabled: boolean, generation: number) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  // Reset during render rather than in an effect, so the first frame of a new
-  // List is already the right length.
-  if (key !== resetKey) {
-    setKey(resetKey);
-    setCount(page);
-  }
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
 
-    if (!sentinel || count >= total) {
+    if (!sentinel || !enabled) {
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          setCount((current) => Math.min(total, current + page));
+          onReach();
         }
       },
       { rootMargin: "1200px 0px" },
@@ -70,7 +61,31 @@ export const useRevealMore = (total: number, page: number, resetKey: unknown) =>
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [count, total, page]);
+  }, [onReach, enabled, generation]);
+
+  return sentinelRef;
+};
+
+/**
+ * How many of `total` already-loaded items to render, growing by `page` as
+ * The end of the list nears and resetting when `resetKey` changes.
+ */
+export const useRevealMore = (total: number, page: number, resetKey: unknown) => {
+  const [count, setCount] = useState(page);
+  const [key, setKey] = useState(resetKey);
+
+  // Reset during render rather than in an effect, so the first frame of a new
+  // List is already the right length.
+  if (key !== resetKey) {
+    setKey(resetKey);
+    setCount(page);
+  }
+
+  const sentinelRef = useSentinel(
+    () => setCount((current) => Math.min(total, current + page)),
+    count < total,
+    count,
+  );
 
   return { count: Math.min(count, total), hasMore: count < total, sentinelRef };
 };
