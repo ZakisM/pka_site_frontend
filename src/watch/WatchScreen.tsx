@@ -44,11 +44,7 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
           <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
             <Player videoId={videoId} {...start} />
           </div>
-          <EpisodeBar
-            key={episodeNumber}
-            episode={episode}
-            startRequested={start.startSeconds !== undefined}
-          />
+          <EpisodeBar key={episodeNumber} episode={episode} />
         </div>
       </main>
       {/* Keyed per episode so its filter and follow state start fresh. */}

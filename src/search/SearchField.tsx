@@ -58,7 +58,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   };
 
   return (
-    <div className="group/field relative flex h-10 min-w-0 flex-1 items-center border border-line bg-raised transition-colors duration-150 focus-within:border-line-strong">
+    <div className="relative flex h-10 min-w-0 flex-1 items-center border border-line bg-raised transition-colors duration-150 focus-within:border-line-strong">
       <Search aria-hidden className="pointer-events-none absolute left-[13px] size-4 text-muted" />
       <input
         ref={inputRef}
@@ -81,7 +81,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
           }
         }}
       />
-      {value ? (
+      {value && (
         <button
           type="button"
           aria-label="Clear search"
@@ -93,10 +93,6 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
         >
           <X className="size-3.5 stroke-[1.75]" />
         </button>
-      ) : (
-        <kbd className="mr-2.5 shrink-0 border border-line-strong px-1.5 py-0.5 font-sans text-[11px] text-dim group-focus-within/field:hidden mobile:hidden">
-          ⌘K
-        </kbd>
       )}
     </div>
   );

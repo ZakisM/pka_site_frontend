@@ -37,11 +37,14 @@ export const Thumbnail = ({
           alt=""
           loading="lazy"
           decoding="async"
-          className={`absolute inset-0 size-full object-cover transition-[opacity,filter] duration-300 group-hover:brightness-115 ${loaded ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 size-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
       )}
+      {/* A plain overlay rather than a filter: filters on dozens of images are
+          Expensive to repaint while scrolling, notably in Firefox. */}
+      <span aria-hidden className="absolute inset-0 bg-white/0 transition-colors duration-200 group-hover:bg-white/[0.07]" />
       <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
         {formatTimestamp(lengthSeconds)}
       </span>

@@ -1,14 +1,13 @@
 import { ChevronLeft, ChevronRight, Link2 } from "lucide-react";
 import { formatEpisodeNumber, formatShortDate, formatTimestamp } from "@/lib/time";
-import { positionAtom, seekRequestAtom } from "@/player/playerState";
-import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { Link } from "@tanstack/react-router";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { allEpisodesQuery } from "@/lib/queries";
 import { displayTitle } from "@/lib/titles";
+import { positionAtom } from "@/player/playerState";
+import { useAtomValue } from "jotai";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { watchProgress } from "@/lib/progress";
 
 const COPIED_FEEDBACK_MS = 1600;
 
@@ -25,28 +24,12 @@ const useNeighbours = (episodeNumber: number) => {
     : { older: episodes?.[index + 1], newer: episodes?.[index - 1] };
 };
 
-interface EpisodeBarProps {
-  episode: PkaEpisodeWithAll;
-  // Whether the player was told where to start; if not, it resumed.
-  startRequested: boolean;
-}
-
 /** Number, title and facts under the player, with the episode's actions. */
-export const EpisodeBar = ({ episode, startRequested }: EpisodeBarProps) => {
+export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   const { videoId, title, lengthSeconds } = episode.youtubeDetails;
-  const store = useStore();
   const position = useAtomValue(positionAtom(videoId));
-  const setSeekRequest = useSetAtom(seekRequestAtom);
   const { older, newer } = useNeighbours(episode.episode.number);
   const [copied, setCopied] = useState(false);
-
-  // Read once per episode (the bar is keyed by it): resuming is a fact about
-  // How the episode opened, not something to recompute every second.
-  const [resumed, setResumed] = useState(() => {
-    const progress = watchProgress(store.get(positionAtom(videoId)), lengthSeconds);
-
-    return !startRequested && progress !== undefined && !progress.finished;
-  });
 
   const shareFrom = Math.floor(position);
 
@@ -81,24 +64,6 @@ export const EpisodeBar = ({ episode, startRequested }: EpisodeBarProps) => {
           <span>{formatShortDate(episode.episode.uploadDate)}</span>
           <span className="text-dim">·</span>
           <span>{formatTimestamp(lengthSeconds)}</span>
-          {resumed && (
-            <>
-              <span className="text-dim">·</span>
-              <span>
-                Resumed where you left off.{" "}
-                <button
-                  type="button"
-                  className="cursor-pointer text-secondary underline decoration-line-strong underline-offset-3 hover:text-ink"
-                  onClick={() => {
-                    setSeekRequest({ seconds: 0, requestedAt: Date.now() });
-                    setResumed(false);
-                  }}
-                >
-                  Start from the beginning
-                </button>
-              </span>
-            </>
-          )}
         </p>
       </div>
       <div className="flex shrink-0 gap-2 mobile:w-full">
