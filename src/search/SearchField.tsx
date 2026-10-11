@@ -143,9 +143,17 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
             return;
           }
 
+          // Esc closes the results like their Close button does, keeping
+          // The query in the box to come back to; the × is what clears it.
           if (event.key === "Escape") {
             event.preventDefault();
-            clear();
+            // A search still settling must not reopen what Esc just closed.
+            typedRef.current = false;
+
+            if (query) {
+              closeSearch();
+            }
+
             event.currentTarget.blur();
             onEscape();
           }

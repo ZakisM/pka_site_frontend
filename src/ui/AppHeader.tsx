@@ -3,6 +3,7 @@ import { Search, Shuffle } from "lucide-react";
 import { useRef, useState } from "react";
 import { SearchField } from "@/search/SearchField";
 import { Wordmark } from "./Wordmark";
+import { flushSync } from "react-dom";
 import { useCloseSearch } from "@/search/searchState";
 
 const buttonStyles =
@@ -20,9 +21,14 @@ export const AppHeader = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const searching = unfolded || Boolean(query);
 
+  // Tapping the icon counts as clicking into the box: it focuses it and, with
+  // A query kept from before, brings those results straight back. Unfolded
+  // Synchronously so the focus lands inside the tap itself, which is the only
+  // Time iOS will raise the keyboard for it.
   const unfold = () => {
-    setUnfolded(true);
-    requestAnimationFrame(() => inputRef.current?.focus());
+    flushSync(() => setUnfolded(true));
+    inputRef.current?.focus();
+    inputRef.current?.click();
   };
 
   return (
@@ -39,9 +45,10 @@ export const AppHeader = () => {
       </Link>
       <div className="flex min-w-0 items-center gap-3 mobile:hidden mobile:flex-1 mobile:group-data-searching/header:flex">
         <SearchField inputRef={inputRef} onEscape={() => setUnfolded(false)} />
+        {/* Phones close the results here; desktops beside the results' sort. */}
         <button
           type="button"
-          className="hidden h-10 shrink-0 cursor-pointer items-center px-1 text-[14px] text-secondary mobile:flex"
+          className="hidden h-10 shrink-0 cursor-pointer items-center border border-line px-3 text-[14px] text-secondary transition-colors duration-150 hover:border-line-strong hover:text-ink mobile:flex"
           onClick={() => {
             setUnfolded(false);
 
@@ -50,7 +57,7 @@ export const AppHeader = () => {
             }
           }}
         >
-          Cancel
+          Close
         </button>
       </div>
       <div className="flex gap-2 justify-self-end mobile:ml-auto mobile:group-data-searching/header:hidden">
