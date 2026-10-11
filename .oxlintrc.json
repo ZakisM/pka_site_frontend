@@ -1,10 +1,14 @@
 {
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
   "env": {
     "browser": true
   },
   "globals": {
     "__dirname": "readable"
   },
+  "ignorePatterns": [
+    "src/routeTree.gen.ts"
+  ],
   "categories": {
     "correctness": "error",
     "suspicious": "error",

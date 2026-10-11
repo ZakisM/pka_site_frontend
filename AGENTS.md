@@ -6,7 +6,7 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 | Folder | Holds |
 | --- | --- |
 | `routes/` | TanStack Router route files; `routeTree.gen.ts` is generated — never edit it |
-| `player/` | The YouTube iframe: `controller` owns it and corrects it until it matches what should be on screen; `watchHistory` keeps positions and recent episodes |
+| `player/` | The YouTube iframe, owned by `controller`; `watchHistory` keeps positions and recent episodes |
 | `home/` | The home page — continue watching and the archive grid, filterable by year |
 | `watch/` | The watch screen — player, episode bar, moments rail |
 | `search/` | The header search field and the results page drawn over any page via `?q=` |
@@ -25,7 +25,7 @@ Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run ser
 **Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
 ## Coding Style & Naming Conventions
-TypeScript with strict typing and 2-space indentation. Components and hooks use PascalCase and camelCase filenames respectively (`MomentsRail.tsx`, `usePlayer.ts`); prefer named exports. Import order is enforced: side-effect, namespace, multi-member, then single-member, alphabetically within each group. Tailwind utilities drive styling — keep tokens in `styles.css` and use the `@` alias for cross-feature imports.
+TypeScript with strict typing and 2-space indentation. Components and hooks use PascalCase and camelCase filenames respectively (`MomentsRail.tsx`, `useWatchState.ts`); prefer named exports. Import order is enforced: side-effect, namespace, multi-member, then single-member, alphabetically within each group. Tailwind utilities drive styling — keep tokens in `styles.css` and use the `@` alias for cross-feature imports.
 
 ### Design system
 Tokens live in `@theme` in `src/styles.css`. Two rules bite often:
@@ -35,4 +35,4 @@ Tokens live in `@theme` in `src/styles.css`. Two rules bite often:
 Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths: the two-column UI needs width *and* height, so a tablet or unfolded foldable gets it while a landscape phone does not.
 
 ## Commit & Pull Request Guidelines
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. Before opening a PR ensure `bun run build` passes, attach screenshots for UI diffs, and cross-link relevant issues.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.
