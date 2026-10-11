@@ -39,7 +39,12 @@ export const RelatedMoments = ({ episodeNumber, moment, fallback }: RelatedMomen
   return (
     <section className="@container mobile:px-4">
       <h2 className="mb-4 text-[15px] font-semibold">In other episodes</h2>
-      <div className="grid gap-x-6 gap-y-4 @[720px]:grid-cols-2">
+      {/* Keyed by what it shows, so the list fades as playback moves on to
+          A moment with different matches, instead of snapping. */}
+      <div
+        key={related.map((item) => `${item.episode.episodeNumber}-${item.timestamp}`).join("|")}
+        className="grid animate-fade-in gap-x-6 gap-y-4 @[720px]:grid-cols-2"
+      >
         {related.map((item) => (
           <button
             key={`${item.episode.episodeNumber}-${item.timestamp}`}

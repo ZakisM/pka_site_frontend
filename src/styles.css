@@ -21,6 +21,10 @@
 }
 
 @theme {
+  /* The app's one entrance: a short fade where content swaps. Opacity only,
+     and quick — a longer fade's in-between frames read as a rendering bug. */
+  --animate-fade-in: pka-fade-in 0.15s ease-out;
+
   /* Geist carries all UI copy; Raleway is only the wordmark — its old-style
      Figures made episode numbers look uneven. */
   --font-sans: "Geist Variable", system-ui, -apple-system, sans-serif;
@@ -226,10 +230,6 @@
     animation-delay: var(--d, 0s);
   }
 
-  .pka-fade-in {
-    animation: pka-fade-in 0.15s ease-out;
-  }
-
   .pka-caret {
     display: inline-block;
     width: 2px;
@@ -296,7 +296,8 @@
   .pka-scan::after,
   .pka-ticks > i,
   .pka-sk::after,
-  .pka-caret {
+  .pka-caret,
+  .animate-fade-in {
     animation: none;
   }
 

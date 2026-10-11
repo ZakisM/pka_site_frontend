@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { smoothScroll } from "@/lib/motion";
 
 interface HitKeysOptions {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -77,7 +78,8 @@ export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOp
 
       if (hit) {
         hit.dataset.selected = "";
-        hit.scrollIntoView({ block: "nearest" });
+        // Glides for a single press; a held key moves too fast to animate.
+        hit.scrollIntoView({ block: "nearest", behavior: event.repeat ? "instant" : smoothScroll() });
       }
     };
 

@@ -10,7 +10,7 @@ import { useEpisodeProgress } from "@/player/useEpisodeProgress";
 // Full width; beside a 112px thumbnail they wrapped a word per line. Every
 // Group draws the hairline above it: on wide screens they sit two abreast.
 const groupGrid =
-  "grid grid-cols-[208px_1fr] content-start gap-x-6 gap-y-2 border-t border-line py-6 mobile:grid-cols-[112px_1fr] mobile:gap-x-3.5 mobile:gap-y-3";
+  "grid animate-fade-in grid-cols-[208px_1fr] content-start gap-x-6 gap-y-2 border-t border-line py-6 mobile:grid-cols-[112px_1fr] mobile:gap-x-3.5 mobile:gap-y-3";
 
 interface ResultGroupProps {
   group: SearchGroup;

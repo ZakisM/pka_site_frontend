@@ -6,6 +6,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import type { PkaEvent } from "@/lib/api";
 import { railFilterIntentAtom } from "@/lib/intents";
 import { seekRequestAtom } from "@/player/playerState";
+import { smoothScroll } from "@/lib/motion";
 
 interface MomentRowProps {
   event: PkaEvent;
@@ -51,9 +52,15 @@ const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior)
   if (row && !list.matches(":hover") && list.scrollHeight > list.clientHeight + 1) {
     list.scrollTo({ top: row.offsetTop - list.clientHeight / 3, behavior });
   }
+
+  return row !== null;
 };
 
-const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, activeIndex: number) => {
+const useFollowActive = (
+  listRef: React.RefObject<HTMLDivElement | null>,
+  activeIndex: number,
+  filter: string,
+) => {
   const previousRef = useRef<number | null>(null);
   const activeRef = useRef(activeIndex);
 
@@ -68,9 +75,28 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
     if (list && previous !== activeIndex) {
       const adjacent = previous !== null && Math.abs(activeIndex - previous) === 1;
 
-      scrollToRow(list, activeIndex, adjacent ? "smooth" : "instant");
+      scrollToRow(list, activeIndex, adjacent ? smoothScroll() : "instant");
     }
   }, [listRef, activeIndex]);
+
+  // Changing the filter changes which rows exist: bring the playing moment
+  // Back into view (clearing the filter should not strand the list wherever
+  // The filtered rows left it), or start from the top if it was filtered out.
+  const filterRef = useRef(filter);
+
+  useLayoutEffect(() => {
+    const list = listRef.current;
+
+    if (!list || filterRef.current === filter) {
+      return;
+    }
+
+    filterRef.current = filter;
+
+    if (!scrollToRow(list, activeRef.current, "instant")) {
+      list.scrollTop = 0;
+    }
+  }, [listRef, filter]);
 
   // A resize (or the layout switching between beside and below the video)
   // Changes the list's height; put the playing moment back in its place.
@@ -116,7 +142,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
     }
   }, [filterIntent, episodeNumber, setFilterIntent]);
 
-  useFollowActive(listRef, activeIndex);
+  useFollowActive(listRef, activeIndex, filter);
 
   const terms = searchTerms(filter);
   const rows = events
@@ -126,7 +152,8 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const seek = (seconds: number) => setSeekRequest({ seconds, requestedAt: Date.now() });
 
   return (
-    <aside className="flex flex-col desktop:sticky desktop:top-(--header-h) desktop:row-span-2 desktop:h-[calc(100dvh-var(--header-h))] desktop:self-start desktop:border-l desktop:border-line mobile:mt-6">
+    // Keyed per episode by its parent, so a new episode's moments fade in.
+    <aside className="flex animate-fade-in flex-col desktop:sticky desktop:top-(--header-h) desktop:row-span-2 desktop:h-[calc(100dvh-var(--header-h))] desktop:self-start desktop:border-l desktop:border-line mobile:mt-6">
       <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
         <h2 className="text-[15px] font-semibold">Moments</h2>

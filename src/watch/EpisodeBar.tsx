@@ -32,7 +32,7 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   };
 
   return (
-    <section className="mt-4 mobile:mx-4 mobile:mt-3">
+    <section className="mt-4 animate-fade-in mobile:mx-4 mobile:mt-3">
       {/* The same shape as an episode card: number and facts, then the title. */}
       <div className="flex items-center gap-2 text-[13px] tabular-nums text-muted">
         <span className="text-[14px] font-bold text-ink">{formatEpisodeNumber(episode.episode.number)}</span>
@@ -46,7 +46,11 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
           className="-my-1.5 -mr-2 ml-auto grid size-8 shrink-0 cursor-pointer place-items-center text-muted transition-colors duration-150 hover:bg-raised hover:text-ink"
           onClick={copyLink}
         >
-          {copied ? <Check className="size-4 stroke-2 text-ink" /> : <Copy className="size-4 stroke-[1.75]" />}
+          {copied ? (
+            <Check className="size-4 animate-fade-in stroke-2 text-ink" />
+          ) : (
+            <Copy className="size-4 stroke-[1.75]" />
+          )}
         </button>
       </div>
       <h1 className="mt-1.5 text-[22px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[18px]/[1.3]">

@@ -61,7 +61,8 @@ export const HomeScreen = () => {
         )}
       </div>
 
-      <div className={gridStyles}>
+      {/* Keyed by year, so a new year's episodes fade in rather than snap. */}
+      <div key={year ?? "all"} className={`${gridStyles} animate-fade-in`}>
         {episodes
           ? shown.slice(0, count).map((episode) => <EpisodeCard key={episode.episodeNumber} episode={episode} />)
           : SKELETON_CARDS.map((key) => <EpisodeCardSkeleton key={key} />)}
