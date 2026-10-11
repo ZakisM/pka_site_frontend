@@ -25,6 +25,7 @@
     "eslint/no-magic-numbers": "off",
     "eslint/no-ternary": "off",
     "eslint/no-undefined": "off",
+    "eslint/one-var": "off",
     "eslint/yoda": "off",
     "eslint/sort-keys": "off",
     "oxc/no-async-await": "off",
