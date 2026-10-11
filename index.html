@@ -13,6 +13,11 @@
 
     <base href="/" />
 
+    <!-- The player and the thumbnails come from YouTube: open those
+         connections while the app itself is still loading. -->
+    <link rel="preconnect" href="https://www.youtube.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+
     <!-- The square IX mark. PNG rather than SVG: the brand SVGs set their type
          in Raleway, and neither an <img> nor a tab favicon loads webfonts. -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
