@@ -113,10 +113,11 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
         // Focusing selects the kept query so typing replaces it. The mouseup
         // Of the click that focused the box would collapse that selection to
         // A caret, so that one mouseup is cancelled.
-        onFocus={(event) => {
-          event.currentTarget.select();
-
-          // Coming back to a kept query brings its results back as they were.
+        onFocus={(event) => event.currentTarget.select()}
+        // Clicking back into a kept query brings its results back as they
+        // Were. On click, not focus: returning to the browser window re-fires
+        // Focus on the box and would cover the video with old results.
+        onClick={() => {
           if (value.trim() && !query) {
             showResults(value.trim());
           }

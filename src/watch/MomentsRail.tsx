@@ -102,18 +102,19 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const [filterIntent, setFilterIntent] = useAtom(railFilterIntentAtom);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  // A search's "more moments in this episode" opens with its query applied.
-  // The rail is keyed per episode, so this runs once for each.
+  // A search's "more moments in this episode" applies its query here: on the
+  // First render when it opens a new episode (so the full list never
+  // Flashes), and whenever it arrives for the episode already on screen.
   const [filter, setFilter] = useState(() =>
     filterIntent?.episodeNumber === episodeNumber ? filterIntent.filter : "",
   );
 
   useLayoutEffect(() => {
-    if (filterIntent) {
+    if (filterIntent?.episodeNumber === episodeNumber) {
+      setFilter(filterIntent.filter);
       setFilterIntent(null);
     }
-    // eslint-disable-next-line exhaustive-deps
-  }, []);
+  }, [filterIntent, episodeNumber, setFilterIntent]);
 
   useFollowActive(listRef, activeIndex);
 
