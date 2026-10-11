@@ -1,4 +1,4 @@
-import { EpisodeCard, EpisodeCardSkeleton, gridStyles } from "./EpisodeCard";
+import { EpisodeCard, EpisodeCardSkeleton, gridStyles } from "@/ui/EpisodeCard";
 import { pluralise, yearOf } from "@/lib/time";
 import { useEffect, useMemo, useState } from "react";
 import { ContinueWatching } from "./ContinueWatching";

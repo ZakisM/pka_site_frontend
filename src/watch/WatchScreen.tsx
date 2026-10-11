@@ -1,6 +1,7 @@
 import { useActiveMoment, usePlaybackPosition, useStartPosition } from "./useWatchState";
 import { EpisodeBar } from "./EpisodeBar";
 import { MomentsRail } from "./MomentsRail";
+import { MoreEpisodes } from "./MoreEpisodes";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { Player } from "@/player/Player";
 import { displayTitle } from "@/lib/titles";
@@ -18,8 +19,9 @@ interface WatchScreenProps {
 
 /**
  * The player, sized to leave the episode bar on screen, with the moments
- * Beside it in wide windows and below it otherwise. Nothing is drawn over the
- * Player: YouTube's own controls are the only chrome inside it.
+ * Pinned beside it and neighbouring episodes below (on phones: player, bar,
+ * Moments, episodes). Nothing is drawn over the player: YouTube's own controls
+ * Are the only chrome inside it.
  */
 export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   const { videoId, title } = episode.youtubeDetails;
@@ -38,8 +40,8 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   }, [episodeNumber, title, setRecent]);
 
   return (
-    <div className="wide:grid wide:grid-cols-[minmax(0,1fr)_380px]">
-      <main className="min-w-0 px-8 pt-6 mobile:p-0 wide:pb-14">
+    <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px]">
+      <main className="min-w-0 px-8 pt-6 mobile:p-0">
         <div className="watch-width @container mx-auto">
           <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
             <Player videoId={videoId} {...start} />
@@ -47,14 +49,19 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
           <EpisodeBar key={episodeNumber} episode={episode} />
         </div>
       </main>
-      {/* Keyed per episode so its filter and follow state start fresh. */}
+      {/* Keyed per episode so its filter and follow state start fresh. Spans
+          Both rows so it stays pinned beside the player and the episodes. */}
       <MomentsRail
         key={episodeNumber}
         events={episode.events}
         episodeNumber={episodeNumber}
         activeIndex={activeIndex}
-        position={position}
       />
+      <div className="px-8 pt-10 pb-14 desktop:col-start-1 desktop:row-start-2 mobile:px-0 mobile:pt-8">
+        <div className="watch-width mx-auto">
+          <MoreEpisodes episodeNumber={episodeNumber} />
+        </div>
+      </div>
     </div>
   );
 };

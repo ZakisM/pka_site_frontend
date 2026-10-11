@@ -1,4 +1,4 @@
-import { EpisodeCard, gridStyles } from "./EpisodeCard";
+import { EpisodeCard, gridStyles } from "@/ui/EpisodeCard";
 import { atom, useAtomValue } from "jotai";
 import { positionAtom, recentEpisodesAtom } from "@/player/playerState";
 import type { EpisodeSummary } from "@/lib/api";

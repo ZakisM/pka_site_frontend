@@ -11,19 +11,16 @@ interface MomentRowProps {
   event: PkaEvent;
   index: number;
   active: boolean;
-  // Fraction (0–1) through this moment; only meaningful when active, so
-  // Inactive rows never re-render on playback ticks.
-  progress: number;
   terms: string[];
   onSeek: (seconds: number) => void;
 }
 
-const MomentRow = ({ event, index, active, progress, terms, onSeek }: MomentRowProps) => (
+const MomentRow = ({ event, index, active, terms, onSeek }: MomentRowProps) => (
   <button
     type="button"
     data-index={index}
     data-active={active ? true : undefined}
-    className="group relative grid w-full cursor-pointer grid-cols-[56px_1fr_auto] items-baseline gap-3 px-5 py-2.5 text-left text-[14px]/[1.4] text-secondary transition-colors duration-100 hover:bg-raised hover:text-ink data-active:bg-raised data-active:text-ink stacked:px-3 mobile:px-4"
+    className="group relative grid w-full cursor-pointer grid-cols-[56px_1fr_auto] items-baseline gap-3 px-5 py-2.5 text-left text-[14px]/[1.4] text-secondary transition-colors duration-100 hover:bg-raised hover:text-ink data-active:bg-raised data-active:text-ink mobile:px-4"
     onClick={() => onSeek(event.timestamp)}
   >
     {active && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-primary" />}
@@ -34,56 +31,67 @@ const MomentRow = ({ event, index, active, progress, terms, onSeek }: MomentRowP
       <Highlight text={event.description} terms={terms} />
     </span>
     <span className="text-[11px] tabular-nums text-dim">{formatDuration(event.lengthSeconds)}</span>
-    {active && (
-      <span
-        aria-hidden
-        className="absolute bottom-0 left-0 h-0.5 bg-primary/70"
-        style={{ width: `${(progress * 100).toFixed(1)}%` }}
-      />
-    )}
   </button>
 );
 
 /**
  * Keeps the playing moment a third of the way down the list, gliding one row
  * At a time during playback and snapping for anything further. Only when the
- * List scrolls on its own (beside the video): stacked under it, the list is
- * Part of the page, and moving the page under someone would be worse.
+ * List scrolls on its own: on phones it is part of the page, and moving the
+ * Page under someone's thumb would be worse than not following.
  */
+const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior) => {
+  const row = list.querySelector<HTMLElement>(`[data-index="${index}"]`);
+
+  if (row && !list.matches(":hover") && list.scrollHeight > list.clientHeight + 1) {
+    list.scrollTo({ top: row.offsetTop - list.clientHeight / 3, behavior });
+  }
+};
+
 const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, activeIndex: number) => {
   const previousRef = useRef<number | null>(null);
+  const activeRef = useRef(activeIndex);
 
   useLayoutEffect(() => {
     const list = listRef.current;
-    const row = list?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`);
     const previous = previousRef.current;
+
+    activeRef.current = activeIndex;
 
     previousRef.current = activeIndex;
 
-    if (!list || !row || previous === activeIndex || list.matches(":hover")) {
-      return;
-    }
+    if (list && previous !== activeIndex) {
+      const adjacent = previous !== null && Math.abs(activeIndex - previous) === 1;
 
-    if (list.scrollHeight <= list.clientHeight + 1) {
-      return;
+      scrollToRow(list, activeIndex, adjacent ? "smooth" : "instant");
     }
-
-    list.scrollTo({
-      top: row.offsetTop - list.clientHeight / 3,
-      behavior: previous !== null && Math.abs(activeIndex - previous) === 1 ? "smooth" : "instant",
-    });
   }, [listRef, activeIndex]);
+
+  // A resize (or the layout switching between beside and below the video)
+  // Changes the list's height; put the playing moment back in its place.
+  useLayoutEffect(() => {
+    const list = listRef.current;
+
+    if (!list) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => scrollToRow(list, activeRef.current, "instant"));
+
+    observer.observe(list);
+
+    return () => observer.disconnect();
+  }, [listRef]);
 };
 
 interface MomentsRailProps {
   events: PkaEvent[];
   episodeNumber: number;
   activeIndex: number;
-  position: number;
 }
 
 /** The episode's moments, filterable; every row is a play target. */
-export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: MomentsRailProps) => {
+export const MomentsRail = ({ events, episodeNumber, activeIndex }: MomentsRailProps) => {
   const setSeekRequest = useSetAtom(seekRequestAtom);
   const [filterIntent, setFilterIntent] = useAtom(railFilterIntentAtom);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -111,10 +119,9 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const seek = (seconds: number) => setSeekRequest({ seconds, requestedAt: Date.now() });
 
   return (
-    <aside className="flex flex-col wide:sticky wide:top-(--header-h) wide:h-[calc(100dvh-var(--header-h))] wide:border-l wide:border-line stacked:mt-8 stacked:px-8 mobile:mt-6 mobile:px-0">
-      {/* Stacked, the list takes the video's width so their edges line up. */}
-      <div className="flex min-h-0 flex-1 flex-col stacked:mx-auto stacked:watch-width">
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3 stacked:px-0 mobile:px-4">
+    <aside className="flex flex-col desktop:sticky desktop:top-(--header-h) desktop:row-span-2 desktop:h-[calc(100dvh-var(--header-h))] desktop:self-start desktop:border-l desktop:border-line mobile:mt-6">
+      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
         <h2 className="text-[15px] font-semibold">Moments</h2>
         <span className="text-[12px] tabular-nums text-dim">{events.length > 0 ? events.length : ""}</span>
         {events.length > 0 && (
@@ -145,13 +152,13 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
       </div>
       <div
         ref={listRef}
-        className="relative border-t border-line py-2 stacked:pb-14 wide:min-h-0 wide:flex-1 wide:overflow-y-auto wide:[scrollbar-color:var(--color-line-strong)_transparent] wide:[scrollbar-width:thin]"
+        className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto"
       >
         {events.length === 0 && (
-          <p className="px-5 py-6 text-[14px]/[1.5] text-dim stacked:px-3">Nobody has timestamped this episode yet.</p>
+          <p className="px-5 py-6 text-[14px]/[1.5] text-dim">Nobody has timestamped this episode yet.</p>
         )}
         {events.length > 0 && rows.length === 0 && (
-          <p className="px-5 py-6 text-[14px]/[1.5] text-dim stacked:px-3">No moments in this episode mention “{filter}”.</p>
+          <p className="px-5 py-6 text-[14px]/[1.5] text-dim">No moments in this episode mention “{filter}”.</p>
         )}
         {rows.map(({ event, index }) => {
           const active = index === activeIndex;
@@ -162,7 +169,6 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
               event={event}
               index={index}
               active={active}
-              progress={active ? Math.min(1, Math.max(0, (position - event.timestamp) / Math.max(event.lengthSeconds, 1))) : 0}
               terms={terms}
               onSeek={seek}
             />
