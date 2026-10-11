@@ -12,9 +12,9 @@ export const WatchSkeleton = () => (
     <main className="min-w-0 px-8 pt-6 mobile:p-0">
       <div className="watch-width mx-auto">
         <div className="aspect-video w-full bg-black mobile:min-h-[200px]" />
-        <div className="mt-5 flex flex-col gap-3 mobile:mx-4 mobile:mt-4">
-          <Skeleton className="h-6 w-[min(460px,80%)]" />
-          <Skeleton className="h-3.5 w-40" soft delay={0.08} />
+        <div className="mt-4 flex flex-col gap-2.5 mobile:mx-4 mobile:mt-3">
+          <Skeleton className="h-3.5 w-40" soft />
+          <Skeleton className="h-6 w-[min(460px,80%)]" delay={0.08} />
         </div>
       </div>
     </main>
