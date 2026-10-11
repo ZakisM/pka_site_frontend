@@ -14,14 +14,14 @@ reverse proxy as [the backend](https://github.com/ZakisM/pka_site_backend/):
 3. `bun run dev` serves the app on port 5678.
 4. Visit https://www.pkaindextest.com.
 
-| Command             | Does                                               |
-| ------------------- | -------------------------------------------------- |
-| `bun run dev`       | Vite dev server on port 5678                       |
-| `bun run serve`     | Production build, previewed on port 5678           |
-| `bun run typecheck` | TypeScript, app and tooling configs                |
-| `bun run lint`      | oxlint                                             |
-| `bun run format`    | oxfmt; CI runs `bun run format:check`              |
-| `bun run build`     | Production bundle in `dist/`                       |
+| Command             | Does                                     |
+| ------------------- | ---------------------------------------- |
+| `bun run dev`       | Vite dev server on port 5678             |
+| `bun run serve`     | Production build, previewed on port 5678 |
+| `bun run typecheck` | TypeScript, app and tooling configs      |
+| `bun run lint`      | oxlint                                   |
+| `bun run format`    | oxfmt; CI runs `bun run format:check`    |
+| `bun run build`     | Production bundle in `dist/`             |
 
 Measure performance against `bun run serve`, never `dev`: React's development
 build makes large lists look far slower than they ship.

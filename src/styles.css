@@ -220,12 +220,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgb(242 241 240 / 0.07),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, rgb(242 241 240 / 0.07), transparent);
     animation: pka-sweep 1.5s ease-in-out infinite;
     animation-delay: var(--d, 0s);
   }

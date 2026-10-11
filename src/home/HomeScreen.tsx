@@ -19,10 +19,7 @@ export const HomeScreen = () => {
   const year = useStore(homeYear);
   const setYear = homeYear.set;
 
-  const years = useMemo(
-    () => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))],
-    [episodes],
-  );
+  const years = useMemo(() => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))], [episodes]);
   const shown = useMemo(
     () => (year ? (episodes ?? []).filter((episode) => yearOf(episode.uploadDate) === year) : (episodes ?? [])),
     [episodes, year],
@@ -42,7 +39,11 @@ export const HomeScreen = () => {
       {episodes && <ContinueWatching episodes={episodes} />}
 
       <div className="mb-6 flex items-center justify-between gap-4">
-        <div role="group" aria-label="Filter by year" className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] mobile:pr-6 mobile:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]">
+        <div
+          role="group"
+          aria-label="Filter by year"
+          className="-mx-1 flex min-w-0 gap-0.5 overflow-x-auto px-1 [scrollbar-width:none] mobile:pr-6 mobile:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]"
+        >
           {[null, ...years].map((option) => (
             <button
               key={option ?? "all"}
@@ -56,9 +57,7 @@ export const HomeScreen = () => {
           ))}
         </div>
         {episodes && (
-          <span className="shrink-0 text-[13px] tabular-nums text-dim">
-            {pluralise(shown.length, "episode")}
-          </span>
+          <span className="shrink-0 text-[13px] tabular-nums text-dim">{pluralise(shown.length, "episode")}</span>
         )}
       </div>
 

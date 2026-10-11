@@ -4,16 +4,12 @@ import { TriangleAlert } from "lucide-react";
 // The API answered, and the thing asked for doesn't exist: an old or mistyped
 // Episode link, not an outage.
 const isNotFound = (error: Error) =>
-  error.name === "HTTPError" &&
-  (error as Error & { response?: Response }).response?.status === 404;
+  error.name === "HTTPError" && (error as Error & { response?: Response }).response?.status === 404;
 
 // Raw fetch/parse failures mean the API returned nothing useful — usually the
 // Backend is down and the SPA fallback HTML came back instead of JSON.
 const isApiUnreachable = (error: Error) =>
-  error.name === "HTTPError" ||
-  /JSON\.parse|Unexpected token|Failed to fetch|NetworkError/iu.test(
-    error.message,
-  );
+  error.name === "HTTPError" || /JSON\.parse|Unexpected token|Failed to fetch|NetworkError/iu.test(error.message);
 
 const actionStyles =
   "cursor-pointer border border-line px-3.5 py-2 text-[13px] text-muted transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink";
@@ -54,22 +50,14 @@ export const ErrorPage = ({ error: thrown }: { error: unknown }) => {
           : error.message || "An unexpected error occurred."}
       </p>
       <div className="flex gap-2.5 pt-[22px]">
-        <button
-          type="button"
-          className={actionStyles}
-          onClick={() => globalThis.location.reload()}
-        >
+        <button type="button" className={actionStyles} onClick={() => globalThis.location.reload()}>
           Try again
         </button>
         <Link className={actionStyles} to="/">
           All episodes
         </Link>
       </div>
-      {unreachable && (
-        <p className="max-w-[520px] pt-5 text-[12px] text-dim">
-          {error.message}
-        </p>
-      )}
+      {unreachable && <p className="max-w-[520px] pt-5 text-[12px] text-dim">{error.message}</p>}
     </div>
   );
 };

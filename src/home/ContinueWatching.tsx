@@ -47,10 +47,22 @@ export const ContinueWatching = ({ episodes }: { episodes: EpisodeSummary[] }) =
         {/* Phones swipe; desktops page with these when the row overflows. */}
         {!(edges.atStart && edges.atEnd) && (
           <div className="flex gap-1 mobile:hidden">
-            <button type="button" aria-label="Scroll back" className={pageButton} disabled={edges.atStart} onClick={() => page(-1)}>
+            <button
+              type="button"
+              aria-label="Scroll back"
+              className={pageButton}
+              disabled={edges.atStart}
+              onClick={() => page(-1)}
+            >
               <ChevronLeft className="size-4 stroke-[1.75]" />
             </button>
-            <button type="button" aria-label="Scroll forward" className={pageButton} disabled={edges.atEnd} onClick={() => page(1)}>
+            <button
+              type="button"
+              aria-label="Scroll forward"
+              className={pageButton}
+              disabled={edges.atEnd}
+              onClick={() => page(1)}
+            >
               <ChevronRight className="size-4 stroke-[1.75]" />
             </button>
           </div>

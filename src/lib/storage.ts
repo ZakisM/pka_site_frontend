@@ -23,9 +23,7 @@ export const storageKeys = (storage: () => Storage) => {
   try {
     const store = storage();
 
-    return Array.from({ length: store.length }, (_, index) => store.key(index)).filter(
-      (key) => key !== null,
-    );
+    return Array.from({ length: store.length }, (_, index) => store.key(index)).filter((key) => key !== null);
   } catch {
     return [];
   }

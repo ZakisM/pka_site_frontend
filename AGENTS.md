@@ -1,17 +1,18 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+
 The React + Vite app lives under `src`, organised by feature rather than by file type:
 
-| Folder | Holds |
-| --- | --- |
-| `routes/` | TanStack Router route files; `routeTree.gen.ts` is generated — never edit it |
+| Folder    | Holds                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `routes/` | TanStack Router route files; `routeTree.gen.ts` is generated — never edit it                  |
 | `player/` | The YouTube iframe, owned by `controller`; `watchHistory` keeps positions and recent episodes |
-| `home/` | The home page — continue watching and the archive grid, filterable by year |
-| `watch/` | The watch screen — player, episode bar, moments rail |
-| `search/` | The header search field and the results page drawn over any page via `?q=` |
-| `ui/` | Shared presentation: header, wordmark, thumbnail, highlight, loaders, error page |
-| `lib/` | Non-visual shared code: API client, query options, formatters, small hooks |
+| `home/`   | The home page — continue watching and the archive grid, filterable by year                    |
+| `watch/`  | The watch screen — player, episode bar, moments rail                                          |
+| `search/` | The header search field and the results page drawn over any page via `?q=`                    |
+| `ui/`     | Shared presentation: header, wordmark, thumbnail, highlight, loaders, error page              |
+| `lib/`    | Non-visual shared code: API client, query options, formatters, small hooks                    |
 
 Search is a root search param, not a route: results render over whichever page is open while that page stays mounted but hidden, so the player keeps its iframe and home keeps its scroll. Never turn search into a route of its own.
 
@@ -20,19 +21,24 @@ Only `player/controller` touches the YouTube player: ask it (`request`, `seek`),
 Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. Static assets live in `public/`, production bundles in `dist/`.
 
 ## Build, Test, and Development Commands
+
 Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint) and format with `bun run format` (oxfmt, 120 columns).
 
 **Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
 ## Coding Style & Naming Conventions
+
 TypeScript with strict typing and 2-space indentation. Components and hooks use PascalCase and camelCase filenames respectively (`MomentsRail.tsx`, `useWatchState.ts`); prefer named exports. Import order is enforced: side-effect, namespace, multi-member, then single-member, alphabetically within each group. Tailwind utilities drive styling — keep tokens in `styles.css` and use the `@` alias for cross-feature imports.
 
 ### Design system
+
 Tokens live in `@theme` in `src/styles.css`. Two rules bite often:
+
 - **Leading:** `body` sets `line-height: normal`. Use arbitrary sizes (`text-[14px]`) which inherit it, not `text-sm`/`text-xs`, which pair their own leading.
 - **Box sizing:** Tailwind boxes are border-box, so a "56px cell plus a hairline" is `h-[57px]`.
 
-Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths: the two-column UI needs width *and* height, so a tablet or unfolded foldable gets it while a landscape phone does not.
+Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths: the two-column UI needs width _and_ height, so a tablet or unfolded foldable gets it while a landscape phone does not.
 
 ## Commit & Pull Request Guidelines
+
 Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.

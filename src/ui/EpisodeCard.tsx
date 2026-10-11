@@ -36,16 +36,16 @@ export const EpisodeCard = ({ episode }: { episode: EpisodeSummary }) => {
         progress={progress}
       />
       <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-muted">
-        <span className="text-[13px] font-bold text-ink">
-          {formatEpisodeNumber(episode.episodeNumber)}
-        </span>
+        <span className="text-[13px] font-bold text-ink">{formatEpisodeNumber(episode.episodeNumber)}</span>
         {formatShortDate(episode.uploadDate)}
       </span>
       <span className="line-clamp-2 text-[15px]/[1.4] font-medium decoration-line-strong underline-offset-3 group-hover:underline mobile:text-[14px]/[1.4]">
         {displayTitle(episode.title)}
       </span>
       {detail && (
-        <span className={`-mt-1 text-[12px] tabular-nums ${progress && !progress.finished ? "text-secondary" : "text-dim"}`}>
+        <span
+          className={`-mt-1 text-[12px] tabular-nums ${progress && !progress.finished ? "text-secondary" : "text-dim"}`}
+        >
           {detail}
         </span>
       )}

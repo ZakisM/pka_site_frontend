@@ -5,8 +5,7 @@
 // Episode number is already on screen, so a leading "PKA 825" goes, and a
 // Trailing ": PKA 719 W/ Harley" keeps its guest but loses the number.
 
-const LEADING_NUMBER =
-  /^(?:PKA|Painkiller(?: Already)?)\s*(?:Ep\.?|Episode)?\s*#?\d+(?:\.\d+)?\s*(?:[-:|–—]\s*)?/iu;
+const LEADING_NUMBER = /^(?:PKA|Painkiller(?: Already)?)\s*(?:Ep\.?|Episode)?\s*#?\d+(?:\.\d+)?\s*(?:[-:|–—]\s*)?/iu;
 const TRAILING_NUMBER = /^(?<before>.+?)\s*[:|]?\s*PKA\s*\d+\s*(?<after>.*)$/u;
 
 export const displayTitle = (raw: string) => {

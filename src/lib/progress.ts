@@ -11,10 +11,7 @@ export interface WatchProgress {
   finished: boolean;
 }
 
-export const watchProgress = (
-  position: number,
-  lengthSeconds: number,
-): WatchProgress | undefined => {
+export const watchProgress = (position: number, lengthSeconds: number): WatchProgress | undefined => {
   if (position < MIN_SECONDS || lengthSeconds <= 0) {
     return undefined;
   }

@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  createRootRouteWithContext,
-  useRouterState,
-  useSearch,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, useRouterState, useSearch } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppHeader } from "@/ui/AppHeader";
 import type { QueryClient } from "@tanstack/react-query";

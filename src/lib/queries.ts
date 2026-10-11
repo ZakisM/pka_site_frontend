@@ -1,9 +1,4 @@
-import {
-  QueryClient,
-  infiniteQueryOptions,
-  keepPreviousData,
-  queryOptions,
-} from "@tanstack/react-query";
+import { QueryClient, infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { type SearchSort, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
 
 export const queryClient = new QueryClient({

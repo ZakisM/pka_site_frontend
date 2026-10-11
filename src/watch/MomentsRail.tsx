@@ -56,11 +56,7 @@ const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior)
   return row !== null;
 };
 
-const useFollowActive = (
-  listRef: React.RefObject<HTMLDivElement | null>,
-  activeIndex: number,
-  filter: string,
-) => {
+const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, activeIndex: number, filter: string) => {
   const previousRef = useRef<number | null>(null);
   const activeRef = useRef(activeIndex);
 
@@ -151,61 +147,61 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
     // Keyed per episode by its parent, so a new episode's moments fade in.
     <aside className="flex animate-fade-in flex-col desktop:sticky desktop:top-(--header-h) desktop:row-span-2 desktop:h-[calc(100dvh-var(--header-h))] desktop:self-start desktop:border-l desktop:border-line mobile:mt-6">
       <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
-        <h2 className="text-[15px] font-semibold">Moments</h2>
-        <span className="text-[12px] tabular-nums text-dim">{events.length > 0 ? events.length : ""}</span>
-        {events.length > 0 && (
-          <div className="relative ml-auto flex h-8 w-44 items-center border border-line bg-raised transition-colors duration-150 focus-within:border-line-strong">
-            <Search aria-hidden className="pointer-events-none absolute left-2.5 size-3.5 text-dim" />
-            <input
-              type="text"
-              value={filter}
-              placeholder="Filter"
-              aria-label="Filter moments"
-              autoComplete="off"
-              spellCheck={false}
-              className="h-full min-w-0 flex-1 bg-transparent pr-2 pl-8 text-[13px] outline-none placeholder:text-dim"
-              onChange={(event) => setFilter(event.target.value)}
-            />
-            {filter && (
-              <button
-                type="button"
-                aria-label="Clear filter"
-                className="grid h-full w-8 shrink-0 cursor-pointer place-items-center text-muted hover:text-ink"
-                onClick={() => setFilter("")}
-              >
-                <X className="size-3 stroke-[1.75]" />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-      <div
-        ref={listRef}
-        className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto mobile:max-h-[60dvh] mobile:overflow-y-auto"
-      >
-        {events.length === 0 && (
-          <p className="px-5 py-6 text-[14px]/[1.5] text-dim">Nobody has timestamped this episode yet.</p>
-        )}
-        {events.length > 0 && rows.length === 0 && (
-          <p className="px-5 py-6 text-[14px]/[1.5] text-dim">No moments in this episode mention “{filter}”.</p>
-        )}
-        {rows.map(({ event, index }) => {
-          const active = index === activeIndex;
+        <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
+          <h2 className="text-[15px] font-semibold">Moments</h2>
+          <span className="text-[12px] tabular-nums text-dim">{events.length > 0 ? events.length : ""}</span>
+          {events.length > 0 && (
+            <div className="relative ml-auto flex h-8 w-44 items-center border border-line bg-raised transition-colors duration-150 focus-within:border-line-strong">
+              <Search aria-hidden className="pointer-events-none absolute left-2.5 size-3.5 text-dim" />
+              <input
+                type="text"
+                value={filter}
+                placeholder="Filter"
+                aria-label="Filter moments"
+                autoComplete="off"
+                spellCheck={false}
+                className="h-full min-w-0 flex-1 bg-transparent pr-2 pl-8 text-[13px] outline-none placeholder:text-dim"
+                onChange={(event) => setFilter(event.target.value)}
+              />
+              {filter && (
+                <button
+                  type="button"
+                  aria-label="Clear filter"
+                  className="grid h-full w-8 shrink-0 cursor-pointer place-items-center text-muted hover:text-ink"
+                  onClick={() => setFilter("")}
+                >
+                  <X className="size-3 stroke-[1.75]" />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <div
+          ref={listRef}
+          className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto mobile:max-h-[60dvh] mobile:overflow-y-auto"
+        >
+          {events.length === 0 && (
+            <p className="px-5 py-6 text-[14px]/[1.5] text-dim">Nobody has timestamped this episode yet.</p>
+          )}
+          {events.length > 0 && rows.length === 0 && (
+            <p className="px-5 py-6 text-[14px]/[1.5] text-dim">No moments in this episode mention “{filter}”.</p>
+          )}
+          {rows.map(({ event, index }) => {
+            const active = index === activeIndex;
 
-          return (
-            <MomentRow
-              key={event.timestamp}
-              event={event}
-              index={index}
-              active={active}
-              remaining={active ? Math.max(0, event.timestamp + event.lengthSeconds - position) : undefined}
-              terms={terms}
-              onSeek={player.seek}
-            />
-          );
-        })}
-      </div>
+            return (
+              <MomentRow
+                key={event.timestamp}
+                event={event}
+                index={index}
+                active={active}
+                remaining={active ? Math.max(0, event.timestamp + event.lengthSeconds - position) : undefined}
+                terms={terms}
+                onSeek={player.seek}
+              />
+            );
+          })}
+        </div>
       </div>
     </aside>
   );

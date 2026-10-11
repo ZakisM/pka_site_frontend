@@ -20,21 +20,21 @@ export const WatchSkeleton = () => (
     </main>
     <aside className="flex flex-col desktop:sticky desktop:top-(--header-h) desktop:h-[calc(100dvh-var(--header-h))] desktop:border-l desktop:border-line mobile:mt-6">
       <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
-        <h2 className="text-[15px] font-semibold">Moments</h2>
-        <Skeleton className="ml-auto h-8 w-44" soft />
-      </div>
-      <div className="min-h-0 flex-1 overflow-hidden border-t border-line py-2">
-        {RAIL_ROWS.map((width, index) => (
-          <div key={width} className="grid grid-cols-[56px_1fr] gap-3 px-5 py-2.5 mobile:px-4">
-            <Skeleton className="mt-px h-3 w-10" delay={index * 0.08} />
-            <span className="flex flex-col gap-1.5">
-              <Skeleton className="h-3.5" style={{ width }} delay={index * 0.08} />
-              <Skeleton className="h-3.5 w-1/2" soft delay={index * 0.08} />
-            </span>
-          </div>
-        ))}
-      </div>
+        <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
+          <h2 className="text-[15px] font-semibold">Moments</h2>
+          <Skeleton className="ml-auto h-8 w-44" soft />
+        </div>
+        <div className="min-h-0 flex-1 overflow-hidden border-t border-line py-2">
+          {RAIL_ROWS.map((width, index) => (
+            <div key={width} className="grid grid-cols-[56px_1fr] gap-3 px-5 py-2.5 mobile:px-4">
+              <Skeleton className="mt-px h-3 w-10" delay={index * 0.08} />
+              <span className="flex flex-col gap-1.5">
+                <Skeleton className="h-3.5" style={{ width }} delay={index * 0.08} />
+                <Skeleton className="h-3.5 w-1/2" soft delay={index * 0.08} />
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </aside>
   </div>

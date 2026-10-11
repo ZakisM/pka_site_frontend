@@ -3,7 +3,7 @@ name: Build and Push images
 on:
   push:
     paths-ignore:
-      - 'README.md'
+      - "README.md"
     branches: [master]
 
 jobs:

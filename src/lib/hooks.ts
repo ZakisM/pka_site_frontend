@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 // Trails a fast-changing value so effects downstream fire once it settles.
-export const useDebounced = <T,>(value: T, delayMs: number) => {
+export const useDebounced = <T>(value: T, delayMs: number) => {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
