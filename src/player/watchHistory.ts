@@ -36,7 +36,7 @@ export const savePosition = (videoId: string, seconds: number) => {
     return;
   }
 
-  positions.set((previous) => new Map(previous).set(videoId, seconds));
+  positions.update((previous) => new Map(previous).set(videoId, seconds));
   writeJson(local, videoId, seconds);
 };
 
@@ -72,13 +72,13 @@ globalThis.addEventListener("storage", ({ storageArea, key, newValue }) => {
     const value = Number(newValue);
 
     if (newValue !== null && Number.isFinite(value) && value >= 0) {
-      positions.set((previous) => new Map(previous).set(key, value));
+      positions.update((previous) => new Map(previous).set(key, value));
     }
   }
 });
 
 export const markRecent = (episodeNumber: number) => {
-  recentEpisodes.set((recent) =>
+  recentEpisodes.update((recent) =>
     recent[0] === episodeNumber
       ? recent
       : [episodeNumber, ...recent.filter((number) => number !== episodeNumber)].slice(0, RECENT_LIMIT),

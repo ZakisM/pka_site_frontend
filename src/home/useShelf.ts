@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { smoothScroll } from "@/lib/motion";
 
-// The archive grid's own measurements (`gridStyles`: columns of at least
+// The archive grid's own measurements (HomeScreen's `gridStyles`: columns of at least
 // 260px, 20px apart), so shelf cards line up with the columns below them.
 const MIN_CARD = 260;
 const GAP = 20;
@@ -40,6 +40,9 @@ export const useShelf = (itemCount: number) => {
       observer.disconnect();
       row.removeEventListener("scroll", update);
     };
+    // `itemCount` is a trigger: new cards change the row's scroll edges without
+    // Resizing it, so nothing else would re-measure.
+    // eslint-disable-next-line react/exhaustive-effect-dependencies
   }, [row, itemCount]);
 
   const page = (direction: 1 | -1) => {

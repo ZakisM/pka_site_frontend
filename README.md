@@ -19,7 +19,7 @@ reverse proxy as [the backend](https://github.com/ZakisM/pka_site_backend/):
 | `bun run dev`       | Vite dev server on port 5678             |
 | `bun run serve`     | Production build, previewed on port 5678 |
 | `bun run typecheck` | TypeScript, app and tooling configs      |
-| `bun run lint`      | oxlint                                   |
+| `bun run lint`      | oxlint, with type-aware rules            |
 | `bun run format`    | oxfmt; CI runs `bun run format:check`    |
 | `bun run build`     | Production bundle in `dist/`             |
 

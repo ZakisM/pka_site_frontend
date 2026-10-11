@@ -28,13 +28,13 @@ export const useCloseSearch = () => {
   const router = useRouter();
 
   return useCallback(() => {
-    if (router.state.location.state.searchOverlay) {
+    if (router.state.location.state.searchOverlay === true) {
       router.history.back();
 
       return;
     }
 
-    router.navigate({
+    void router.navigate({
       to: ".",
       search: (previous) => ({ ...previous, q: undefined }),
       replace: true,

@@ -1,10 +1,11 @@
-import { Highlight, searchTerms } from "@/ui/Highlight";
 import { Search, X } from "lucide-react";
 import { formatDuration, formatTimestamp } from "@/lib/time";
 import { isSpent, spend } from "@/lib/intents";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Highlight } from "@/ui/Highlight";
 import type { PkaEvent } from "@/lib/api";
 import { player } from "@/player/controller";
+import { searchTerms } from "@/lib/searchTerms";
 import { smoothScroll } from "@/lib/motion";
 import { useLocation } from "@tanstack/react-router";
 
@@ -103,7 +104,9 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
       return;
     }
 
-    const observer = new ResizeObserver(() => scrollToRow(list, activeRef.current, "instant"));
+    const observer = new ResizeObserver(() => {
+      scrollToRow(list, activeRef.current, "instant");
+    });
 
     observer.observe(list);
 
@@ -129,10 +132,16 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const intent = useLocation({ select: (location) => location.state.filterMoments });
   const wanted = intent?.episodeNumber === episodeNumber && !isSpent(intent.id) ? intent : undefined;
   const [filter, setFilter] = useState(() => wanted?.filter ?? "");
+  const [appliedId, setAppliedId] = useState(wanted?.id);
 
-  useLayoutEffect(() => {
-    if (wanted && spend(wanted.id)) {
-      setFilter(wanted.filter);
+  if (wanted && wanted.id !== appliedId) {
+    setAppliedId(wanted.id);
+    setFilter(wanted.filter);
+  }
+
+  useEffect(() => {
+    if (wanted) {
+      spend(wanted.id);
     }
   }, [wanted]);
 

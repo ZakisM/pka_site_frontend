@@ -13,8 +13,8 @@ export const displayTitle = (raw: string) => {
   let title = collapsed.replace(LEADING_NUMBER, "");
   const { before, after } = TRAILING_NUMBER.exec(title)?.groups ?? {};
 
-  if (before) {
-    title = `${before.replace(/[\s:|]+$/u, "")}${after ? ` ${after}` : ""}`;
+  if (before !== undefined) {
+    title = `${before.replace(/[\s:|]+$/u, "")}${after === undefined || after === "" ? "" : ` ${after}`}`;
   }
 
   // Untitled early episodes are nothing but the number; keep them as written.

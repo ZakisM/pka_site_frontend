@@ -40,7 +40,7 @@ export const useSentinel = ({ onReach, enabled, generation, scrollRoot }: Sentin
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) {
+        if (entry?.isIntersecting === true) {
           onReach();
         }
       },
@@ -50,6 +50,8 @@ export const useSentinel = ({ onReach, enabled, generation, scrollRoot }: Sentin
     observer.observe(sentinel);
 
     return () => observer.disconnect();
+    // `generation` is a trigger: re-observing makes the observer report again.
+    // eslint-disable-next-line react/exhaustive-effect-dependencies
   }, [onReach, enabled, generation, scrollRoot]);
 
   return sentinelRef;

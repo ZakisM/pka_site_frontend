@@ -31,6 +31,8 @@ export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOp
     if (selected) {
       delete selected.dataset.selected;
     }
+    // `resetKey` is the trigger: new rows start with nothing selected.
+    // eslint-disable-next-line react/exhaustive-effect-dependencies
   }, [containerRef, resetKey]);
 
   useEffect(() => {

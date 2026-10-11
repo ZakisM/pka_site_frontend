@@ -22,7 +22,7 @@ export const ErrorPage = ({ error: thrown }: { error: unknown }) => {
     return (
       <div className="flex min-h-[calc(100dvh-var(--header-h))] flex-col items-start justify-center px-4 desktop:px-[26px]">
         <span aria-hidden className="block h-0.5 w-7 bg-primary" />
-        <h1 className="pt-[18px] text-[23px] font-semibold">That episode isn't in the index</h1>
+        <h1 className="pt-[18px] text-[23px] font-semibold">That episode isn’t in the index</h1>
         <p className="max-w-[520px] pt-3.5 text-[14px]/[1.6] text-muted">
           The link may be mistyped, or point to an episode that has been removed.
         </p>

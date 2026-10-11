@@ -1,10 +1,11 @@
-import { type QueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, getRouteApi, redirect } from "@tanstack/react-router";
 import { episodeKey, episodeQuery } from "@/lib/queries";
 import { fetchEpisodeById, fetchRandomEvent } from "@/lib/api";
+import type { QueryClient } from "@tanstack/react-query";
 import { WatchScreen } from "@/watch/WatchScreen";
 import { loadYouTubeApi } from "@/lib/youtube";
 import { playFrom } from "@/lib/intents";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 const routeApi = getRouteApi("/watch/$episodeId");
 
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/watch/$episodeId")({
 
     // Fetched alongside the episode rather than after it renders: the player
     // Can't start until YouTube's script is in. Once per page; a no-op after.
-    loadYouTubeApi();
+    void loadYouTubeApi();
 
     if (episodeId === "latest" || episodeId === "random") {
       throw redirect({
@@ -59,6 +60,7 @@ export const Route = createFileRoute("/watch/$episodeId")({
       });
     }
 
-    await context.queryClient.ensureQueryData(episodeQuery(episodeId));
+    // Cached data is used as it is; only a missing episode is fetched.
+    await context.queryClient.query({ ...episodeQuery(episodeId), staleTime: "static" });
   },
 });

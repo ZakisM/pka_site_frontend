@@ -1,6 +1,8 @@
-import { type Pending, pendingAt, settle } from "./settle";
-import { PlayerState, type YouTubePlayer, loadYouTubeApi } from "@/lib/youtube";
+import { PlayerState, embedPlayer, loadYouTubeApi } from "@/lib/youtube";
+import { pendingAt, settle } from "./settle";
 import { positionOf, savePosition } from "./watchHistory";
+import type { Pending } from "./settle";
+import type { YouTubePlayer } from "@/lib/youtube";
 import { createStore } from "@/lib/store";
 import { spend } from "@/lib/intents";
 
@@ -56,11 +58,11 @@ export const playerReady = createStore(false);
 
 const now = () => Date.now();
 
-const isPlaying = (state: number) => state === PlayerState.PLAYING || state === PlayerState.BUFFERING;
+const isPlaying = (state: PlayerState) => state === PlayerState.PLAYING || state === PlayerState.BUFFERING;
 
 const publish = (seconds: number) => {
   // Once a second is plenty, for the UI and for the saved position.
-  if (videoId && Math.floor(seconds) !== Math.floor(positionOf(videoId))) {
+  if (videoId !== null && Math.floor(seconds) !== Math.floor(positionOf(videoId))) {
     savePosition(videoId, seconds);
   }
 };
@@ -76,7 +78,7 @@ const switchVideo = (player: YouTubePlayer, id: string, seconds: number) => {
 };
 
 const send = () => {
-  if (!yt || !ready || !videoId) {
+  if (!yt || !ready || videoId === null) {
     unsent = true;
 
     return;
@@ -114,8 +116,17 @@ const aim = (seconds: number, play: boolean) => {
   send();
 };
 
+// The old video still up long after a switch means it was lost: resend it.
+// Once the new one has been seen, another video is the viewer's own pick.
+const retrySwitch = (player: YouTubePlayer, id: string, showing: string) => {
+  if (showing !== "" && sent && !sent.seen && now() - sent.at > SWITCH_RETRY_MS && sent.retries < SWITCH_RETRIES) {
+    sent = { ...sent, at: now(), retries: sent.retries + 1 };
+    switchVideo(player, id, pending?.seconds ?? positionOf(id));
+  }
+};
+
 const poll = () => {
-  if (!yt || !ready || !videoId) {
+  if (!yt || !ready || videoId === null) {
     return;
   }
 
@@ -127,16 +138,11 @@ const poll = () => {
     resumeOnReveal = true;
   }
 
-  const showing = yt.getVideoData()?.video_id;
+  const showing = yt.getVideoData()?.video_id ?? "";
 
-  // Mid-switch the clock is the old video's and means nothing here. The old
-  // Video still up long after a switch means it was lost: resend it. Once the
-  // New one has been seen, another video is the viewer's pick inside YouTube.
+  // Mid-switch the clock is the old video's and means nothing here.
   if (showing !== videoId) {
-    if (showing && sent && !sent.seen && now() - sent.at > SWITCH_RETRY_MS && sent.retries < SWITCH_RETRIES) {
-      sent = { ...sent, at: now(), retries: sent.retries + 1 };
-      switchVideo(yt, videoId, pending?.seconds ?? positionOf(videoId));
-    }
+    retrySwitch(yt, videoId, showing);
 
     return;
   }
@@ -177,40 +183,34 @@ const onReady = () => {
   }
 };
 
-const create = () => {
+const create = async () => {
   const element = host;
 
-  if (!element || !videoId || yt || creatingIn === element) {
+  if (!element || videoId === null || yt || creatingIn === element) {
     return;
   }
 
   creatingIn = element;
+  const api = await loadYouTubeApi();
 
-  loadYouTubeApi().then((YT) => {
-    if (creatingIn !== element || host !== element || !videoId) {
-      return;
-    }
+  // Taken out, or moved to another element, while the script loaded: either
+  // Way destroy() has cleared this.
+  if (creatingIn !== element) {
+    return;
+  }
 
-    creatingIn = null;
-    sent = { videoId, at: now(), retries: 0, seen: false };
-    unsent = false;
-    resumeOnReveal = wantPlay && obscured;
-
-    yt = new YT.Player(element, {
-      // Whatever is wanted by now, not when creation began: a navigation can
-      // Land while the API script loads.
-      videoId,
-      playerVars: {
-        autoplay: wantPlay && !obscured ? 1 : 0,
-        // YouTube's own controls are the only in-frame chrome: nothing of
-        // Ours may sit over the iframe, per the embed terms.
-        controls: 1,
-        playsinline: 1,
-        rel: 0,
-        start: Math.floor(pending?.seconds ?? positionOf(videoId)),
-      },
-      events: { onReady, onStateChange: poll },
-    });
+  creatingIn = null;
+  sent = { videoId, at: now(), retries: 0, seen: false };
+  unsent = false;
+  resumeOnReveal = wantPlay && obscured;
+  // Whatever is wanted by now, not when creation began: a navigation can land
+  // While the API script loads.
+  yt = embedPlayer(api, element, {
+    videoId,
+    startSeconds: pending?.seconds ?? positionOf(videoId),
+    autoplay: wantPlay && !obscured,
+    onReady,
+    onStateChange: poll,
   });
 };
 
@@ -247,7 +247,7 @@ export const player = {
       videoId = id;
       // Switching videos inside a running player keeps it playing.
       aim(fresh ? start.seconds : positionOf(id), fresh ? start.play : yt !== null);
-      create();
+      void create();
     } else if (fresh) {
       aim(start.seconds, start.play);
     }
@@ -255,7 +255,7 @@ export const player = {
 
   // A moment in the video on screen: the moments rail.
   seek: (seconds: number) => {
-    if (videoId) {
+    if (videoId !== null) {
       aim(seconds, true);
     }
   },
@@ -291,7 +291,7 @@ export const player = {
       host = element;
     }
 
-    create();
+    void create();
 
     return () => {
       timers.reset = setTimeout(reset, 0);

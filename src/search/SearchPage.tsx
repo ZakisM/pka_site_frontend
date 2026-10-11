@@ -1,16 +1,17 @@
-import { type HistoryState, useNavigate } from "@tanstack/react-router";
 import { ResultGroup, ResultGroupSkeleton } from "./ResultGroup";
 import { filterMoments, playFrom } from "@/lib/intents";
 import { searchSort, useCloseSearch } from "./searchState";
 import { useCallback, useEffect, useRef } from "react";
+import type { HistoryState } from "@tanstack/react-router";
 import type { SearchSort } from "@/lib/api";
 import { Ticks } from "@/ui/Loaders";
 import { X } from "lucide-react";
 import { pluralise } from "@/lib/time";
 import { searchQuery } from "@/lib/queries";
-import { searchTerms } from "@/ui/Highlight";
+import { searchTerms } from "@/lib/searchTerms";
 import { useHitKeys } from "./useHitKeys";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useSentinel } from "@/lib/hooks";
 import { useStore } from "@/lib/store";
 
@@ -62,7 +63,7 @@ const ResultsToolbar = ({ totals, updating, sort, onSort, onClose }: ResultsTool
     </p>
     <div className="flex items-center gap-4">
       <span className="text-[12px] text-dim mobile:hidden">↑ ↓ to move · Enter to play</span>
-      <div role="group" aria-label="Sort results" className="flex border border-line">
+      <fieldset aria-label="Sort results" className="flex border border-line">
         {SORTS.map((option) => (
           <button
             key={option.value}
@@ -74,7 +75,7 @@ const ResultsToolbar = ({ totals, updating, sort, onSort, onClose }: ResultsTool
             {option.label}
           </button>
         ))}
-      </div>
+      </fieldset>
       <CloseButton onClose={onClose} />
     </div>
   </div>
@@ -96,7 +97,7 @@ const searchFailed = ({ isError, isFetchNextPageError, hasData, isPlaceholderDat
 const SearchUnavailable = ({ retrying, onRetry }: { retrying: boolean; onRetry: () => void }) => (
   <div className={pageStyles}>
     <p className="py-10 text-[14px]/[1.6] text-muted">
-      Search isn't responding right now.
+      Search isn’t responding right now.
       <br />
       <button
         type="button"
@@ -112,7 +113,7 @@ const SearchUnavailable = ({ retrying, onRetry }: { retrying: boolean; onRetry: 
 
 const LoadMoreFailed = ({ onRetry }: { onRetry: () => void }) => (
   <p className="py-6 text-[13px] text-muted">
-    Couldn't load more results.{" "}
+    Couldn’t load more results.{" "}
     <button
       type="button"
       className="cursor-pointer text-secondary underline decoration-line-strong underline-offset-3 hover:text-ink"
@@ -147,7 +148,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   const totals = data?.pages[0];
   const sentinelRef = useSentinel({
     onReach: useCallback(() => {
-      fetchNextPage();
+      void fetchNextPage();
     }, [fetchNextPage]),
     enabled: hasNextPage && !isFetchingNextPage && !isPlaceholderData,
     generation: data?.pages.length ?? 0,
@@ -186,7 +187,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
         document.activeElement.blur();
       }
 
-      navigate({ to: "/watch/$episodeId", params: { episodeId: String(episodeNumber) }, search: {}, state });
+      void navigate({ to: "/watch/$episodeId", params: { episodeId: String(episodeNumber) }, search: {}, state });
     },
     [navigate],
   );
@@ -204,7 +205,14 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   // Shown in place, never thrown: an error boundary above this would take the
   // Header and the page underneath (and its player) down with it.
   if (searchFailed({ isError, isFetchNextPageError, hasData: data !== undefined, isPlaceholderData })) {
-    return <SearchUnavailable retrying={isFetching} onRetry={() => refetch()} />;
+    return (
+      <SearchUnavailable
+        retrying={isFetching}
+        onRetry={() => {
+          void refetch();
+        }}
+      />
+    );
   }
 
   return (
@@ -242,7 +250,13 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
             {isFetchingNextPage && <ResultGroupSkeleton />}
           </div>
           {hasNextPage && !isFetchNextPageError && <div ref={sentinelRef} aria-hidden className="h-px" />}
-          {isFetchNextPageError && <LoadMoreFailed onRetry={() => fetchNextPage()} />}
+          {isFetchNextPageError && (
+            <LoadMoreFailed
+              onRetry={() => {
+                void fetchNextPage();
+              }}
+            />
+          )}
         </>
       )}
     </div>
