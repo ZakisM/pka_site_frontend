@@ -43,7 +43,7 @@ export const AppHeader = () => {
       >
         <Wordmark className="h-7 text-[19px] mobile:h-[25px] mobile:text-[17px]" />
       </Link>
-      <div className="flex min-w-0 items-center gap-3 mobile:hidden mobile:flex-1 mobile:group-data-searching/header:flex">
+      <div className="flex min-w-0 items-center gap-3 mobile:hidden mobile:flex-1 mobile:group-data-searching/header:flex mobile:group-data-searching/header:animate-fade-in">
         <SearchField inputRef={inputRef} onEscape={() => setUnfolded(false)} />
         {/* Phones close the results here; desktops beside the results' sort. */}
         <button

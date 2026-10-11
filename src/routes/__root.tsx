@@ -12,6 +12,7 @@ import { ScanBar } from "@/ui/Loaders";
 import { SearchPage } from "@/search/SearchPage";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { WatchSkeleton } from "@/watch/WatchSkeleton";
+import { fadeIn } from "@/lib/motion";
 import { playerObscuredAtom } from "@/player/playerState";
 import { resultsScroll } from "@/search/searchState";
 import { useSetAtom } from "jotai";
@@ -40,6 +41,7 @@ const RootComponent = () => {
   const onWatch = useRouterState({
     select: (state) => state.location.pathname.startsWith("/watch"),
   });
+  const routeId = useRouterState({ select: (state) => state.matches.at(-1)?.routeId });
 
   // The watch skeleton is for the very first paint only. A route-level
   // PendingComponent would replace the screen on every navigation and take
@@ -56,6 +58,17 @@ const RootComponent = () => {
   useSearchOverlay(Boolean(query));
 
   const resultsRef = useRef<HTMLDivElement | null>(null);
+  const pageRef = useRef<HTMLDivElement | null>(null);
+  const shownRouteRef = useRef(routeId);
+
+  // Home and watch fade into each other. Not one episode into the next: that
+  // Is the same page, and the player stays put while its video swaps.
+  useLayoutEffect(() => {
+    if (shownRouteRef.current !== routeId) {
+      shownRouteRef.current = routeId;
+      fadeIn(pageRef.current);
+    }
+  }, [routeId]);
 
   // Reopening a query's results puts them back where they were left. (Back
   // And Forward are handled by the router's restoration; this covers opening
@@ -74,7 +87,7 @@ const RootComponent = () => {
     <>
       <AppHeader />
       <div className="sticky top-(--header-h) z-10 h-0">{pending && <ScanBar />}</div>
-      <div inert={Boolean(query)}>
+      <div ref={pageRef} inert={Boolean(query)}>
         {pending && !loadedOnce && onWatch ? <WatchSkeleton /> : <Outlet />}
       </div>
       {query && (
@@ -85,7 +98,7 @@ const RootComponent = () => {
           ref={resultsRef}
           data-scroll-restoration-id="search-results"
           onScroll={(event) => resultsScroll.set(query, event.currentTarget.scrollTop)}
-          className="fixed inset-x-0 top-(--header-h) bottom-0 z-10 overflow-y-auto overscroll-contain bg-bg"
+          className="fixed inset-x-0 top-(--header-h) bottom-0 z-10 animate-fade-in overflow-y-auto overscroll-contain bg-bg"
         >
           <SearchPage query={query} scrollRoot={resultsRef} />
         </div>

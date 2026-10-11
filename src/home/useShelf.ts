@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { smoothScroll } from "@/lib/motion";
 
 // The archive grid's own measurements (`gridStyles`: columns of at least
 // 260px, 20px apart), so shelf cards line up with the columns below them.
@@ -42,7 +43,7 @@ export const useShelf = (itemCount: number) => {
   }, [row, itemCount]);
 
   const page = (direction: 1 | -1) => {
-    row?.scrollBy({ left: direction * (row.clientWidth + GAP), behavior: "smooth" });
+    row?.scrollBy({ left: direction * (row.clientWidth + GAP), behavior: smoothScroll() });
   };
 
   return { rowRef: setRow, edges, page };
