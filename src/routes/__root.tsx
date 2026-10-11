@@ -13,6 +13,7 @@ import { SearchPage } from "@/search/SearchPage";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { WatchSkeleton } from "@/watch/WatchSkeleton";
 import { playerObscuredAtom } from "@/player/playerState";
+import { resultsScroll } from "@/search/searchState";
 import { useSetAtom } from "jotai";
 
 /**
@@ -30,9 +31,6 @@ const useSearchOverlay = (searching: boolean) => {
     document.documentElement.classList.toggle("search-open", searching);
   }, [searching, setPlayerObscured]);
 };
-
-// Where each query's results were last scrolled to, for this session.
-const resultsScroll = new Map<string, number>();
 
 const RootComponent = () => {
   const query = useSearch({ strict: false, select: (search) => search.q });

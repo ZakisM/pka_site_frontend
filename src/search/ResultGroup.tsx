@@ -7,9 +7,10 @@ import { displayTitle } from "@/lib/titles";
 import { useEpisodeProgress } from "@/player/useEpisodeProgress";
 
 // On phones the moments drop below the thumbnail and title so they get the
-// Full width; beside a 112px thumbnail they wrapped a word per line.
+// Full width; beside a 112px thumbnail they wrapped a word per line. Every
+// Group draws the hairline above it: on wide screens they sit two abreast.
 const groupGrid =
-  "grid grid-cols-[208px_1fr] gap-x-6 gap-y-2 border-t border-line py-6 first:border-t-0 first:pt-0 mobile:grid-cols-[112px_1fr] mobile:gap-x-3.5 mobile:gap-y-3";
+  "grid grid-cols-[208px_1fr] content-start gap-x-6 gap-y-2 border-t border-line py-6 mobile:grid-cols-[112px_1fr] mobile:gap-x-3.5 mobile:gap-y-3";
 
 interface ResultGroupProps {
   group: SearchGroup;

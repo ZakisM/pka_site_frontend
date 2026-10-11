@@ -4,6 +4,7 @@ import { episodeKey, episodeQuery } from "@/lib/queries";
 import { fetchEpisodeById, fetchRandomEvent } from "@/lib/api";
 import { WatchScreen } from "@/watch/WatchScreen";
 import { getDefaultStore } from "jotai";
+import { loadYouTubeApi } from "@/lib/youtube";
 import { startIntentAtom } from "@/player/playerState";
 
 const routeApi = getRouteApi("/watch/$episodeId");
@@ -39,6 +40,10 @@ export const Route = createFileRoute("/watch/$episodeId")({
     search,
   loader: async ({ context, params }) => {
     const { episodeId } = params;
+
+    // Fetched alongside the episode rather than after it renders: the player
+    // Can't start until YouTube's script is in. Once per page; a no-op after.
+    loadYouTubeApi();
 
     if (episodeId === "latest" || episodeId === "random") {
       throw redirect({

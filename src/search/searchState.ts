@@ -13,6 +13,11 @@ declare module "@tanstack/react-router" {
 // Kept for the session, so coming back to results keeps the chosen order.
 export const searchSortAtom = atom<SearchSort>("newest");
 
+// Where each query's results were last scrolled to, for this session: opening
+// The kept query again from the box puts them back there. A query typed
+// Afresh forgets its entry and starts at the top.
+export const resultsScroll = new Map<string, number>();
+
 /**
  * Closes the results. When they were opened over a page in this session, that
  * Is a step back in history, so the page underneath returns with its scroll

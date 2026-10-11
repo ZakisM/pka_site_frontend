@@ -4,6 +4,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import type { SearchSort } from "@/lib/api";
 import { Ticks } from "@/ui/Loaders";
+import { X } from "lucide-react";
 import { pluralise } from "@/lib/time";
 import { railFilterIntentAtom } from "@/lib/intents";
 import { searchQuery } from "@/lib/queries";
@@ -21,15 +22,34 @@ const SORTS: { value: SearchSort; label: string }[] = [
   { value: "matches", label: "Most matches" },
 ];
 
+// Same page edges as the header; wide screens get two columns of results.
+const pageStyles = "px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14";
+const groupsStyles =
+  "grid grid-cols-[repeat(auto-fill,minmax(min(100%,640px),1fr))] gap-x-12 transition-opacity duration-150";
+
+// Phones close from the header's Cancel; desktops get this beside the sort.
+const CloseButton = ({ onClose }: { onClose: () => void }) => (
+  <button
+    type="button"
+    title="Close search (Esc)"
+    className="flex cursor-pointer items-center gap-1.5 border border-line px-2.5 py-1.5 text-[12px] text-muted transition-colors duration-150 hover:border-line-strong hover:text-ink mobile:hidden"
+    onClick={onClose}
+  >
+    <X aria-hidden className="size-3.5 stroke-[1.75]" />
+    Close
+  </button>
+);
+
 interface ResultsToolbarProps {
   totals: { totalMoments: number; totalEpisodes: number } | undefined;
   updating: boolean;
   sort: SearchSort;
   onSort: (sort: SearchSort) => void;
+  onClose: () => void;
 }
 
-const ResultsToolbar = ({ totals, updating, sort, onSort }: ResultsToolbarProps) => (
-  <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
+const ResultsToolbar = ({ totals, updating, sort, onSort, onClose }: ResultsToolbarProps) => (
+  <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
     <p className="flex items-center gap-3 text-[14px] tabular-nums text-muted">
       {totals ? (
         <span>
@@ -42,7 +62,7 @@ const ResultsToolbar = ({ totals, updating, sort, onSort }: ResultsToolbarProps)
       {updating && <Ticks size="sm" tone="muted" label="Updating results" />}
     </p>
     <div className="flex items-center gap-4">
-      <span className="text-[12px] text-dim mobile:hidden">↑ ↓ to move · Enter to play · Esc to go back</span>
+      <span className="text-[12px] text-dim mobile:hidden">↑ ↓ to move · Enter to play</span>
       <div role="group" aria-label="Sort results" className="flex border border-line">
         {SORTS.map((option) => (
           <button
@@ -56,6 +76,7 @@ const ResultsToolbar = ({ totals, updating, sort, onSort }: ResultsToolbarProps)
           </button>
         ))}
       </div>
+      <CloseButton onClose={onClose} />
     </div>
   </div>
 );
@@ -74,7 +95,7 @@ const searchFailed = ({ isError, isFetchNextPageError, hasData, isPlaceholderDat
   isError && !isFetchNextPageError && (!hasData || isPlaceholderData);
 
 const SearchUnavailable = ({ retrying, onRetry }: { retrying: boolean; onRetry: () => void }) => (
-  <div className="mx-auto max-w-[1000px] px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6">
+  <div className={pageStyles}>
     <p className="py-10 text-[14px]/[1.6] text-muted">
       Search isn't responding right now.
       <br />
@@ -196,13 +217,16 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   }
 
   return (
-    <div ref={containerRef} className="mx-auto max-w-[1000px] px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14">
+    <div ref={containerRef} className={pageStyles}>
       {groups && groups.length === 0 && !isPlaceholderData ? (
-        <p className="py-10 text-[14px]/[1.6] text-muted">
-          Nothing matches “{query}”.
-          <br />
-          Try fewer words, or check the spelling of a name.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <p className="py-10 text-[14px]/[1.6] text-muted">
+            Nothing matches “{query}”.
+            <br />
+            Try fewer words, or check the spelling of a name.
+          </p>
+          <CloseButton onClose={closeSearch} />
+        </div>
       ) : (
         <>
           <ResultsToolbar
@@ -210,8 +234,9 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
             updating={isPlaceholderData || !totals}
             sort={sort}
             onSort={setSort}
+            onClose={closeSearch}
           />
-          <div className={isPlaceholderData ? "opacity-60 transition-opacity duration-150" : "transition-opacity duration-150"}>
+          <div className={isPlaceholderData ? `${groupsStyles} opacity-60` : groupsStyles}>
             {groups
               ? groups.map((group) => (
                   <ResultGroup
@@ -223,9 +248,9 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
                   />
                 ))
               : SKELETON_GROUPS.map((key) => <ResultGroupSkeleton key={key} />)}
+            {isFetchingNextPage && <ResultGroupSkeleton />}
           </div>
           {hasNextPage && !isFetchNextPageError && <div ref={sentinelRef} aria-hidden className="h-px" />}
-          {isFetchingNextPage && <ResultGroupSkeleton />}
           {isFetchNextPageError && <LoadMoreFailed onRetry={() => fetchNextPage()} />}
         </>
       )}
