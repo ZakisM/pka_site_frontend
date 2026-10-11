@@ -89,6 +89,16 @@
     outline: none;
   }
 
+  /* The page under the search results keeps its position but cannot scroll;
+     The gutter stays reserved so nothing shifts as the scrollbar goes. */
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  html.search-open {
+    overflow: hidden;
+  }
+
   mark {
     background: var(--color-primary-soft);
     color: var(--color-ink);

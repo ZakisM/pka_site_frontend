@@ -8,7 +8,7 @@ const RAIL_ROWS = ["78%", "94%", "62%", "88%", "71%", "96%", "58%", "83%", "74%"
  * Bar and rail all hold their real positions, so nothing moves when it lands.
  */
 export const WatchSkeleton = () => (
-  <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px]">
+  <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] desktop:grid-rows-[auto_1fr]">
     <main className="min-w-0 px-8 pt-6 mobile:p-0">
       <div className="watch-width mx-auto">
         <div className="aspect-video w-full bg-black mobile:min-h-[200px]" />

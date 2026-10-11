@@ -1,5 +1,7 @@
 import { ResultGroup, ResultGroupSkeleton } from "./ResultGroup";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { searchSortAtom, useCloseSearch } from "./searchState";
+import { useAtom, useSetAtom } from "jotai";
+import { useCallback, useEffect, useRef } from "react";
 import type { SearchSort } from "@/lib/api";
 import { Ticks } from "@/ui/Loaders";
 import { pluralise } from "@/lib/time";
@@ -10,7 +12,6 @@ import { startIntentAtom } from "@/player/playerState";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useSentinel } from "@/lib/hooks";
-import { useSetAtom } from "jotai";
 
 const SKELETON_GROUPS = [0, 1, 2, 3];
 
@@ -34,7 +35,10 @@ const useHitKeys = (containerRef: React.RefObject<HTMLDivElement | null>, resetK
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      const fromSearch = event.target instanceof HTMLElement && event.target.dataset.searchInput !== undefined;
+      const fromSearch =
+        !event.defaultPrevented &&
+        event.target instanceof HTMLElement &&
+        event.target.dataset.searchInput !== undefined;
       const hits = [...(containerRef.current?.querySelectorAll<HTMLElement>("[data-hit]") ?? [])];
 
       if (!fromSearch || hits.length === 0) {
@@ -72,26 +76,48 @@ const useHitKeys = (containerRef: React.RefObject<HTMLDivElement | null>, resetK
 };
 
 /** Results for `?q=`, drawn over whatever page the search started from. */
-export const SearchPage = ({ query }: { query: string }) => {
+interface SearchPageProps {
+  query: string;
+  scrollRoot: React.RefObject<HTMLElement | null>;
+}
+
+export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   const navigate = useNavigate();
   const setStartIntent = useSetAtom(startIntentAtom);
   const setFilterIntent = useSetAtom(railFilterIntentAtom);
-  const [sort, setSort] = useState<SearchSort>("newest");
+  const [sort, setSort] = useAtom(searchSortAtom);
   const { data, error, isPlaceholderData, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery(searchQuery(query, sort));
   const groups = data?.pages.flatMap((page) => page.groups);
   const totals = data?.pages[0];
-  const sentinelRef = useSentinel(
-    useCallback(() => {
+  const sentinelRef = useSentinel({
+    onReach: useCallback(() => {
       fetchNextPage();
     }, [fetchNextPage]),
-    hasNextPage && !isFetchingNextPage && !isPlaceholderData,
-    data?.pages.length ?? 0,
-  );
+    enabled: hasNextPage && !isFetchingNextPage && !isPlaceholderData,
+    generation: data?.pages.length ?? 0,
+    scrollRoot,
+  });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const terms = searchTerms(query);
 
   useHitKeys(containerRef, `${query}|${sort}`);
+
+  // Esc closes the results from anywhere on them, not only from the search
+  // Box (which handles its own Esc, and marks it handled).
+  const closeSearch = useCloseSearch();
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        closeSearch();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [closeSearch]);
 
   useEffect(() => {
     document.title = `${query} · PKA Index`;

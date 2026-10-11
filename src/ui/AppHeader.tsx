@@ -1,11 +1,12 @@
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { Search, Shuffle } from "lucide-react";
 import { useRef, useState } from "react";
 import { SearchField } from "@/search/SearchField";
 import { Wordmark } from "./Wordmark";
+import { useCloseSearch } from "@/search/searchState";
 
 const buttonStyles =
-  "flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 border border-line px-3.5 text-[14px] text-secondary transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink mobile:w-10 mobile:px-0";
+  "flex size-10 shrink-0 cursor-pointer items-center justify-center border border-line text-secondary transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink";
 
 /**
  * Wordmark, search, random moment — the search box centred on the page, with
@@ -13,7 +14,7 @@ const buttonStyles =
  * The full wordmark keeps its room, unfolding while typing or showing a query.
  */
 export const AppHeader = () => {
-  const navigate = useNavigate();
+  const closeSearch = useCloseSearch();
   const query = useSearch({ strict: false, select: (search) => search.q });
   const [unfolded, setUnfolded] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -43,7 +44,10 @@ export const AppHeader = () => {
           className="hidden h-10 shrink-0 cursor-pointer items-center px-1 text-[14px] text-secondary mobile:flex"
           onClick={() => {
             setUnfolded(false);
-            navigate({ to: ".", search: (previous) => ({ ...previous, q: undefined }), replace: true });
+
+            if (query) {
+              closeSearch();
+            }
           }}
         >
           Cancel
@@ -61,7 +65,6 @@ export const AppHeader = () => {
           className={buttonStyles}
         >
           <Shuffle className="size-4 stroke-[1.75]" />
-          <span className="mobile:hidden">Random moment</span>
         </Link>
       </div>
     </header>

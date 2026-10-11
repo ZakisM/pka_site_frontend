@@ -4,6 +4,7 @@ import { MomentsRail } from "./MomentsRail";
 import { MoreEpisodes } from "./MoreEpisodes";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { Player } from "@/player/Player";
+import { RelatedMoments } from "./RelatedMoments";
 import { displayTitle } from "@/lib/titles";
 import { formatEpisodeNumber } from "@/lib/time";
 import { recentEpisodesAtom } from "@/player/playerState";
@@ -40,7 +41,7 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   }, [episodeNumber, title, setRecent]);
 
   return (
-    <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px]">
+    <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] desktop:grid-rows-[auto_1fr]">
       <main className="min-w-0 px-8 pt-6 mobile:p-0">
         <div className="watch-width @container mx-auto">
           <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
@@ -56,10 +57,19 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
         events={episode.events}
         episodeNumber={episodeNumber}
         activeIndex={activeIndex}
+        position={position}
       />
       <div className="px-8 pt-10 pb-14 desktop:col-start-1 desktop:row-start-2 mobile:px-0 mobile:pt-8">
         <div className="watch-width mx-auto">
-          <MoreEpisodes episodeNumber={episodeNumber} />
+          {episode.events[activeIndex] ? (
+            <RelatedMoments
+              episodeNumber={episodeNumber}
+              moment={episode.events[activeIndex]}
+              fallback={<MoreEpisodes episodeNumber={episodeNumber} />}
+            />
+          ) : (
+            <MoreEpisodes episodeNumber={episodeNumber} />
+          )}
         </div>
       </div>
     </div>

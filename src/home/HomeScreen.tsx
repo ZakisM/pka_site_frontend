@@ -1,18 +1,22 @@
 import { EpisodeCard, EpisodeCardSkeleton, gridStyles } from "@/ui/EpisodeCard";
+import { atom, useAtom } from "jotai";
 import { pluralise, yearOf } from "@/lib/time";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { ContinueWatching } from "./ContinueWatching";
 import { allEpisodesQuery } from "@/lib/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useRevealMore } from "@/lib/hooks";
 
 const PAGE = 24;
+
+// Kept for the session, so Back from an episode returns to the same year.
+const homeYearAtom = atom<number | null>(null);
 const SKELETON_CARDS = Array.from({ length: 8 }, (_, index) => index);
 
 /** Continue watching, then the whole archive newest first, by year if picked. */
 export const HomeScreen = () => {
   const { data: episodes, error } = useQuery(allEpisodesQuery);
-  const [year, setYear] = useState<number | null>(null);
+  const [year, setYear] = useAtom(homeYearAtom);
 
   const years = useMemo(
     () => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))],
@@ -22,7 +26,7 @@ export const HomeScreen = () => {
     () => (year ? (episodes ?? []).filter((episode) => yearOf(episode.uploadDate) === year) : (episodes ?? [])),
     [episodes, year],
   );
-  const { count, hasMore, sentinelRef } = useRevealMore(shown.length, PAGE, year);
+  const { count, hasMore, sentinelRef } = useRevealMore(shown.length, PAGE, `home:${year ?? "all"}`);
 
   useEffect(() => {
     document.title = "PKA Index";

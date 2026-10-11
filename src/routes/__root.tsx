@@ -4,7 +4,7 @@ import {
   useRouterState,
   useSearch,
 } from "@tanstack/react-router";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/ui/AppHeader";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -16,33 +16,18 @@ import { playerObscuredAtom } from "@/player/playerState";
 import { useSetAtom } from "jotai";
 
 /**
- * While a query is showing, the page it was typed over stays mounted but
- * Hidden: unmounting the watch page would destroy the player's iframe, and
- * Home would lose its place. Closing the results restores the scroll position.
+ * While a query is showing, the page it was typed over stays mounted, still
+ * And untouched, under the results: unmounting the watch page would destroy
+ * The player's iframe, and the page keeps its scroll position for when the
+ * Results close. The page's own scrolling is locked meanwhile.
  */
 const useSearchOverlay = (searching: boolean) => {
   const setPlayerObscured = useSetAtom(playerObscuredAtom);
-  const savedScrollRef = useRef(0);
-  const wasSearchingRef = useRef(searching);
-
-  useLayoutEffect(() => {
-    if (searching === wasSearchingRef.current) {
-      return;
-    }
-
-    wasSearchingRef.current = searching;
-
-    if (searching) {
-      savedScrollRef.current = globalThis.scrollY;
-      globalThis.scrollTo(0, 0);
-    } else {
-      globalThis.scrollTo(0, savedScrollRef.current);
-    }
-  }, [searching]);
 
   // The video should not keep playing under the results.
   useEffect(() => {
     setPlayerObscured(searching);
+    document.documentElement.classList.toggle("search-open", searching);
   }, [searching, setPlayerObscured]);
 };
 
@@ -69,14 +54,27 @@ const RootComponent = () => {
 
   useSearchOverlay(Boolean(query));
 
+  const resultsRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <>
       <AppHeader />
       <div className="sticky top-(--header-h) z-10 h-0">{pending && <ScanBar />}</div>
-      {query && <SearchPage query={query} />}
-      <div hidden={Boolean(query)}>
+      <div inert={Boolean(query)}>
         {pending && !loadedOnce && onWatch ? <WatchSkeleton /> : <Outlet />}
       </div>
+      {query && (
+        // A layer over the page with its own scroll, rather than hiding the
+        // Page: hiding it shortened the document and the browser clipped the
+        // Page's scroll position. Its own position is restored on Back by id.
+        <div
+          ref={resultsRef}
+          data-scroll-restoration-id="search-results"
+          className="fixed inset-x-0 top-(--header-h) bottom-0 z-10 overflow-y-auto overscroll-contain bg-bg"
+        >
+          <SearchPage query={query} scrollRoot={resultsRef} />
+        </div>
+      )}
       <ReactQueryDevtools buttonPosition="bottom-left" />
       <TanStackRouterDevtools position="bottom-right" />
     </>

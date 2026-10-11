@@ -87,6 +87,25 @@ export interface SearchPage {
 
 export type SearchSort = "newest" | "matches";
 
+// A moment in another episode about the same thing, with the words they share.
+export interface RelatedMoment {
+  episode: EpisodeSummary;
+  timestamp: number;
+  description: string;
+  lengthSeconds: number;
+  sharedTerms: string[];
+}
+
+export const fetchRelated = async (signal: AbortSignal, episodeNumber: number, timestamp: number) => {
+  const response = await client.get("events/related", {
+    signal,
+    searchParams: { episode: episodeNumber, timestamp },
+  });
+  const payload = await response.json<{ data: RelatedMoment[] }>();
+
+  return payload.data;
+};
+
 // Every episode, newest first.
 export const fetchEpisodes = async (signal: AbortSignal) => {
   const response = await client.get("episodes", { signal });

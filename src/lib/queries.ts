@@ -4,7 +4,7 @@ import {
   keepPreviousData,
   queryOptions,
 } from "@tanstack/react-query";
-import { type SearchSort, fetchEpisodeById, fetchEpisodes, searchPage } from "./api";
+import { type SearchSort, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000 } },
@@ -25,6 +25,17 @@ export const allEpisodesQuery = queryOptions({
   queryFn: ({ signal }) => fetchEpisodes(signal),
   staleTime: 5 * 60 * 1000,
 });
+
+// Moments elsewhere about the moment now playing. They only change when the
+// Archive does, so they are cached for the session.
+export const relatedQuery = (episodeNumber: number, timestamp: number) =>
+  queryOptions({
+    queryKey: ["related", episodeNumber, timestamp],
+    queryFn: ({ signal }) => fetchRelated(signal, episodeNumber, timestamp),
+    staleTime: Infinity,
+    // The section swaps when the next answer lands rather than blinking out.
+    placeholderData: keepPreviousData,
+  });
 
 // Pages of grouped results. keepPreviousData holds the last term's results on
 // Screen while the next one loads, so the list never blinks empty mid-type.

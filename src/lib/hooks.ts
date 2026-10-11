@@ -39,7 +39,16 @@ export const useMediaQuery = (query: string) => {
  * List grows: re-observing makes the observer report again if the end is
  * Still in range, so a tall screen keeps filling itself.
  */
-export const useSentinel = (onReach: () => void, enabled: boolean, generation: number) => {
+interface SentinelOptions {
+  onReach: () => void;
+  enabled: boolean;
+  generation: number;
+  // The scrolling element, when the list scrolls inside one rather than the
+  // Page; the look-ahead margin only applies to the observer's root.
+  scrollRoot?: React.RefObject<HTMLElement | null>;
+}
+
+export const useSentinel = ({ onReach, enabled, generation, scrollRoot }: SentinelOptions) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -55,37 +64,46 @@ export const useSentinel = (onReach: () => void, enabled: boolean, generation: n
           onReach();
         }
       },
-      { rootMargin: "1200px 0px" },
+      { root: scrollRoot?.current ?? null, rootMargin: "1200px 0px" },
     );
 
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [onReach, enabled, generation]);
+  }, [onReach, enabled, generation, scrollRoot]);
 
   return sentinelRef;
 };
 
+// How far each list had been revealed, so coming back to it (Back from an
+// Episode) renders enough of it for the scroll position to be restored.
+const revealed = new Map<string, number>();
+
 /**
  * How many of `total` already-loaded items to render, growing by `page` as
- * The end of the list nears and resetting when `resetKey` changes.
+ * The end of the list nears. `listKey` names the list: a new one starts from
+ * The first page, one seen before resumes where it was.
  */
-export const useRevealMore = (total: number, page: number, resetKey: unknown) => {
-  const [count, setCount] = useState(page);
-  const [key, setKey] = useState(resetKey);
+export const useRevealMore = (total: number, page: number, listKey: string) => {
+  const [count, setCount] = useState(() => revealed.get(listKey) ?? page);
+  const [key, setKey] = useState(listKey);
 
-  // Reset during render rather than in an effect, so the first frame of a new
-  // List is already the right length.
-  if (key !== resetKey) {
-    setKey(resetKey);
-    setCount(page);
+  // Switch lists during render rather than in an effect, so the first frame
+  // Of the new list is already the right length.
+  if (key !== listKey) {
+    setKey(listKey);
+    setCount(revealed.get(listKey) ?? page);
   }
 
-  const sentinelRef = useSentinel(
-    () => setCount((current) => Math.min(total, current + page)),
-    count < total,
-    count,
-  );
+  useEffect(() => {
+    revealed.set(listKey, count);
+  }, [listKey, count]);
+
+  const sentinelRef = useSentinel({
+    onReach: () => setCount((current) => Math.min(total, current + page)),
+    enabled: count < total,
+    generation: count,
+  });
 
   return { count: Math.min(count, total), hasMore: count < total, sentinelRef };
 };

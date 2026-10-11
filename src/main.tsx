@@ -16,6 +16,9 @@ const router = createRouter({
   // Every navigation and take the player's iframe with it. The root renders
   // The scan bar and the first-load skeleton instead.
   defaultPreloadStaleTime: 0,
+  // Back and Forward return every page — home, results, an episode — to where
+  // It was scrolled.
+  scrollRestoration: true,
   defaultNotFoundComponent: () => <Navigate to="/" replace />,
   defaultErrorComponent: ({ error }) => <ErrorPage error={error} />,
 });

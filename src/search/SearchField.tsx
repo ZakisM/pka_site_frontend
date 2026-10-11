@@ -1,6 +1,7 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useCloseSearch } from "./searchState";
 import { useDebounced } from "@/lib/hooks";
 
 const TYPING_SETTLE_MS = 150;
@@ -13,48 +14,81 @@ interface SearchFieldProps {
 /**
  * The header's search box. The query lives in the URL (`?q=`) on whatever
  * Page is open, so results sit over that page instead of replacing it: the
- * Player keeps its iframe, home keeps its scroll, and Esc or Back returns to
- * Exactly where you were.
+ * Player keeps its iframe and the page keeps its place.
+ *
+ * The text stays in the box after a result is opened, like any search bar;
+ * Enter brings the results back. Only clearing empties it.
  */
 export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   const navigate = useNavigate();
+  const closeSearch = useCloseSearch();
   const query = useSearch({ strict: false, select: (search) => search.q ?? "" });
   const [value, setValue] = useState(query);
   const settled = useDebounced(value.trim(), TYPING_SETTLE_MS);
 
-  // The last query this field wrote. A URL change that isn't ours (Back, a
-  // Result click clearing it) is copied into the box; our own is not, so a
-  // Slow navigation can never overwrite what is still being typed.
+  // The last query this field wrote. A different query arriving from the URL
+  // (Back or Forward between searches) is copied into the box; our own is
+  // Not, so a slow navigation never overwrites what is still being typed.
   const writtenRef = useRef(query);
 
   useEffect(() => {
     if (query !== writtenRef.current) {
       writtenRef.current = query;
-      setValue(query);
+
+      if (query) {
+        setValue(query);
+      }
     }
   }, [query]);
 
+  const showResults = useCallback(
+    (term: string) => {
+      // The first query over a page gets its own history entry, so Back (or
+      // Esc) returns to that page; refining the query replaces it.
+      const opening = writtenRef.current === "";
+
+      writtenRef.current = term;
+      navigate({
+        to: ".",
+        search: (previous) => ({ ...previous, q: term }),
+        replace: !opening,
+        // The results are a layer over the page: leave the page where it is.
+        resetScroll: false,
+        state: (previous) => ({ ...previous, searchOverlay: opening || previous.searchOverlay }),
+      });
+    },
+    [navigate],
+  );
+
+  const focusingClickRef = useRef(false);
+
+  // Typing searches as it settles. Only a change to the text does: the box
+  // Keeping its text after a result is opened must not reopen the results.
+  const typedRef = useRef(false);
+
   useEffect(() => {
-    if (settled === writtenRef.current) {
+    if (!typedRef.current || settled === writtenRef.current) {
       return;
     }
 
-    // The first keystroke gets its own history entry, so Back closes the
-    // Results; refining the query after that replaces it.
-    const replace = writtenRef.current !== "";
+    typedRef.current = false;
 
-    writtenRef.current = settled;
-    navigate({
-      to: ".",
-      search: (previous) => ({ ...previous, q: settled || undefined }),
-      replace,
-    });
-  }, [settled, navigate]);
+    if (settled) {
+      showResults(settled);
+    } else {
+      writtenRef.current = "";
+      closeSearch();
+    }
+  }, [settled, showResults, closeSearch]);
 
   const clear = () => {
+    typedRef.current = false;
     setValue("");
-    writtenRef.current = "";
-    navigate({ to: ".", search: (previous) => ({ ...previous, q: undefined }), replace: true });
+
+    if (writtenRef.current) {
+      writtenRef.current = "";
+      closeSearch();
+    }
   };
 
   return (
@@ -71,8 +105,33 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
         enterKeyHint="search"
         data-search-input
         className="h-full min-w-0 flex-1 bg-transparent pr-2 pl-10 text-[14px] outline-none placeholder:text-dim"
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          typedRef.current = true;
+          setValue(event.target.value);
+        }}
+        // Focusing selects the kept query so typing replaces it. The mouseup
+        // Of the click that focused the box would collapse that selection to
+        // A caret, so that one mouseup is cancelled.
+        onFocus={(event) => event.currentTarget.select()}
+        onMouseDown={(event) => {
+          focusingClickRef.current = document.activeElement !== event.currentTarget;
+        }}
+        onMouseUp={(event) => {
+          if (focusingClickRef.current) {
+            focusingClickRef.current = false;
+            event.preventDefault();
+          }
+        }}
         onKeyDown={(event) => {
+          if (event.key === "Enter" && value.trim() && !query) {
+            // Handled: the results this opens must not also read this Enter
+            // As "play the first hit".
+            event.preventDefault();
+            showResults(value.trim());
+
+            return;
+          }
+
           if (event.key === "Escape") {
             event.preventDefault();
             clear();

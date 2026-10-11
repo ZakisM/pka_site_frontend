@@ -31,7 +31,20 @@ export const useStartPosition = (
   urlTimestamp: unknown,
 ) => {
   const [intent, setIntent] = useAtom(startIntentAtom);
-  const [urlStart] = useState(() => consumeUrlTimestamp(urlTimestamp));
+  // The watch screen outlives episode changes, so remember which episode the
+  // Link's timestamp was for: once a later intent had been used up, an
+  // Unscoped one resurfaced as a fresh request and sent every next episode to
+  // The shared link's time.
+  const [urlStart, setUrlStart] = useState(() => ({
+    episodeNumber,
+    seconds: consumeUrlTimestamp(urlTimestamp),
+  }));
+
+  // Spent once another episode is opened, so coming Back resumes where the
+  // Viewer was rather than replaying the link's moment.
+  if (urlStart.seconds !== undefined && urlStart.episodeNumber !== episodeNumber) {
+    setUrlStart({ episodeNumber, seconds: undefined });
+  }
 
   // Only an intent aimed at the episode now on screen may touch the player.
   const forThisEpisode =
@@ -44,7 +57,9 @@ export const useStartPosition = (
   }, [forThisEpisode, setIntent]);
 
   return {
-    startSeconds: forThisEpisode?.seconds ?? urlStart,
+    startSeconds:
+      forThisEpisode?.seconds ??
+      (urlStart.episodeNumber === episodeNumber ? urlStart.seconds : undefined),
     // A constant for the URL case so it is never mistaken for a fresh request;
     // It only ever seeds the player's initial construction.
     startKey: forThisEpisode ? String(forThisEpisode.requestedAt) : "url",

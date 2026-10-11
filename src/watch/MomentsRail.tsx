@@ -11,11 +11,14 @@ interface MomentRowProps {
   event: PkaEvent;
   index: number;
   active: boolean;
+  // Seconds left in this moment; only set on the active row, so other rows
+  // Never re-render on playback ticks.
+  remaining: number | undefined;
   terms: string[];
   onSeek: (seconds: number) => void;
 }
 
-const MomentRow = ({ event, index, active, terms, onSeek }: MomentRowProps) => (
+const MomentRow = ({ event, index, active, remaining, terms, onSeek }: MomentRowProps) => (
   <button
     type="button"
     data-index={index}
@@ -30,7 +33,9 @@ const MomentRow = ({ event, index, active, terms, onSeek }: MomentRowProps) => (
     <span className="min-w-0 text-pretty">
       <Highlight text={event.description} terms={terms} />
     </span>
-    <span className="text-[11px] tabular-nums text-dim">{formatDuration(event.lengthSeconds)}</span>
+    <span className="text-[11px] tabular-nums text-dim group-data-active:text-secondary">
+      {remaining === undefined ? formatDuration(event.lengthSeconds) : `${formatDuration(remaining)} left`}
+    </span>
   </button>
 );
 
@@ -88,10 +93,11 @@ interface MomentsRailProps {
   events: PkaEvent[];
   episodeNumber: number;
   activeIndex: number;
+  position: number;
 }
 
 /** The episode's moments, filterable; every row is a play target. */
-export const MomentsRail = ({ events, episodeNumber, activeIndex }: MomentsRailProps) => {
+export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: MomentsRailProps) => {
   const setSeekRequest = useSetAtom(seekRequestAtom);
   const [filterIntent, setFilterIntent] = useAtom(railFilterIntentAtom);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -152,7 +158,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex }: MomentsRailP
       </div>
       <div
         ref={listRef}
-        className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto"
+        className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto mobile:max-h-[60dvh] mobile:overflow-y-auto"
       >
         {events.length === 0 && (
           <p className="px-5 py-6 text-[14px]/[1.5] text-dim">Nobody has timestamped this episode yet.</p>
@@ -169,6 +175,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex }: MomentsRailP
               event={event}
               index={index}
               active={active}
+              remaining={active ? Math.max(0, event.timestamp + event.lengthSeconds - position) : undefined}
               terms={terms}
               onSeek={seek}
             />

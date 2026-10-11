@@ -1,5 +1,5 @@
+import { Check, Copy } from "lucide-react";
 import { formatEpisodeNumber, formatShortDate, formatTimestamp } from "@/lib/time";
-import { Link2 } from "lucide-react";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { displayTitle } from "@/lib/titles";
 import { positionAtom } from "@/player/playerState";
@@ -7,9 +7,6 @@ import { useAtomValue } from "jotai";
 import { useState } from "react";
 
 const COPIED_FEEDBACK_MS = 1600;
-
-const buttonStyles =
-  "flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border border-line px-3 text-[14px] tabular-nums text-secondary transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink";
 
 /** Number, title and facts under the player, with the episode's actions. */
 export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
@@ -35,27 +32,26 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   };
 
   return (
-    <section className="mt-5 flex items-start gap-6 @max-[560px]:flex-col @max-[560px]:gap-3 mobile:mx-4 mobile:mt-4">
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-3.5">
-          <span className="shrink-0 text-[20px] font-bold tabular-nums mobile:text-[17px]">
-            <small className="mr-[5px] text-[11px] font-semibold tracking-[0.06em] text-muted">EP</small>
-            {formatEpisodeNumber(episode.episode.number)}
-          </span>
-          <h1 className="min-w-0 text-[20px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[17px]/[1.3]">
-            {displayTitle(title)}
-          </h1>
-        </div>
-        <p className="mt-2 flex flex-wrap items-baseline gap-2 text-[13px] tabular-nums text-muted">
-          <span>{formatShortDate(episode.episode.uploadDate)}</span>
-          <span className="text-dim">·</span>
-          <span>{formatTimestamp(lengthSeconds)}</span>
-        </p>
+    <section className="mt-4 mobile:mx-4 mobile:mt-3">
+      {/* The same shape as an episode card: number and facts, then the title. */}
+      <div className="flex items-center gap-2 text-[13px] tabular-nums text-muted">
+        <span className="text-[14px] font-bold text-ink">{formatEpisodeNumber(episode.episode.number)}</span>
+        <span>{formatShortDate(episode.episode.uploadDate)}</span>
+        <span className="text-dim">·</span>
+        <span>{formatTimestamp(lengthSeconds)}</span>
+        <button
+          type="button"
+          aria-label={copied ? "Link copied" : `Copy a link to ${formatTimestamp(shareFrom)}`}
+          title={copied ? "Link copied" : `Copy a link to ${formatTimestamp(shareFrom)}`}
+          className="-my-1.5 -mr-2 ml-auto grid size-8 shrink-0 cursor-pointer place-items-center text-muted transition-colors duration-150 hover:bg-raised hover:text-ink"
+          onClick={copyLink}
+        >
+          {copied ? <Check className="size-4 stroke-2 text-ink" /> : <Copy className="size-4 stroke-[1.75]" />}
+        </button>
       </div>
-      <button type="button" className={`${buttonStyles} gap-2 px-3.5`} onClick={copyLink}>
-        <Link2 className="size-[15px] stroke-2" />
-        {copied ? "Link copied" : `Copy link at ${formatTimestamp(shareFrom)}`}
-      </button>
+      <h1 className="mt-1.5 text-[22px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[18px]/[1.3]">
+        {displayTitle(title)}
+      </h1>
     </section>
   );
 };

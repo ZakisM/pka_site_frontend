@@ -5,7 +5,9 @@ import { useState } from "react";
 
 interface ThumbnailProps {
   episodeNumber: number;
-  lengthSeconds: number;
+  // The episode's running time, badged in the corner; omitted where the
+  // Thumbnail stands for a moment rather than the whole episode.
+  lengthSeconds?: number;
   videoId: string;
   progress?: WatchProgress;
 }
@@ -45,9 +47,11 @@ export const Thumbnail = ({
       {/* A plain overlay rather than a filter: filters on dozens of images are
           Expensive to repaint while scrolling, notably in Firefox. */}
       <span aria-hidden className="absolute inset-0 bg-white/0 transition-colors duration-200 group-hover:bg-white/[0.07]" />
-      <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
-        {formatTimestamp(lengthSeconds)}
-      </span>
+      {lengthSeconds !== undefined && (
+        <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
+          {formatTimestamp(lengthSeconds)}
+        </span>
+      )}
       {progress && (
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-white/25">
           <span
