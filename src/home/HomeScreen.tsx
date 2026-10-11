@@ -37,7 +37,7 @@ export const HomeScreen = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1320px] px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14">
+    <div className="px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14">
       {episodes && <ContinueWatching episodes={episodes} />}
 
       <div className="mb-6 flex items-center justify-between gap-4">

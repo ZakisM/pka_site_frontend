@@ -1,7 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
+import { resultsScroll, useCloseSearch } from "./searchState";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useCloseSearch } from "./searchState";
 import { useDebounced } from "@/lib/hooks";
 
 const TYPING_SETTLE_MS = 150;
@@ -75,6 +75,8 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
     typedRef.current = false;
 
     if (settled) {
+      // A new search starts at the top, even for a query searched before.
+      resultsScroll.delete(settled);
       showResults(settled);
     } else {
       writtenRef.current = "";
