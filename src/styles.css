@@ -31,22 +31,23 @@
      Oklch(0.59 0.1973 24.83) / #D02F35, but that reads duller on a P3 screen
      And the user wants the vivid version — keep these values. */
   --color-primary: oklch(0.64 0.245 27);
-  --color-primary-soft: oklch(0.64 0.245 27 / 0.28);
 
-  /* Warm near-black surfaces, flat, hard edges: no gradients, glass or
-     Radius. Raised is a filled control or a selected row; hover sits above. */
-  --color-bg: #0c0b0b;
+  /* Near-neutral charcoal: a trace of warmth (oklch chroma 0.002) so the
+     Greys sit with the red, but no brown cast on screens without wide gamut.
+     Flat, hard edges: no gradients, glass or radius. Raised is a filled
+     Control or a selected row; hover sits above it. */
+  --color-bg: #0c0b0a;
   --color-raised: #151413;
-  --color-hover: #1c1a19;
+  --color-hover: #1b1a1a;
 
-  /* Warm ink ramp. */
-  --color-ink: #f4f1ec;
-  --color-secondary: #bdb7b1;
-  --color-muted: #8f8984;
-  --color-dim: #6c6764;
+  /* Ink ramp, the same lightness steps as before, neutralised. */
+  --color-ink: #f2f1f0;
+  --color-secondary: #b9b8b7;
+  --color-muted: #8b8a89;
+  --color-dim: #696867;
 
-  --color-line: rgb(244 241 236 / 0.08);
-  --color-line-strong: rgb(244 241 236 / 0.16);
+  --color-line: rgb(242 241 240 / 0.08);
+  --color-line-strong: rgb(242 241 240 / 0.16);
 
   --breakpoint-xs: 440px;
 }
@@ -99,9 +100,13 @@
     overflow: hidden;
   }
 
+  /* Matched search words: bright text on a thin red underline. A filled
+     Background got heavy where several matches sat in one line. */
   mark {
-    background: var(--color-primary-soft);
+    background: none;
     color: var(--color-ink);
+    text-decoration: underline 1.5px var(--color-primary);
+    text-underline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -215,7 +220,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgb(244 241 236 / 0.07),
+      rgb(242 241 240 / 0.07),
       transparent
     );
     animation: pka-sweep 1.5s ease-in-out infinite;
