@@ -4,67 +4,37 @@ import { Skeleton } from "@/ui/Loaders";
 const RAIL_ROWS = ["78%", "94%", "62%", "88%", "71%", "96%", "58%", "83%", "74%", "90%"];
 
 /**
- * The watch screen's shape while the first episode loads: the player box, the
- * Playing-now band and the rail all hold their real positions, so nothing
- * Moves when the data lands.
+ * The watch screen's shape while the first episode loads: player box, episode
+ * Bar and rail all hold their real positions, so nothing moves when it lands.
  */
 export const WatchSkeleton = () => (
-  <div className="flex h-full min-h-0 mobile:flex-col">
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col mobile:flex-none">
-      <div className="min-w-0 bg-black mobile:aspect-video mobile:min-h-[200px] mobile:shrink-0 desktop:min-h-[300px] desktop:flex-1" />
-
-      <section className="flex shrink-0 items-start gap-3 border-b border-hairline px-4 pt-3 pb-3 desktop:items-center desktop:gap-7 desktop:px-6 desktop:pt-5 desktop:pb-[22px]">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 pb-[5px] desktop:gap-2.5 desktop:pb-[7px]">
-            <Skeleton className="h-[11px] w-[92px]" />
-            <Skeleton className="h-[11px] w-[86px]" soft />
-          </div>
-          <Skeleton className="h-[26px] w-[62%] desktop:h-8" delay={0.08} />
-          <div className="pt-[5px] desktop:pt-2.5">
-            <Skeleton className="h-[13px] w-[38%]" soft delay={0.16} />
-          </div>
+  <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] desktop:grid-rows-[auto_1fr]">
+    <main className="min-w-0 px-8 pt-6 mobile:p-0">
+      <div className="watch-width mx-auto">
+        <div className="aspect-video w-full bg-black mobile:min-h-[200px]" />
+        <div className="mt-4 flex flex-col gap-2.5 mobile:mx-4 mobile:mt-3">
+          <Skeleton className="h-3.5 w-40" soft />
+          <Skeleton className="h-6 w-[min(460px,80%)]" delay={0.08} />
         </div>
-        <Skeleton className="size-11 shrink-0" delay={0.08} />
-      </section>
-
-      <section className="flex shrink-0 items-center bg-raised mobile:hidden">
-        <div className="flex h-[50px] items-center border-r border-hairline px-5">
-          <Skeleton className="h-[21px] w-[54px]" />
-        </div>
-        <div className="min-w-0 flex-1 px-5">
-          <Skeleton className="h-[14px] w-[46%]" soft delay={0.08} />
-        </div>
-        <div className="flex h-[50px]">
-          <span className="flex items-center border-l border-hairline px-[18px]">
-            <Skeleton className="h-[12px] w-[52px]" soft delay={0.16} />
-          </span>
-          <span className="flex items-center border-l border-hairline px-[18px]">
-            <Skeleton className="h-[12px] w-[128px]" soft delay={0.24} />
-          </span>
-        </div>
-      </section>
-    </main>
-
-    <aside className="flex min-h-0 flex-col bg-raised mobile:flex-1 desktop:w-[381px] desktop:shrink-0 desktop:border-l desktop:border-hairline">
-      <div className="flex h-[39px] shrink-0 items-center justify-between border-b border-hairline px-4 desktop:h-[45px] desktop:px-[18px]">
-        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-ink mobile:tracking-[0.16em]">
-          Moments
-        </span>
-        <Skeleton className="h-[12px] w-[72px]" soft />
       </div>
-      <div className="min-h-0 flex-1 overflow-hidden">
+    </main>
+    <aside className="flex flex-col desktop:sticky desktop:top-(--header-h) desktop:h-[calc(100dvh-var(--header-h))] desktop:border-l desktop:border-line mobile:mt-6">
+      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex items-center gap-3 px-5 pt-5 pb-3 mobile:px-4">
+        <h2 className="text-[15px] font-semibold">Moments</h2>
+        <Skeleton className="ml-auto h-8 w-44" soft />
+      </div>
+      <div className="min-h-0 flex-1 overflow-hidden border-t border-line py-2">
         {RAIL_ROWS.map((width, index) => (
-          <div
-            key={width}
-            className="flex gap-3.5 border-b border-hairline-soft px-4 py-3.5 desktop:px-[18px] desktop:py-[13px]"
-          >
-            <Skeleton className="mt-px h-[12px] w-[50px] shrink-0" delay={index * 0.08} />
-            <span className="flex min-w-0 flex-1 flex-col gap-1">
-              <Skeleton className="h-[14px]" style={{ width }} delay={index * 0.08} />
-              <Skeleton className="h-[11px] w-[42px]" soft delay={index * 0.08} />
+          <div key={width} className="grid grid-cols-[56px_1fr] gap-3 px-5 py-2.5 mobile:px-4">
+            <Skeleton className="mt-px h-3 w-10" delay={index * 0.08} />
+            <span className="flex flex-col gap-1.5">
+              <Skeleton className="h-3.5" style={{ width }} delay={index * 0.08} />
+              <Skeleton className="h-3.5 w-1/2" soft delay={index * 0.08} />
             </span>
           </div>
         ))}
+      </div>
       </div>
     </aside>
   </div>

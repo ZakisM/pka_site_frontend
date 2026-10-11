@@ -1,24 +1,39 @@
+import type { SearchSort } from "@/lib/api";
 import { atom } from "jotai";
+import { useCallback } from "react";
+import { useRouter } from "@tanstack/react-router";
 
-export const SEARCH_TABS = ["moments", "episodes"] as const;
-
-export type SearchTab = (typeof SEARCH_TABS)[number];
-
-// What a row draws, from either result shape, so there is one row component
-// Instead of one per tab.
-export interface SearchRow {
-  key: string;
-  episodeNumber: number;
-  title: string;
-  uploadDate: number;
-  lengthSeconds: number;
-  // Moments only — an episode result has no position in the video.
-  timestamp?: number;
+declare module "@tanstack/react-router" {
+  interface HistoryState {
+    // Set on history entries the search field pushed over another page.
+    searchOverlay?: boolean;
+  }
 }
 
-export const searchOpenAtom = atom(false);
-// Survives closing the takeover, so reopening returns to the same results.
-export const searchQueryAtom = atom("");
-// Moments are the primary result type.
-export const searchTabAtom = atom<SearchTab>("moments");
-export const selectedIndexAtom = atom(0);
+// Kept for the session, so coming back to results keeps the chosen order.
+export const searchSortAtom = atom<SearchSort>("newest");
+
+/**
+ * Closes the results. When they were opened over a page in this session, that
+ * Is a step back in history, so the page underneath returns with its scroll
+ * Position; a shared results link has nothing to go back to, so it just drops
+ * The query.
+ */
+export const useCloseSearch = () => {
+  const router = useRouter();
+
+  return useCallback(() => {
+    if (router.state.location.state.searchOverlay) {
+      router.history.back();
+
+      return;
+    }
+
+    router.navigate({
+      to: ".",
+      search: (previous) => ({ ...previous, q: undefined }),
+      replace: true,
+      resetScroll: false,
+    });
+  }, [router]);
+};

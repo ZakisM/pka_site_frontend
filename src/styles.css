@@ -21,9 +21,9 @@
 }
 
 @theme {
-  /* Roboto carries all body copy; Raleway is display only (wordmark,
-     Headings, episode numbers). */
-  --font-sans: "Roboto Variable", system-ui, sans-serif;
+  /* Geist carries all UI copy; Raleway is only the wordmark — its old-style
+     Figures made episode numbers look uneven. */
+  --font-sans: "Geist Variable", system-ui, -apple-system, sans-serif;
   --font-raleway: Raleway Variable;
 
   /* High-chroma oklch, deliberately outside sRGB so wide-gamut (P3) displays
@@ -31,31 +31,25 @@
      Oklch(0.59 0.1973 24.83) / #D02F35, but that reads duller on a P3 screen
      And the user wants the vivid version — keep these values. */
   --color-primary: oklch(0.64 0.245 27);
-  --color-primary-hover: oklch(0.57 0.225 27);
-  --color-accent: oklch(0.72 0.2 25);
-  --color-night: #0e0f12;
 
-  /* Redesign surfaces: warm near-black, flat, hard edges — no gradients,
-     No glass, no radius. */
-  --color-bg: #0b0a0a;
-  --color-raised: #0e0d0c;
-  --color-row-active: #191716;
-  --color-row-hover: #1a1817;
-  --color-row-selected: #141312;
-  --color-cell-hover: #131211;
+  /* Near-neutral charcoal: a trace of warmth (oklch chroma 0.002) so the
+     Greys sit with the red, but no brown cast on screens without wide gamut.
+     Flat, hard edges: no gradients, glass or radius. Raised is a filled
+     Control or a selected row; hover sits above it. */
+  --color-bg: #0c0b0a;
+  --color-raised: #151413;
+  --color-hover: #1b1a1a;
 
-  /* Warm ink ramp. */
-  --color-ink: #f2efea;
-  --color-secondary: #b6b0ab;
-  --color-muted: #8a8480;
-  --color-dim: #6b6663;
-  --color-dimmer: #5c5754;
-  --color-faint: #4a4543;
-  --color-fainter: #3a3634;
+  /* Ink ramp, the same lightness steps as before, neutralised. */
+  --color-ink: #f2f1f0;
+  --color-secondary: #b9b8b7;
+  --color-muted: #8b8a89;
+  --color-dim: #696867;
 
-  --color-hairline: rgb(242 239 234 / 0.1);
-  --color-hairline-soft: rgb(242 239 234 / 0.06);
-  --color-control: rgb(242 239 234 / 0.14);
+  --color-line: rgb(242 241 240 / 0.08);
+  --color-line-strong: rgb(242 241 240 / 0.16);
+
+  --breakpoint-xs: 440px;
 }
 
 @layer base {
@@ -64,20 +58,29 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-line);
+  }
+
+  html {
+    background: var(--color-bg);
+    color-scheme: dark;
+    /* Header height including its hairline; sticky rails sit under it. */
+    --header-h: 61px;
+
+    @media (max-width: 767.98px), (max-height: 599.98px) {
+      --header-h: 57px;
+    }
   }
 
   body {
-    @apply bg-bg text-ink antialiased;
-    /* The design gives explicit leading only where text wraps (headings,
-       Row titles); every label sits on the browser default. Tailwind's
-       Preflight would otherwise impose 1.5 and inflate every band. */
+    @apply bg-bg font-sans text-ink antialiased;
+    /* Labels sit on the browser default leading; text that wraps sets its
+       Own. Tailwind's preflight would otherwise impose 1.5 everywhere. */
     line-height: normal;
   }
 
-  /* Drawn inside the element: header cells and rows are full-height and
-     Edge-to-edge, so an outset ring showed up as red bars floating in the
-     Gaps between them instead of framing the target. */
+  /* Drawn inside the element, so full-bleed rows and cells keep a clean
+     Frame instead of an outline floating in the gap beside them. */
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
@@ -85,6 +88,42 @@
 
   iframe:focus-visible {
     outline: none;
+  }
+
+  /* The page under the search results keeps its position but cannot scroll;
+     The gutter stays reserved so nothing shifts as the scrollbar goes. */
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  html.search-open {
+    overflow: hidden;
+  }
+
+  /* Matched search words: a step brighter and bolder than the text around
+     Them — enough to scan by, quiet enough not to compete with the result. */
+  mark {
+    background: none;
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0s !important;
+    }
+  }
+}
+
+/* The watch page's video width: as wide as its column allows, but never so
+   Tall that the episode bar below it falls off the first screen. */
+@utility watch-width {
+  width: min(100%, max(560px, calc((100dvh - var(--header-h) - 150px) * 16 / 9)));
+
+  @media (max-width: 767.98px), (max-height: 599.98px) {
+    width: 100%;
   }
 }
 
@@ -96,7 +135,7 @@
     position: relative;
     height: 2px;
     overflow: hidden;
-    background: var(--color-row-hover);
+    background: var(--color-hover);
   }
 
   .pka-scan::after {
@@ -157,7 +196,7 @@
   }
 
   .pka-ticks--dim > i {
-    background: var(--color-faint);
+    background: var(--color-dim);
   }
 
   /* Skeletons hold the real column positions so nothing jumps when data
@@ -166,11 +205,11 @@
     position: relative;
     display: block;
     overflow: hidden;
-    background: var(--color-row-hover);
+    background: var(--color-hover);
   }
 
   .pka-sk--soft {
-    background: #161514;
+    background: var(--color-raised);
   }
 
   .pka-sk::after {
@@ -180,7 +219,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgb(242 239 234 / 0.07),
+      rgb(242 241 240 / 0.07),
       transparent
     );
     animation: pka-sweep 1.5s ease-in-out infinite;

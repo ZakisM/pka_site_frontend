@@ -1,7 +1,5 @@
+import "@fontsource-variable/geist";
 import "@fontsource-variable/raleway";
-import "@fontsource-variable/roboto";
-import "core-js/stable";
-import "overlayscrollbars/overlayscrollbars.css";
 import "./styles.css";
 import { Navigate, RouterProvider, createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "@/ui/ErrorPage";
@@ -18,9 +16,10 @@ const router = createRouter({
   // Every navigation and take the player's iframe with it. The root renders
   // The scan bar and the first-load skeleton instead.
   defaultPreloadStaleTime: 0,
-  defaultNotFoundComponent: () => (
-    <Navigate to="/watch/$episodeId" params={{ episodeId: "latest" }} replace />
-  ),
+  // Back and Forward return every page — home, results, an episode — to where
+  // It was scrolled.
+  scrollRestoration: true,
+  defaultNotFoundComponent: () => <Navigate to="/" replace />,
   defaultErrorComponent: ({ error }) => <ErrorPage error={error} />,
 });
 

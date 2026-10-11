@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as WatchEpisodeIdRouteImport } from './routes/watch.$episodeId'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WatchEpisodeIdRoute = WatchEpisodeIdRouteImport.update({
   id: '/watch/$episodeId',
   path: '/watch/$episodeId',
@@ -18,29 +24,40 @@ const WatchEpisodeIdRoute = WatchEpisodeIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/watch/$episodeId': typeof WatchEpisodeIdRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/watch/$episodeId': typeof WatchEpisodeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/watch/$episodeId': typeof WatchEpisodeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/watch/$episodeId'
+  fullPaths: '/' | '/watch/$episodeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/watch/$episodeId'
-  id: '__root__' | '/watch/$episodeId'
+  to: '/' | '/watch/$episodeId'
+  id: '__root__' | '/' | '/watch/$episodeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   WatchEpisodeIdRoute: typeof WatchEpisodeIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/watch/$episodeId': {
       id: '/watch/$episodeId'
       path: '/watch/$episodeId'
@@ -52,6 +69,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   WatchEpisodeIdRoute: WatchEpisodeIdRoute,
 }
 export const routeTree = rootRouteImport

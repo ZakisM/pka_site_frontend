@@ -1,9 +1,10 @@
 import {
   QueryClient,
+  infiniteQueryOptions,
   keepPreviousData,
   queryOptions,
 } from "@tanstack/react-query";
-import { fetchEpisodeById, searchEpisodes, searchEvents } from "./api";
+import { type SearchSort, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60 * 1000 } },
@@ -17,18 +18,35 @@ export const episodeQuery = (episodeId: string) =>
     queryFn: () => fetchEpisodeById(episodeId),
   });
 
-// KeepPreviousData holds the last results on screen while the next term is in
-// Flight, so the list never blinks empty mid-type.
-export const momentSearchQuery = (query = "") =>
+// Every episode, newest first: the home grid, prev/next on the watch page and
+// Continue watching all read this one list.
+export const allEpisodesQuery = queryOptions({
+  queryKey: ["episodes", "all"],
+  queryFn: ({ signal }) => fetchEpisodes(signal),
+  staleTime: 5 * 60 * 1000,
+});
+
+// Moments elsewhere about the moment now playing. They only change when the
+// Archive does, so they are cached for the session.
+export const relatedQuery = (episodeNumber: number, timestamp: number) =>
   queryOptions({
-    queryKey: ["search", "moments", query],
-    queryFn: ({ signal }) => searchEvents(signal, query),
+    queryKey: ["related", episodeNumber, timestamp],
+    queryFn: ({ signal }) => fetchRelated(signal, episodeNumber, timestamp),
+    staleTime: Infinity,
+    // The section swaps when the next answer lands rather than blinking out.
     placeholderData: keepPreviousData,
   });
 
-export const episodeSearchQuery = (query = "") =>
-  queryOptions({
-    queryKey: ["search", "episodes", query],
-    queryFn: ({ signal }) => searchEpisodes(signal, query),
+// Pages of grouped results. keepPreviousData holds the last term's results on
+// Screen while the next one loads, so the list never blinks empty mid-type.
+export const searchQuery = (query: string, sort: SearchSort) =>
+  infiniteQueryOptions({
+    queryKey: ["search", query, sort],
+    queryFn: ({ signal, pageParam }) => searchPage({ signal, query, sort, page: pageParam }),
+    initialPageParam: 0,
+    getNextPageParam: (last) => last.nextPage ?? undefined,
     placeholderData: keepPreviousData,
+    // Kept long enough that reopening a recent search is instant, with every
+    // Page that had been loaded.
+    gcTime: 30 * 60 * 1000,
   });

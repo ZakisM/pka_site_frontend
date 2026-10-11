@@ -1,21 +1,3 @@
-FROM rust:latest AS wasm-build
-
-WORKDIR /wasm
-
-RUN apt update && \
-    apt install clang llvm -y && \
-    curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-
-# Must match the wasm-bindgen version in lib_wasm/Cargo.lock exactly —
-# the bindgen schema is unstable across versions.
-RUN cargo binstall wasm-bindgen-cli@0.2.123 just -y
-RUN rustup target add wasm32-unknown-unknown
-
-COPY justfile .
-COPY /lib_wasm ./lib_wasm
-
-RUN just update-wasm-bindgen
-
 FROM oven/bun:1 AS build
 
 WORKDIR /pka_site_frontend
@@ -26,8 +8,6 @@ COPY index.html .
 COPY vite.config.ts .
 COPY /public ./public
 COPY /src ./src
-
-COPY --from=wasm-build /wasm/src ./src/lib_wasm_out
 
 RUN bun install
 RUN bun run build
