@@ -1,5 +1,5 @@
 import { EpisodeCard, EpisodeCardSkeleton, gridStyles } from "@/ui/EpisodeCard";
-import { atom, useAtom } from "jotai";
+import { createStore, useStore } from "@/lib/store";
 import { pluralise, yearOf } from "@/lib/time";
 import { useEffect, useMemo } from "react";
 import { ContinueWatching } from "./ContinueWatching";
@@ -10,13 +10,14 @@ import { useRevealMore } from "@/lib/hooks";
 const PAGE = 24;
 
 // Kept for the session, so Back from an episode returns to the same year.
-const homeYearAtom = atom<number | null>(null);
+const homeYear = createStore<number | null>(null);
 const SKELETON_CARDS = Array.from({ length: 8 }, (_, index) => index);
 
 /** Continue watching, then the whole archive newest first, by year if picked. */
 export const HomeScreen = () => {
   const { data: episodes, error } = useQuery(allEpisodesQuery);
-  const [year, setYear] = useAtom(homeYearAtom);
+  const year = useStore(homeYear);
+  const setYear = homeYear.set;
 
   const years = useMemo(
     () => [...new Set((episodes ?? []).map((episode) => yearOf(episode.uploadDate)))],

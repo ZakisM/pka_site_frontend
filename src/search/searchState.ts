@@ -1,5 +1,5 @@
 import type { SearchSort } from "@/lib/api";
-import { atom } from "jotai";
+import { createStore } from "@/lib/store";
 import { useCallback } from "react";
 import { useRouter } from "@tanstack/react-router";
 
@@ -11,7 +11,7 @@ declare module "@tanstack/react-router" {
 }
 
 // Kept for the session, so coming back to results keeps the chosen order.
-export const searchSortAtom = atom<SearchSort>("newest");
+export const searchSort = createStore<SearchSort>("newest");
 
 // Where each query's results were last scrolled to, for this session: opening
 // The kept query again from the box puts them back there. A query typed

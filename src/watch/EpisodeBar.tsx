@@ -2,8 +2,7 @@ import { Check, Copy } from "lucide-react";
 import { formatEpisodeNumber, formatShortDate, formatTimestamp } from "@/lib/time";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { displayTitle } from "@/lib/titles";
-import { positionAtom } from "@/player/playerState";
-import { useAtomValue } from "jotai";
+import { usePosition } from "@/player/watchHistory";
 import { useState } from "react";
 
 const COPIED_FEEDBACK_MS = 1600;
@@ -11,7 +10,7 @@ const COPIED_FEEDBACK_MS = 1600;
 /** Number, title and facts under the player, with the episode's actions. */
 export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   const { videoId, title, lengthSeconds } = episode.youtubeDetails;
-  const position = useAtomValue(positionAtom(videoId));
+  const position = usePosition(videoId);
   const [copied, setCopied] = useState(false);
 
   const shareFrom = Math.floor(position);

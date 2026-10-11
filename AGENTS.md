@@ -6,7 +6,7 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 | Folder | Holds |
 | --- | --- |
 | `routes/` | TanStack Router route files; `routeTree.gen.ts` is generated — never edit it |
-| `player/` | The YouTube iframe: `usePlayer` owns its whole lifecycle, `playerState` its atoms |
+| `player/` | The YouTube iframe: `controller` owns it and corrects it until it matches what should be on screen; `watchHistory` keeps positions and recent episodes |
 | `home/` | The home page — continue watching and the archive grid, filterable by year |
 | `watch/` | The watch screen — player, episode bar, moments rail |
 | `search/` | The header search field and the results page drawn over any page via `?q=` |
@@ -14,6 +14,8 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 | `lib/` | Non-visual shared code: API client, query options, formatters, small hooks |
 
 Search is a root search param, not a route: results render over whichever page is open while that page stays mounted but hidden, so the player keeps its iframe and home keeps its scroll. Never turn search into a route of its own.
+
+Only `player/controller` touches the YouTube player: ask it (`request`, `seek`), never hold the iframe or trust a command to have landed. A navigation that asks the watch page for something — start at a moment, filter the moments — carries it in that history entry's state via `lib/intents`, scoped to its episode and acted on once. Never route such a request through global state: it outlives a cancelled navigation and fires on the next visit.
 
 Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. Static assets live in `public/`, production bundles in `dist/`.
 

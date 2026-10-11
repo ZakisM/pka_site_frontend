@@ -13,9 +13,8 @@ import { SearchPage } from "@/search/SearchPage";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { WatchSkeleton } from "@/watch/WatchSkeleton";
 import { fadeIn } from "@/lib/motion";
-import { playerObscuredAtom } from "@/player/playerState";
+import { player } from "@/player/controller";
 import { resultsScroll } from "@/search/searchState";
-import { useSetAtom } from "jotai";
 
 /**
  * While a query is showing, the page it was typed over stays mounted, still
@@ -24,13 +23,22 @@ import { useSetAtom } from "jotai";
  * Results close. The page's own scrolling is locked meanwhile.
  */
 const useSearchOverlay = (searching: boolean) => {
-  const setPlayerObscured = useSetAtom(playerObscuredAtom);
-
-  // The video should not keep playing under the results.
+  // The video should not keep playing under the results. Undone in the
+  // Cleanup, which React runs before any new effect: opening a result reveals
+  // The player before it is asked to play.
   useEffect(() => {
-    setPlayerObscured(searching);
-    document.documentElement.classList.toggle("search-open", searching);
-  }, [searching, setPlayerObscured]);
+    if (!searching) {
+      return;
+    }
+
+    player.setObscured(true);
+    document.documentElement.classList.add("search-open");
+
+    return () => {
+      player.setObscured(false);
+      document.documentElement.classList.remove("search-open");
+    };
+  }, [searching]);
 };
 
 const RootComponent = () => {

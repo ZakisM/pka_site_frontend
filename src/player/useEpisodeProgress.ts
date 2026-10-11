@@ -1,7 +1,6 @@
-import { positionAtom } from "./playerState";
-import { useAtomValue } from "jotai";
+import { usePosition } from "./watchHistory";
 import { watchProgress } from "@/lib/progress";
 
 /** How far the viewer got through an episode, if they started it. */
 export const useEpisodeProgress = ({ videoId, lengthSeconds }: { videoId: string; lengthSeconds: number }) =>
-  watchProgress(useAtomValue(positionAtom(videoId)), lengthSeconds);
+  watchProgress(usePosition(videoId), lengthSeconds);

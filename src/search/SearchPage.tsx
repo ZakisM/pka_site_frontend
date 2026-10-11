@@ -1,19 +1,18 @@
+import { type HistoryState, useNavigate } from "@tanstack/react-router";
 import { ResultGroup, ResultGroupSkeleton } from "./ResultGroup";
-import { searchSortAtom, useCloseSearch } from "./searchState";
-import { useAtom, useSetAtom } from "jotai";
+import { filterMoments, playFrom } from "@/lib/intents";
+import { searchSort, useCloseSearch } from "./searchState";
 import { useCallback, useEffect, useRef } from "react";
 import type { SearchSort } from "@/lib/api";
 import { Ticks } from "@/ui/Loaders";
 import { X } from "lucide-react";
 import { pluralise } from "@/lib/time";
-import { railFilterIntentAtom } from "@/lib/intents";
 import { searchQuery } from "@/lib/queries";
 import { searchTerms } from "@/ui/Highlight";
-import { startIntentAtom } from "@/player/playerState";
 import { useHitKeys } from "./useHitKeys";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useSentinel } from "@/lib/hooks";
+import { useStore } from "@/lib/store";
 
 const SKELETON_GROUPS = [0, 1, 2, 3];
 
@@ -132,9 +131,7 @@ interface SearchPageProps {
 
 export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   const navigate = useNavigate();
-  const setStartIntent = useSetAtom(startIntentAtom);
-  const setFilterIntent = useSetAtom(railFilterIntentAtom);
-  const [sort, setSort] = useAtom(searchSortAtom);
+  const sort = useStore(searchSort);
   const {
     data,
     isError,
@@ -182,32 +179,26 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   }, [query]);
 
   const open = useCallback(
-    (episodeNumber: number) => {
+    (episodeNumber: number, state: HistoryState) => {
       // Out of the search box: on phones this puts the keyboard away, and a
       // Focused box would otherwise sit over the episode now playing.
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
 
-      navigate({ to: "/watch/$episodeId", params: { episodeId: String(episodeNumber) }, search: {} });
+      navigate({ to: "/watch/$episodeId", params: { episodeId: String(episodeNumber) }, search: {}, state });
     },
     [navigate],
   );
 
   const play = useCallback(
-    (episodeNumber: number, seconds: number) => {
-      setStartIntent({ episodeNumber, seconds, requestedAt: Date.now() });
-      open(episodeNumber);
-    },
-    [open, setStartIntent],
+    (episodeNumber: number, seconds: number) => open(episodeNumber, playFrom(episodeNumber, seconds)),
+    [open],
   );
 
   const more = useCallback(
-    (episodeNumber: number) => {
-      setFilterIntent({ episodeNumber, filter: query });
-      open(episodeNumber);
-    },
-    [open, query, setFilterIntent],
+    (episodeNumber: number) => open(episodeNumber, filterMoments(episodeNumber, query)),
+    [open, query],
   );
 
   // Shown in place, never thrown: an error boundary above this would take the
@@ -233,7 +224,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
             totals={totals}
             updating={isPlaceholderData || !totals}
             sort={sort}
-            onSort={setSort}
+            onSort={searchSort.set}
             onClose={closeSearch}
           />
           <div className={isPlaceholderData ? `${groupsStyles} opacity-60` : groupsStyles}>

@@ -3,9 +3,8 @@ import { createFileRoute, getRouteApi, redirect } from "@tanstack/react-router";
 import { episodeKey, episodeQuery } from "@/lib/queries";
 import { fetchEpisodeById, fetchRandomEvent } from "@/lib/api";
 import { WatchScreen } from "@/watch/WatchScreen";
-import { getDefaultStore } from "jotai";
 import { loadYouTubeApi } from "@/lib/youtube";
-import { startIntentAtom } from "@/player/playerState";
+import { playFrom } from "@/lib/intents";
 
 const routeApi = getRouteApi("/watch/$episodeId");
 
@@ -59,14 +58,12 @@ export const Route = createFileRoute("/watch/$episodeId")({
         String(event.episodeNumber),
       );
 
-      // Hand the position over in state so the redirected URL stays clean.
-      getDefaultStore().set(startIntentAtom, {
-        episodeNumber: Number(resolved),
-        seconds: event.timestamp,
-        requestedAt: Date.now(),
+      // The position travels with the redirect, so the URL stays clean.
+      throw redirect({
+        to: "/watch/$episodeId",
+        params: { episodeId: resolved },
+        state: playFrom(Number(resolved), event.timestamp),
       });
-
-      throw redirect({ to: "/watch/$episodeId", params: { episodeId: resolved } });
     }
 
     await context.queryClient.ensureQueryData(episodeQuery(episodeId));
