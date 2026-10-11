@@ -17,9 +17,9 @@ interface WatchScreenProps {
 }
 
 /**
- * The player, sized to leave the episode bar on screen, and the moments rail
- * Beside it (under it on phones). Nothing is drawn over the player: YouTube's
- * Own controls are the only chrome inside it.
+ * The player, sized to leave the episode bar on screen, with the moments
+ * Beside it in wide windows and below it otherwise. Nothing is drawn over the
+ * Player: YouTube's own controls are the only chrome inside it.
  */
 export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   const { videoId, title } = episode.youtubeDetails;
@@ -38,9 +38,9 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   }, [episodeNumber, title, setRecent]);
 
   return (
-    <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] max-[1100px]:desktop:grid-cols-[minmax(0,1fr)_330px]">
-      <main className="min-w-0 px-8 pt-6 pb-14 max-[1100px]:px-5 max-[1100px]:pt-5 mobile:p-0 mobile:pb-1">
-        <div className="watch-screen mx-auto">
+    <div className="wide:grid wide:grid-cols-[minmax(0,1fr)_380px]">
+      <main className="min-w-0 px-8 pt-6 mobile:p-0 wide:pb-14">
+        <div className="watch-width @container mx-auto">
           <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
             <Player videoId={videoId} {...start} />
           </div>

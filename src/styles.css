@@ -20,6 +20,22 @@
   }
 }
 
+/* The watch page puts the moments beside the video only when the window is
+   Wide enough for a 16:9 video plus the list to fill its height — about 7:4.
+   Squarer windows (16:10 laptops, split screen, tablets) stack the list under
+   A full-width video instead, or the column under the video is dead space. */
+@custom-variant wide {
+  @media (min-width: 768px) and (min-height: 600px) and (min-aspect-ratio: 7/4) {
+    @slot;
+  }
+}
+
+@custom-variant stacked {
+  @media not all and (min-width: 768px) and (min-height: 600px) and (min-aspect-ratio: 7/4) {
+    @slot;
+  }
+}
+
 @theme {
   /* Geist carries all UI copy; Raleway is only the wordmark — its old-style
      Figures made episode numbers look uneven. */
@@ -103,15 +119,14 @@
   }
 }
 
-@layer components {
-  /* The watch page's video column: as wide as fits, but never so tall that
-     The episode bar below it falls off the first screen. */
-  .watch-screen {
-    width: min(100%, max(560px, calc((100dvh - var(--header-h) - 160px) * 16 / 9)));
+/* The watch page's video width: as wide as fits, but never so tall that the
+   Episode bar below it falls off the first screen. Stacked, the moments list
+   Takes the same width so its edges line up with the video. */
+@utility watch-width {
+  width: min(100%, max(560px, calc((100dvh - var(--header-h) - 150px) * 16 / 9)));
 
-    @media (max-width: 767.98px), (max-height: 599.98px) {
-      width: 100%;
-    }
+  @media (max-width: 767.98px), (max-height: 599.98px) {
+    width: 100%;
   }
 }
 

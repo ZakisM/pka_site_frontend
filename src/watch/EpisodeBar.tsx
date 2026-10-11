@@ -49,7 +49,7 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   };
 
   return (
-    <section className="mt-5 flex items-start gap-6 max-[1100px]:flex-col max-[1100px]:gap-4 mobile:mx-4 mobile:mt-4">
+    <section className="mt-5 flex items-start gap-6 @max-[720px]:flex-col @max-[720px]:gap-4 mobile:mx-4 mobile:mt-4">
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-3.5">
           <span className="shrink-0 text-[20px] font-bold tabular-nums mobile:text-[17px]">
