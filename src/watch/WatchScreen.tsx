@@ -31,12 +31,11 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   const start = useStartPosition(episodeNumber, urlTimestamp);
 
   useEffect(() => {
-    setRecent((recent) => [
-      { episodeNumber, videoId },
-      ...recent.filter((entry) => entry.episodeNumber !== episodeNumber),
-    ].slice(0, RECENT_LIMIT));
+    setRecent((recent) =>
+      [episodeNumber, ...recent.filter((number) => number !== episodeNumber)].slice(0, RECENT_LIMIT),
+    );
     document.title = `${formatEpisodeNumber(episodeNumber)} · ${displayTitle(title)} · PKA Index`;
-  }, [episodeNumber, videoId, title, setRecent]);
+  }, [episodeNumber, title, setRecent]);
 
   return (
     <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] max-[1100px]:desktop:grid-cols-[minmax(0,1fr)_330px]">

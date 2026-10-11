@@ -15,18 +15,12 @@ const detailFor = (episode: PkaEpisodeSearchResult, progress: WatchProgress | un
     return `Resume at ${formatTimestamp(progress.position)} · ${formatDuration(episode.lengthSeconds - progress.position)} left`;
   }
 
-  return episode.eventCount ? pluralise(episode.eventCount, "moment") : undefined;
+  return episode.eventCount > 0 ? pluralise(episode.eventCount, "moment") : undefined;
 };
 
-interface EpisodeCardProps {
-  episode: PkaEpisodeSearchResult;
-  // Overrides a missing list id with one remembered from watching.
-  videoId?: string;
-}
-
 /** Thumbnail, number and date, title. Opening it resumes where you left off. */
-export const EpisodeCard = ({ episode, videoId = episode.videoId }: EpisodeCardProps) => {
-  const progress = useEpisodeProgress({ ...episode, videoId });
+export const EpisodeCard = ({ episode }: { episode: PkaEpisodeSearchResult }) => {
+  const progress = useEpisodeProgress(episode);
   const detail = detailFor(episode, progress);
 
   return (
@@ -38,7 +32,7 @@ export const EpisodeCard = ({ episode, videoId = episode.videoId }: EpisodeCardP
       <Thumbnail
         episodeNumber={episode.episodeNumber}
         lengthSeconds={episode.lengthSeconds}
-        videoId={videoId}
+        videoId={episode.videoId}
         progress={progress}
       />
       <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-muted">

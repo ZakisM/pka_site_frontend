@@ -6,14 +6,14 @@ import { useState } from "react";
 interface ThumbnailProps {
   episodeNumber: number;
   lengthSeconds: number;
-  videoId?: string;
+  videoId: string;
   progress?: WatchProgress;
 }
 
 /**
  * A flat placeholder that the image fades into once it has loaded — no
  * Spinner: dozens of these load at once and a field of spinners reads as slow.
- * Without a video id (or if YouTube has none) the episode number stands in.
+ * If YouTube has no thumbnail (a removed video), the episode number stands in.
  */
 export const Thumbnail = ({
   episodeNumber,
@@ -26,7 +26,11 @@ export const Thumbnail = ({
 
   return (
     <div className="@container relative aspect-video w-full overflow-hidden bg-raised">
-      {videoId && !failed ? (
+      {failed ? (
+        <span className="absolute inset-0 grid place-items-center text-[26px] font-bold tabular-nums text-dim">
+          {formatEpisodeNumber(episodeNumber)}
+        </span>
+      ) : (
         <img
           key={videoId}
           src={thumbnailUrl(videoId)}
@@ -37,10 +41,6 @@ export const Thumbnail = ({
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
-      ) : (
-        <span className="absolute inset-0 grid place-items-center text-[26px] font-bold tabular-nums text-dim">
-          {formatEpisodeNumber(episodeNumber)}
-        </span>
       )}
       <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
         {formatTimestamp(lengthSeconds)}

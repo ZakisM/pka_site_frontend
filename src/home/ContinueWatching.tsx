@@ -11,23 +11,25 @@ const MAX_CARDS = 4;
 /** Episodes started but not finished, most recently opened first. */
 export const ContinueWatching = ({ episodes }: { episodes: PkaEpisodeSearchResult[] }) => {
   const recent = useAtomValue(recentEpisodesAtom);
+
+  const started = useMemo(() => {
+    const byNumber = new Map(episodes.map((episode) => [formatEpisodeNumber(episode.episodeNumber), episode]));
+
+    return recent
+      .map((episodeNumber) => byNumber.get(formatEpisodeNumber(episodeNumber)))
+      .filter((episode) => episode !== undefined);
+  }, [episodes, recent]);
+
   const positions = useAtomValue(
-    useMemo(() => atom((get) => recent.map((entry) => get(positionAtom(entry.videoId)))), [recent]),
+    useMemo(() => atom((get) => started.map((episode) => get(positionAtom(episode.videoId)))), [started]),
   );
 
-  const byNumber = useMemo(
-    () => new Map(episodes.map((episode) => [formatEpisodeNumber(episode.episodeNumber), episode])),
-    [episodes],
-  );
+  const inProgress = started
+    .filter((episode, index) => {
+      const progress = watchProgress(positions[index] ?? 0, episode.lengthSeconds);
 
-  const inProgress = recent
-    .map((entry, index) => {
-      const episode = byNumber.get(formatEpisodeNumber(entry.episodeNumber));
-      const progress = episode && watchProgress(positions[index] ?? 0, episode.lengthSeconds);
-
-      return progress && !progress.finished ? { episode, videoId: entry.videoId } : undefined;
+      return progress !== undefined && !progress.finished;
     })
-    .filter((card) => card !== undefined)
     .slice(0, MAX_CARDS);
 
   if (inProgress.length === 0) {
@@ -38,8 +40,8 @@ export const ContinueWatching = ({ episodes }: { episodes: PkaEpisodeSearchResul
     <section className="mb-12">
       <h2 className="mb-4 text-[15px] font-semibold">Continue watching</h2>
       <div className={gridStyles}>
-        {inProgress.map(({ episode, videoId }) => (
-          <EpisodeCard key={episode.episodeNumber} episode={episode} videoId={videoId} />
+        {inProgress.map((episode) => (
+          <EpisodeCard key={episode.episodeNumber} episode={episode} />
         ))}
       </div>
     </section>

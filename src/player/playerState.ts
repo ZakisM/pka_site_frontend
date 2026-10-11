@@ -27,15 +27,9 @@ export const positionAtom = (videoId: string) => {
   return created;
 };
 
-export interface RecentEpisode {
-  episodeNumber: number;
-  videoId: string;
-}
-
-// Most recently opened first. Positions are keyed by video id alone, so this
-// Is what lets the home page order "Continue watching" and map a stored
-// Position back to its episode.
-export const recentEpisodesAtom = atomWithStorage<RecentEpisode[]>(
+// Episode numbers, most recently opened first: the order of the home page's
+// "Continue watching". Positions alone carry no time, so they can't order it.
+export const recentEpisodesAtom = atomWithStorage<number[]>(
   "recent-episodes",
   [],
   undefined,
