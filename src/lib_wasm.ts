@@ -8,6 +8,9 @@ export type PkaEpisodeSearchResult = {
   uploadDate: number;
   title: string;
   lengthSeconds: number;
+  // Not sent by the API yet: until it is, thumbnails fall back to a tile.
+  videoId?: string;
+  eventCount?: number;
 };
 
 export type PkaEventSearchResult = {

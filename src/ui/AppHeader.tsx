@@ -1,80 +1,93 @@
-import { Dices, Search, Shuffle } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./Tooltip";
-import { Wordmark, WordmarkIcon } from "./Wordmark";
-import { Link } from "@tanstack/react-router";
-import { SearchTakeover } from "@/search/SearchTakeover";
-import { searchOpenAtom } from "@/search/searchState";
-import { useSetAtom } from "jotai";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Search, Shuffle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { SearchField } from "@/search/SearchField";
+import { Wordmark } from "./Wordmark";
 
-// Radix tooltips also open on focus; the native dialog returns focus to its
-// Trigger on close, which on touch devices left the tooltip stuck open.
-const preventTooltipFocusOpen = (event: React.FocusEvent) =>
-  event.preventDefault();
+const buttonStyles =
+  "flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 border border-line px-3.5 text-[14px] text-secondary transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink mobile:w-10 mobile:px-0";
 
-// Every cell is full height and separated by a vertical hairline — the
-// Dividers are the layout, so there is no padding between cells.
-const iconCellStyles =
-  "flex w-[49px] shrink-0 items-center justify-center border-l border-hairline text-muted transition-colors duration-150 hover:bg-cell-hover hover:text-ink desktop:w-[57px]";
-
+/**
+ * Wordmark, search, random moment. On phones the search box folds into an
+ * Icon so the full wordmark keeps its room; it unfolds while typing and while
+ * A query is showing.
+ */
 export const AppHeader = () => {
-  const setSearchOpen = useSetAtom(searchOpenAtom);
+  const navigate = useNavigate();
+  const query = useSearch({ strict: false, select: (search) => search.q });
+  const [unfolded, setUnfolded] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const searching = unfolded || Boolean(query);
+
+  // ⌘K anywhere, or "/" when not already typing, like YouTube.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const typing = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+      const shortcut =
+        ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") ||
+        (event.key === "/" && !typing);
+
+      if (shortcut) {
+        event.preventDefault();
+        setUnfolded(true);
+        // After the unfold renders, so the input exists on phones.
+        requestAnimationFrame(() => {
+          inputRef.current?.focus();
+          inputRef.current?.select();
+        });
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const unfold = () => {
+    setUnfolded(true);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
 
   return (
-    <>
-      <header className="flex h-[53px] shrink-0 items-stretch border-b border-hairline desktop:h-[57px]">
-        {/* Desktop clears the lockup's 120px minimum; the mobile cell does
-            not, so it shows the square IX mark instead. */}
-        <Link
-          aria-label="PKA Index — latest episode"
-          className="flex shrink-0 items-center border-r border-hairline px-[13px] desktop:px-5"
-          to="/watch/$episodeId"
-          params={{ episodeId: "latest" }}
-        >
-          <WordmarkIcon className="size-[26px] text-[13px] desktop:hidden" />
-          <Wordmark className="h-[28px] text-[19px] mobile:hidden" />
-        </Link>
+    <header
+      data-searching={searching ? true : undefined}
+      className="group/header sticky top-0 z-20 flex h-(--header-h) items-center gap-7 border-b border-line bg-bg px-6 mobile:gap-3 mobile:px-4"
+    >
+      <Link
+        to="/"
+        aria-label="PKA Index home"
+        className="shrink-0 mobile:group-data-searching/header:hidden"
+      >
+        <Wordmark className="h-7 text-[19px] mobile:h-[25px] mobile:text-[17px]" />
+      </Link>
+      <div className="flex min-w-0 flex-1 items-center gap-3 desktop:max-w-[600px] mobile:hidden mobile:group-data-searching/header:flex">
+        <SearchField inputRef={inputRef} onEscape={() => setUnfolded(false)} />
         <button
           type="button"
-          aria-label="Search"
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-[9px] px-[13px] text-left text-[13px] text-muted transition-colors duration-150 hover:bg-cell-hover hover:text-ink desktop:gap-2.5 desktop:border-r desktop:border-hairline desktop:px-5 desktop:text-[14px]"
-          onClick={() => setSearchOpen(true)}
+          className="hidden h-10 shrink-0 cursor-pointer px-1 text-[14px] text-secondary mobile:block"
+          onClick={() => {
+            setUnfolded(false);
+            navigate({ to: ".", search: (previous) => ({ ...previous, q: undefined }), replace: true });
+          }}
         >
-          <Search className="size-[17px] shrink-0 stroke-[2.2] desktop:size-4" />
-          <span className="truncate">Search every episode and moment</span>
-          <kbd className="ml-auto shrink-0 border border-control px-1.5 py-0.5 font-sans text-[11px] tabular-nums text-dimmer mobile:hidden">
-            ⌘K
-          </kbd>
+          Cancel
         </button>
-        {/* Icon-only cells: the label lives in the tooltip and aria-label. */}
-        <Tooltip>
-          <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
-            <Link
-              aria-label="Random episode"
-              className={iconCellStyles}
-              to="/watch/$episodeId"
-              params={{ episodeId: "random" }}
-            >
-              <Shuffle className="size-[17px] stroke-[2.2]" />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Random episode</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger onFocus={preventTooltipFocusOpen} asChild>
-            <Link
-              aria-label="Random moment"
-              className={iconCellStyles}
-              to="/watch/$episodeId"
-              params={{ episodeId: "random-event" }}
-            >
-              <Dices className="size-[17px] stroke-[2.2]" />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Random moment</TooltipContent>
-        </Tooltip>
-      </header>
-
-      <SearchTakeover />
-    </>
+      </div>
+      <div className="ml-auto flex gap-2 mobile:group-data-searching/header:hidden">
+        <button type="button" aria-label="Search" className={`${buttonStyles} desktop:hidden`} onClick={unfold}>
+          <Search className="size-[17px] stroke-2" />
+        </button>
+        <Link
+          to="/watch/$episodeId"
+          params={{ episodeId: "random-event" }}
+          aria-label="Random moment"
+          title="Play a random moment"
+          className={buttonStyles}
+        >
+          <Shuffle className="size-4 stroke-[1.75]" />
+          <span className="mobile:hidden">Random moment</span>
+        </Link>
+      </div>
+    </header>
   );
 };

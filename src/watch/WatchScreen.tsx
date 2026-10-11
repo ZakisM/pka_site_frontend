@@ -1,13 +1,15 @@
-import {
-  useActiveMoment,
-  usePlaybackPosition,
-  useStartPosition,
-} from "./useWatchState";
-import { EpisodeMeta } from "./EpisodeMeta";
+import { useActiveMoment, usePlaybackPosition, useStartPosition } from "./useWatchState";
+import { EpisodeBar } from "./EpisodeBar";
 import { MomentsRail } from "./MomentsRail";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { Player } from "@/player/Player";
-import { PlayingNow } from "./PlayingNow";
+import { displayTitle } from "@/lib/titles";
+import { formatEpisodeNumber } from "@/lib/time";
+import { recentEpisodesAtom } from "@/player/playerState";
+import { useEffect } from "react";
+import { useSetAtom } from "jotai";
+
+const RECENT_LIMIT = 30;
 
 interface WatchScreenProps {
   episode: PkaEpisodeWithAll;
@@ -15,38 +17,46 @@ interface WatchScreenProps {
 }
 
 /**
- * Player, then "where am I", then the episode's moments. On desktop the rail
- * Sits beside the player; on mobile it fills everything under it.
+ * The player, sized to leave the episode bar on screen, and the moments rail
+ * Beside it (under it on phones). Nothing is drawn over the player: YouTube's
+ * Own controls are the only chrome inside it.
  */
 export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
-  const { videoId } = episode.youtubeDetails;
+  const { videoId, title } = episode.youtubeDetails;
+  const episodeNumber = episode.episode.number;
+  const setRecent = useSetAtom(recentEpisodesAtom);
 
   const position = usePlaybackPosition(videoId);
   const activeIndex = useActiveMoment(episode.events, position);
-  const start = useStartPosition(episode.episode.number, urlTimestamp);
+  const start = useStartPosition(episodeNumber, urlTimestamp);
+
+  useEffect(() => {
+    setRecent((recent) => [
+      { episodeNumber, videoId },
+      ...recent.filter((entry) => entry.episodeNumber !== episodeNumber),
+    ].slice(0, RECENT_LIMIT));
+    document.title = `${formatEpisodeNumber(episodeNumber)} · ${displayTitle(title)} · PKA Index`;
+  }, [episodeNumber, videoId, title, setRecent]);
 
   return (
-    <div className="flex h-full min-h-0 mobile:flex-col">
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col mobile:flex-none">
-        <div className="flex min-w-0 flex-col bg-black mobile:aspect-video mobile:min-h-[200px] mobile:shrink-0 desktop:min-h-[300px] desktop:flex-1">
-          <Player videoId={videoId} {...start} />
+    <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] max-[1100px]:desktop:grid-cols-[minmax(0,1fr)_330px]">
+      <main className="min-w-0 px-8 pt-6 pb-14 max-[1100px]:px-5 max-[1100px]:pt-5 mobile:p-0 mobile:pb-1">
+        <div className="watch-screen mx-auto">
+          <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
+            <Player videoId={videoId} {...start} />
+          </div>
+          <EpisodeBar
+            key={episodeNumber}
+            episode={episode}
+            startRequested={start.startSeconds !== undefined}
+          />
         </div>
-        <PlayingNow
-          event={episode.events[activeIndex]}
-          nextEvent={episode.events[activeIndex + 1]}
-          episodeNumber={episode.episode.number}
-          position={position}
-        />
-        <EpisodeMeta episode={episode} />
       </main>
-      {/* Keyed per episode: virtua otherwise carries the previous episode's
-          scroll offset and its cache of row heights, which are indexed by
-          position and so get applied to the new episode's rows until they are
-          re-measured — leaving scrollToIndex computing against stale sizes. */}
+      {/* Keyed per episode so its filter and follow state start fresh. */}
       <MomentsRail
-        key={episode.episode.number}
+        key={episodeNumber}
         events={episode.events}
-        episodeNumber={episode.episode.number}
+        episodeNumber={episodeNumber}
         activeIndex={activeIndex}
         position={position}
       />

@@ -27,19 +27,34 @@ export const positionAtom = (videoId: string) => {
   return created;
 };
 
-// "Seek the video already on screen" — a moments-rail or preview click.
+export interface RecentEpisode {
+  episodeNumber: number;
+  videoId: string;
+}
+
+// Most recently opened first. Positions are keyed by video id alone, so this
+// Is what lets the home page order "Continue watching" and map a stored
+// Position back to its episode.
+export const recentEpisodesAtom = atomWithStorage<RecentEpisode[]>(
+  "recent-episodes",
+  [],
+  undefined,
+  { getOnInit: true },
+);
+
+// "Seek the video already on screen" — a moments-rail click.
 export const seekRequestAtom = atom<{
   seconds: number;
   requestedAt: number;
 } | null>(null);
 
-// Set while a full-screen overlay covers the player. The player pauses for the
+// Set while the search page hides the player. The player pauses for the
 // Duration and resumes only if it was the one that paused it — so a video the
 // Viewer had already paused stays paused.
 export const playerObscuredAtom = atom(false);
 
-// "Open this episode at this moment" — a search result or the random-moment
-// Link. Deliberately state and not a URL param: ?timestamp is only an entry
+// "Open this episode at this moment" — a search hit, a continue-watching card
+// Or the random-moment link. Deliberately state and not a URL param: ?timestamp is only an entry
 // Point for shared links, and letting both drive the player made them fight.
 // A back navigation would re-seek to the shared moment instead of resuming,
 // And the param could reach the player a render before its episode did.

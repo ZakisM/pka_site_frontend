@@ -54,6 +54,11 @@ declare global {
 
 const API_SRC = "https://www.youtube.com/iframe_api";
 
+// YouTube's own 16:9 thumbnail (320×180). Linked rather than proxied, which is
+// How the embed terms expect thumbnails to be used.
+export const thumbnailUrl = (videoId: string) =>
+  `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+
 let apiPromise: Promise<YouTubeApi> | null = null;
 
 // Fetched once per page and shared by every player.

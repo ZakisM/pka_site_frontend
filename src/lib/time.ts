@@ -15,18 +15,18 @@ export const formatTimestamp = (seconds: number) => {
   return hours > 0 ? `${hours}:${mmss}` : mmss;
 };
 
-// A length rather than a position ("9m 27s").
+// A length rather than a position, rounded to what a glance needs: "2h 10m",
+// "7m", "45s".
 export const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
+  if (seconds >= 3600) {
+    return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  }
 
-  return minutes > 0
-    ? `${minutes}m ${String(secs).padStart(2, "0")}s`
-    : `${secs}s`;
+  return seconds >= 60 ? `${Math.round(seconds / 60)}m` : `${Math.max(0, Math.floor(seconds))}s`;
 };
 
-// Hand-rolled rather than date-fns: search rows mount dozens of times per
-// Frame while scrolling a virtualised list of 35k results.
+// Hand-rolled rather than date-fns: grids and result lists format hundreds of
+// These per page.
 export const formatShortDate = (unixSeconds: number) => {
   const date = new Date(unixSeconds * 1000);
 
@@ -36,3 +36,9 @@ export const formatShortDate = (unixSeconds: number) => {
 // The episode number can be fractional for bonus episodes (280.5).
 export const formatEpisodeNumber = (episodeNumber: number) =>
   Number(episodeNumber.toFixed(1));
+
+export const yearOf = (unixSeconds: number) =>
+  new Date(unixSeconds * 1000).getFullYear();
+
+export const pluralise = (count: number, noun: string) =>
+  `${count.toLocaleString("en-GB")} ${noun}${count === 1 ? "" : "s"}`;

@@ -7,10 +7,13 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 | --- | --- |
 | `routes/` | TanStack Router route files; `routeTree.gen.ts` is generated — never edit it |
 | `player/` | The YouTube iframe: `usePlayer` owns its whole lifecycle, `playerState` its atoms |
-| `watch/` | The watch screen — player, playing-now band, episode meta, moments rail |
-| `search/` | The ⌘K takeover — screen, results, preview panel, and its hooks/atoms |
-| `ui/` | Shared presentation: header, wordmark, loaders, tooltip, scrollbars, error page |
+| `home/` | The home page — continue watching and the archive grid, filterable by year |
+| `watch/` | The watch screen — player, episode bar, moments rail |
+| `search/` | The header search field and the results page drawn over any page via `?q=` |
+| `ui/` | Shared presentation: header, wordmark, thumbnail, highlight, loaders, error page |
 | `lib/` | Non-visual shared code: API client, query options, formatters, small hooks |
+
+Search is a root search param, not a route: results render over whichever page is open while that page stays mounted but hidden, so the player keeps its iframe and home keeps its scroll. Never turn search into a route of its own.
 
 Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. WebAssembly bindings compiled from `lib_wasm` are committed to `src/lib_wasm_out/`; static assets live in `public/`, production bundles in `dist/`.
 

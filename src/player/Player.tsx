@@ -20,7 +20,7 @@ export const Player = (request: PlayerRequest) => {
   const showLoader = useDebounced(!ready, LOADER_DELAY_MS) && !ready;
 
   return (
-    <div className="relative flex grow">
+    <div className="relative isolate size-full">
       <div ref={hostRef} className="size-full" />
       {showLoader && (
         <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
