@@ -1,4 +1,5 @@
-import { useActiveMoment, usePlaybackPosition, useStartPosition } from "./useWatchState";
+import { markRecent, usePosition } from "@/player/watchHistory";
+import { useActiveMoment, useStartRequest } from "./useWatchState";
 import { EpisodeBar } from "./EpisodeBar";
 import { MomentsRail } from "./MomentsRail";
 import { MoreEpisodes } from "./MoreEpisodes";
@@ -7,11 +8,7 @@ import { Player } from "@/player/Player";
 import { RelatedMoments } from "./RelatedMoments";
 import { displayTitle } from "@/lib/titles";
 import { formatEpisodeNumber } from "@/lib/time";
-import { recentEpisodesAtom } from "@/player/playerState";
 import { useEffect } from "react";
-import { useSetAtom } from "jotai";
-
-const RECENT_LIMIT = 30;
 
 interface WatchScreenProps {
   episode: PkaEpisodeWithAll;
@@ -27,25 +24,22 @@ interface WatchScreenProps {
 export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   const { videoId, title } = episode.youtubeDetails;
   const episodeNumber = episode.episode.number;
-  const setRecent = useSetAtom(recentEpisodesAtom);
 
-  const position = usePlaybackPosition(videoId);
+  const position = usePosition(videoId);
   const activeIndex = useActiveMoment(episode.events, position);
-  const start = useStartPosition(episodeNumber, urlTimestamp);
+  const start = useStartRequest(episodeNumber, urlTimestamp);
 
   useEffect(() => {
-    setRecent((recent) =>
-      [episodeNumber, ...recent.filter((number) => number !== episodeNumber)].slice(0, RECENT_LIMIT),
-    );
+    markRecent(episodeNumber);
     document.title = `${formatEpisodeNumber(episodeNumber)} · ${displayTitle(title)} · PKA Index`;
-  }, [episodeNumber, title, setRecent]);
+  }, [episodeNumber, title]);
 
   return (
     <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] desktop:grid-rows-[auto_1fr]">
       <main className="min-w-0 px-8 pt-6 mobile:p-0">
         <div className="watch-width @container mx-auto">
           <div className="aspect-video w-full bg-black mobile:min-h-[200px]">
-            <Player videoId={videoId} {...start} />
+            <Player videoId={videoId} start={start} />
           </div>
           <EpisodeBar key={episodeNumber} episode={episode} />
         </div>

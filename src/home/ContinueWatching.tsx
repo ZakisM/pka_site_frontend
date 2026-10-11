@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { atom, useAtomValue } from "jotai";
-import { positionAtom, recentEpisodesAtom } from "@/player/playerState";
+import { usePositions, useRecentEpisodes } from "@/player/watchHistory";
 import { EpisodeCard } from "@/ui/EpisodeCard";
 import type { EpisodeSummary } from "@/lib/api";
 import { formatEpisodeNumber } from "@/lib/time";
@@ -16,7 +15,8 @@ const pageButton =
 
 /** Episodes started but not finished, most recently opened first. */
 export const ContinueWatching = ({ episodes }: { episodes: EpisodeSummary[] }) => {
-  const recent = useAtomValue(recentEpisodesAtom);
+  const recent = useRecentEpisodes();
+  const positions = usePositions();
 
   const started = useMemo(() => {
     const byNumber = new Map(episodes.map((episode) => [formatEpisodeNumber(episode.episodeNumber), episode]));
@@ -26,13 +26,9 @@ export const ContinueWatching = ({ episodes }: { episodes: EpisodeSummary[] }) =
       .filter((episode) => episode !== undefined);
   }, [episodes, recent]);
 
-  const positions = useAtomValue(
-    useMemo(() => atom((get) => started.map((episode) => get(positionAtom(episode.videoId)))), [started]),
-  );
-
   const inProgress = started
-    .filter((episode, index) => {
-      const progress = watchProgress(positions[index] ?? 0, episode.lengthSeconds);
+    .filter((episode) => {
+      const progress = watchProgress(positions.get(episode.videoId) ?? 0, episode.lengthSeconds);
 
       return progress !== undefined && !progress.finished;
     })

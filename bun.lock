@@ -10,7 +10,6 @@
         "@tanstack/react-query": "^5.104.1",
         "@tanstack/react-router": "^1.170.42",
         "@tanstack/react-router-devtools": "^1.167.2",
-        "jotai": "^3.0.0",
         "ky": "^2.2.0",
         "lucide-react": "^1.55.0",
         "react": "^19.3.0",
@@ -382,8 +381,6 @@
     "isbot": ["isbot@5.2.2", "", {}, "sha512-iQcBXcd+Rv/pkubRyGh2utW2j1oPG5hZY6TUhVPpqK4G+o3IbxpJNx04hgksjc/N7GK5pEorUxDeg31cFgEk/w=="],
 
     "jiti": ["jiti@2.7.0", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="],
-
-    "jotai": ["jotai@3.0.1", "", { "peerDependencies": { "@types/react": ">=18.0.0", "react": ">=18.0.0" }, "optionalPeers": ["@types/react", "react"] }, "sha512-6tS7wY9otdiNp26Wqb/1ds3OuVJVoV+tJlN4hpLrYmfFf/t9bauVt+zKBNSpS5qSl5h6GieVQ+OknVraZX+udQ=="],
 
     "js-tokens": ["js-tokens@10.0.0", "", {}, "sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q=="],
 

@@ -22,6 +22,7 @@ export interface YouTubePlayer {
   pauseVideo: () => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   getCurrentTime: () => number;
+  getPlayerState: () => number;
   getVideoData: () => { video_id?: string } | undefined;
   destroy: () => void;
 }

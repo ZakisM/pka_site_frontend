@@ -1,12 +1,12 @@
 import { Highlight, searchTerms } from "@/ui/Highlight";
 import { Search, X } from "lucide-react";
 import { formatDuration, formatTimestamp } from "@/lib/time";
-import { useAtom, useSetAtom } from "jotai";
+import { isSpent, spend } from "@/lib/intents";
 import { useLayoutEffect, useRef, useState } from "react";
 import type { PkaEvent } from "@/lib/api";
-import { railFilterIntentAtom } from "@/lib/intents";
-import { seekRequestAtom } from "@/player/playerState";
+import { player } from "@/player/controller";
 import { smoothScroll } from "@/lib/motion";
+import { useLocation } from "@tanstack/react-router";
 
 interface MomentRowProps {
   event: PkaEvent;
@@ -124,23 +124,21 @@ interface MomentsRailProps {
 
 /** The episode's moments, filterable; every row is a play target. */
 export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: MomentsRailProps) => {
-  const setSeekRequest = useSetAtom(seekRequestAtom);
-  const [filterIntent, setFilterIntent] = useAtom(railFilterIntentAtom);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  // A search's "more moments in this episode" applies its query here: on the
-  // First render when it opens a new episode (so the full list never
-  // Flashes), and whenever it arrives for the episode already on screen.
-  const [filter, setFilter] = useState(() =>
-    filterIntent?.episodeNumber === episodeNumber ? filterIntent.filter : "",
-  );
+  // A search's "more moments in this episode" applies its query here, once
+  // (see lib/intents): on the first render when it opens a new episode, so
+  // The full list never flashes, and whenever it arrives for the episode
+  // Already on screen.
+  const intent = useLocation({ select: (location) => location.state.filterMoments });
+  const wanted = intent?.episodeNumber === episodeNumber && !isSpent(intent.id) ? intent : undefined;
+  const [filter, setFilter] = useState(() => wanted?.filter ?? "");
 
   useLayoutEffect(() => {
-    if (filterIntent?.episodeNumber === episodeNumber) {
-      setFilter(filterIntent.filter);
-      setFilterIntent(null);
+    if (wanted && spend(wanted.id)) {
+      setFilter(wanted.filter);
     }
-  }, [filterIntent, episodeNumber, setFilterIntent]);
+  }, [wanted]);
 
   useFollowActive(listRef, activeIndex, filter);
 
@@ -148,8 +146,6 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const rows = events
     .map((event, index) => ({ event, index }))
     .filter(({ event }) => terms.every((term) => event.description.toLowerCase().includes(term)));
-
-  const seek = (seconds: number) => setSeekRequest({ seconds, requestedAt: Date.now() });
 
   return (
     // Keyed per episode by its parent, so a new episode's moments fade in.
@@ -205,7 +201,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
               active={active}
               remaining={active ? Math.max(0, event.timestamp + event.lengthSeconds - position) : undefined}
               terms={terms}
-              onSeek={seek}
+              onSeek={player.seek}
             />
           );
         })}

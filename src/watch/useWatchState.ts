@@ -1,20 +1,15 @@
-import { positionAtom, startIntentAtom } from "@/player/playerState";
-import { useAtom, useAtomValue } from "jotai";
-import { useEffect, useMemo, useState } from "react";
 import type { PkaEvent } from "@/lib/api";
+import type { StartRequest } from "@/player/controller";
+import { useLocation } from "@tanstack/react-router";
+import { useMemo } from "react";
 
-// A shared link's ?timestamp is an entry point, not app state: honour it once
-// Per page load and never again, so a back navigation resumes where the viewer
-// Actually was instead of replaying the link's moment.
-let urlTimestampConsumed = false;
+// A shared link's ?timestamp is an entry point, honoured when the page is
+// Loaded with it. Its id is unique to this page load, so it is spent from then
+// On: Back to it resumes where the viewer actually was, but a reload of the
+// Link starts at its moment again.
+const PAGE_LOAD = Date.now().toString(36);
 
-const consumeUrlTimestamp = (timestamp: unknown) => {
-  if (urlTimestampConsumed) {
-    return;
-  }
-
-  urlTimestampConsumed = true;
-
+const parseTimestamp = (timestamp: unknown) => {
   // A pasted link arrives as a string; anything unparseable is no timestamp.
   const parsed = Number(timestamp);
 
@@ -22,53 +17,25 @@ const consumeUrlTimestamp = (timestamp: unknown) => {
 };
 
 /**
- * Where this episode should start, from the one source allowed to say so.
- * Returns props for the player: they travel together, so a position can never
- * Reach the player a render before the episode it belongs to.
+ * Where this episode should start, if anything asked: the navigation that
+ * Opened it (see lib/intents), or a shared link. The player acts on each
+ * Request once.
  */
-export const useStartPosition = (
-  episodeNumber: number,
-  urlTimestamp: unknown,
-) => {
-  const [intent, setIntent] = useAtom(startIntentAtom);
-  // The watch screen outlives episode changes, so remember which episode the
-  // Link's timestamp was for: once a later intent had been used up, an
-  // Unscoped one resurfaced as a fresh request and sent every next episode to
-  // The shared link's time.
-  const [urlStart, setUrlStart] = useState(() => ({
-    episodeNumber,
-    seconds: consumeUrlTimestamp(urlTimestamp),
-  }));
+export const useStartRequest = (episodeNumber: number, urlTimestamp: unknown): StartRequest | undefined => {
+  // The location runs ahead of the screen while the next episode loads, so
+  // Only a request for the episode on screen counts.
+  const intent = useLocation({ select: (location) => location.state.playFrom });
 
-  // Spent once another episode is opened, so coming Back resumes where the
-  // Viewer was rather than replaying the link's moment.
-  if (urlStart.seconds !== undefined && urlStart.episodeNumber !== episodeNumber) {
-    setUrlStart({ episodeNumber, seconds: undefined });
+  if (intent?.episodeNumber === episodeNumber) {
+    return { id: intent.id, seconds: intent.seconds, play: true };
   }
 
-  // Only an intent aimed at the episode now on screen may touch the player.
-  const forThisEpisode =
-    intent?.episodeNumber === episodeNumber ? intent : undefined;
+  const seconds = parseTimestamp(urlTimestamp);
 
-  useEffect(() => {
-    if (forThisEpisode) {
-      setIntent(null);
-    }
-  }, [forThisEpisode, setIntent]);
-
-  return {
-    startSeconds:
-      forThisEpisode?.seconds ??
-      (urlStart.episodeNumber === episodeNumber ? urlStart.seconds : undefined),
-    // A constant for the URL case so it is never mistaken for a fresh request;
-    // It only ever seeds the player's initial construction.
-    startKey: forThisEpisode ? String(forThisEpisode.requestedAt) : "url",
-  };
+  return seconds === undefined
+    ? undefined
+    : { id: `url.${PAGE_LOAD}.${episodeNumber}.${seconds}`, seconds, play: false };
 };
-
-/** Live playback position for a video, in seconds. */
-export const usePlaybackPosition = (videoId: string) =>
-  useAtomValue(positionAtom(videoId));
 
 /**
  * Index of the moment currently playing. Derived rather than stored: the
