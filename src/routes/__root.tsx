@@ -4,7 +4,7 @@ import {
   useRouterState,
   useSearch,
 } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppHeader } from "@/ui/AppHeader";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -31,6 +31,9 @@ const useSearchOverlay = (searching: boolean) => {
   }, [searching, setPlayerObscured]);
 };
 
+// Where each query's results were last scrolled to, for this session.
+const resultsScroll = new Map<string, number>();
+
 const RootComponent = () => {
   const query = useSearch({ strict: false, select: (search) => search.q });
   // Status, not isLoading or isTransitioning — those stay false for the whole
@@ -56,6 +59,19 @@ const RootComponent = () => {
 
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
+  // Reopening a query's results puts them back where they were left. (Back
+  // And Forward are handled by the router's restoration; this covers opening
+  // Them again from the search box, which is a new history entry.)
+  useLayoutEffect(() => {
+    const layer = resultsRef.current;
+    const saved = query ? resultsScroll.get(query) : undefined;
+
+    // A query not seen before starts at the top, not at the last one's offset.
+    if (layer) {
+      layer.scrollTop = saved ?? 0;
+    }
+  }, [query]);
+
   return (
     <>
       <AppHeader />
@@ -70,6 +86,7 @@ const RootComponent = () => {
         <div
           ref={resultsRef}
           data-scroll-restoration-id="search-results"
+          onScroll={(event) => resultsScroll.set(query, event.currentTarget.scrollTop)}
           className="fixed inset-x-0 top-(--header-h) bottom-0 z-10 overflow-y-auto overscroll-contain bg-bg"
         >
           <SearchPage query={query} scrollRoot={resultsRef} />

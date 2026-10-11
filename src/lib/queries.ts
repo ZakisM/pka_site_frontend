@@ -46,4 +46,7 @@ export const searchQuery = (query: string, sort: SearchSort) =>
     initialPageParam: 0,
     getNextPageParam: (last) => last.nextPage ?? undefined,
     placeholderData: keepPreviousData,
+    // Kept long enough that reopening a recent search is instant, with every
+    // Page that had been loaded.
+    gcTime: 30 * 60 * 1000,
   });

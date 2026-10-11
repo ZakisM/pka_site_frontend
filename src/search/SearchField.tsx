@@ -17,7 +17,8 @@ interface SearchFieldProps {
  * Player keeps its iframe and the page keeps its place.
  *
  * The text stays in the box after a result is opened, like any search bar;
- * Enter brings the results back. Only clearing empties it.
+ * Focusing the box (or Enter) brings those results back where they were left.
+ * Only clearing empties it.
  */
 export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   const navigate = useNavigate();
@@ -112,7 +113,14 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
         // Focusing selects the kept query so typing replaces it. The mouseup
         // Of the click that focused the box would collapse that selection to
         // A caret, so that one mouseup is cancelled.
-        onFocus={(event) => event.currentTarget.select()}
+        onFocus={(event) => {
+          event.currentTarget.select();
+
+          // Coming back to a kept query brings its results back as they were.
+          if (value.trim() && !query) {
+            showResults(value.trim());
+          }
+        }}
         onMouseDown={(event) => {
           focusingClickRef.current = document.activeElement !== event.currentTarget;
         }}
