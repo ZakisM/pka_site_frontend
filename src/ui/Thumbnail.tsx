@@ -25,7 +25,7 @@ export const Thumbnail = ({
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden bg-raised">
+    <div className="@container relative aspect-video w-full overflow-hidden bg-raised">
       {videoId && !failed ? (
         <img
           key={videoId}
@@ -42,7 +42,7 @@ export const Thumbnail = ({
           {formatEpisodeNumber(episodeNumber)}
         </span>
       )}
-      <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white">
+      <span className="absolute right-1.5 bottom-2 bg-black/80 px-[5px] py-0.5 text-[12px] font-medium tabular-nums text-white @max-[160px]:hidden">
         {formatTimestamp(lengthSeconds)}
       </span>
       {progress && (

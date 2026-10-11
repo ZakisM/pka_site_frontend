@@ -15,7 +15,7 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 
 Search is a root search param, not a route: results render over whichever page is open while that page stays mounted but hidden, so the player keeps its iframe and home keeps its scroll. Never turn search into a route of its own.
 
-Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. WebAssembly bindings compiled from `lib_wasm` are committed to `src/lib_wasm_out/`; static assets live in `public/`, production bundles in `dist/`.
+Feature folders own their own state and hooks; anything imported by two features belongs in `lib/` or `ui/`. WebAssembly bindings compiled from `lib_wasm` land in `src/lib_wasm_out/` (gitignored; the Dockerfile builds them); static assets live in `public/`, production bundles in `dist/`.
 
 ## Build, Test, and Development Commands
 Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7) and lint with `bun run lint` (oxlint).
@@ -33,7 +33,7 @@ Tokens live in `@theme` in `src/styles.css`. Two rules bite often:
 Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths: the two-column UI needs width *and* height, so a tablet or unfolded foldable gets it while a landscape phone does not.
 
 ## WASM Workflow
-The Rust crate in `lib_wasm/` must be rebuilt whenever bindings change. Run `just wasm-build`, `just wasm-bindgen`, then `just update-wasm-bindgen` to sync `src/lib_wasm_out/`. Keep the generated files committed.
+The Rust crate in `lib_wasm/` must be rebuilt whenever bindings change. Run `just update-wasm-bindgen` (it builds and binds first) to regenerate `src/lib_wasm_out/` locally. The `wasm-bindgen-cli` version pinned in the Dockerfile must match `wasm-bindgen` in `lib_wasm/Cargo.lock` exactly. The decoders read the backend's bitcode positionally, so a struct change must match the backend field for field.
 
 ## Commit & Pull Request Guidelines
 Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. Before opening a PR ensure `bun run build` passes, attach screenshots for UI diffs, and cross-link relevant issues.

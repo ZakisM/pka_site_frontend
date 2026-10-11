@@ -30,11 +30,20 @@ export const AppHeader = () => {
       if (shortcut) {
         event.preventDefault();
         setUnfolded(true);
-        // After the unfold renders, so the input exists on phones.
-        requestAnimationFrame(() => {
+
+        const focusInput = () => {
           inputRef.current?.focus();
           inputRef.current?.select();
-        });
+        };
+
+        // Synchronously where the box is already visible, or the keystroke
+        // Typed straight after the shortcut is lost; on phones it only exists
+        // Once the unfold has rendered.
+        focusInput();
+
+        if (document.activeElement !== inputRef.current) {
+          requestAnimationFrame(focusInput);
+        }
       }
     };
 

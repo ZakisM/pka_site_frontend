@@ -8,7 +8,7 @@ RUN apt update && \
 
 # Must match the wasm-bindgen version in lib_wasm/Cargo.lock exactly —
 # the bindgen schema is unstable across versions.
-RUN cargo binstall wasm-bindgen-cli@0.2.123 just -y
+RUN cargo binstall wasm-bindgen-cli@0.2.129 just -y
 RUN rustup target add wasm32-unknown-unknown
 
 COPY justfile .
