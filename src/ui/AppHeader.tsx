@@ -3,6 +3,7 @@ import { Search, Shuffle } from "lucide-react";
 import { useRef, useState } from "react";
 import { SearchField } from "@/search/SearchField";
 import { Wordmark } from "./Wordmark";
+import { flushSync } from "react-dom";
 import { useCloseSearch } from "@/search/searchState";
 
 const buttonStyles =
@@ -20,9 +21,14 @@ export const AppHeader = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const searching = unfolded || Boolean(query);
 
+  // Tapping the icon counts as clicking into the box: it focuses it and, with
+  // A query kept from before, brings those results straight back. Unfolded
+  // Synchronously so the focus lands inside the tap itself, which is the only
+  // Time iOS will raise the keyboard for it.
   const unfold = () => {
-    setUnfolded(true);
-    requestAnimationFrame(() => inputRef.current?.focus());
+    flushSync(() => setUnfolded(true));
+    inputRef.current?.focus();
+    inputRef.current?.click();
   };
 
   return (
