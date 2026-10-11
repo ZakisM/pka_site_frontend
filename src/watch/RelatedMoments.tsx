@@ -1,5 +1,4 @@
 import { formatEpisodeNumber, formatShortDate, formatTimestamp } from "@/lib/time";
-import { Highlight } from "@/ui/Highlight";
 import type { PkaEvent } from "@/lib/api";
 import { Thumbnail } from "@/ui/Thumbnail";
 import { relatedQuery } from "@/lib/queries";
@@ -58,7 +57,7 @@ export const RelatedMoments = ({ episodeNumber, moment, fallback }: RelatedMomen
                 {formatShortDate(item.episode.uploadDate)}
               </span>
               <span className="mt-1 line-clamp-3 block text-[14px]/[1.4] text-secondary group-hover:text-ink">
-                <Highlight text={item.description} terms={item.sharedTerms} />
+                {item.description}
               </span>
             </span>
           </button>

@@ -13,26 +13,6 @@ export const useDebounced = <T,>(value: T, delayMs: number) => {
   return debounced;
 };
 
-// Lets a component skip rendering — and so skip fetching for — UI that CSS
-// Would only have hidden.
-export const useMediaQuery = (query: string) => {
-  const [matches, setMatches] = useState(
-    () => globalThis.matchMedia?.(query).matches ?? false,
-  );
-
-  useEffect(() => {
-    const media = globalThis.matchMedia(query);
-    const onChange = () => setMatches(media.matches);
-
-    onChange();
-    media.addEventListener("change", onChange);
-
-    return () => media.removeEventListener("change", onChange);
-  }, [query]);
-
-  return matches;
-};
-
 /**
  * A ref for an element at the end of a list; `onReach` runs whenever it comes
  * Within a screen or so of view. `generation` should change each time the

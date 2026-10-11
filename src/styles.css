@@ -100,13 +100,12 @@
     overflow: hidden;
   }
 
-  /* Matched search words: bright text on a thin red underline. A filled
-     Background got heavy where several matches sat in one line. */
+  /* Matched search words: a step brighter and bolder than the text around
+     Them — enough to scan by, quiet enough not to compete with the result. */
   mark {
     background: none;
     color: var(--color-ink);
-    text-decoration: underline 1.5px var(--color-primary);
-    text-underline-offset: 3px;
+    font-weight: 600;
   }
 
   @media (prefers-reduced-motion: reduce) {
