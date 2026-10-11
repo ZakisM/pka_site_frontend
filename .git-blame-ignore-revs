@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by `git blame` (GitHub does this
+# automatically; locally: git config blame.ignoreRevsFile .git-blame-ignore-revs).
+
+# Format the codebase with oxfmt
+8b3be8f3300e3cf0205c93b375aeacfb31bdba73
