@@ -1,15 +1,15 @@
+import { HTTPError } from "@/lib/api";
 import { Link } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 
 // The API answered, and the thing asked for doesn't exist: an old or mistyped
 // Episode link, not an outage.
-const isNotFound = (error: Error) =>
-  error.name === "HTTPError" && (error as Error & { response?: Response }).response?.status === 404;
+const isNotFound = (error: Error) => error instanceof HTTPError && error.response.status === 404;
 
 // Raw fetch/parse failures mean the API returned nothing useful — usually the
 // Backend is down and the SPA fallback HTML came back instead of JSON.
 const isApiUnreachable = (error: Error) =>
-  error.name === "HTTPError" || /JSON\.parse|Unexpected token|Failed to fetch|NetworkError/iu.test(error.message);
+  error instanceof HTTPError || /JSON\.parse|Unexpected token|Failed to fetch|NetworkError/iu.test(error.message);
 
 const actionStyles =
   "cursor-pointer border border-line px-3.5 py-2 text-[13px] text-muted transition-colors duration-150 hover:border-line-strong hover:bg-raised hover:text-ink";

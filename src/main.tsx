@@ -1,5 +1,4 @@
 import "@fontsource-variable/geist";
-import "@fontsource-variable/raleway";
 import "./styles.css";
 import { Navigate, RouterProvider, createRouter } from "@tanstack/react-router";
 import { ErrorPage } from "@/ui/ErrorPage";
@@ -28,6 +27,12 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+
+// A tab opened before a deploy still runs the old build, whose route chunks
+// The deploy removed: when one fails to load, reload onto the new build.
+globalThis.addEventListener("vite:preloadError", () => {
+  globalThis.location.reload();
+});
 
 const rootElement = document.querySelector("#root");
 
