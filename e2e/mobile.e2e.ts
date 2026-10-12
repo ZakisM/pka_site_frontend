@@ -90,3 +90,11 @@ test("after tapping a moment, the list keeps following playback", async ({ page 
     })
     .toEqual({ time: clock(TARGET.index), inView: true });
 });
+
+test("About & privacy is a tap away on a phone too", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "About & privacy" }).tap();
+
+  await expect(page.getByRole("heading", { name: "About & privacy" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+});

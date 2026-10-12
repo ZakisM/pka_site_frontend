@@ -1,5 +1,5 @@
+import { Info, Search, Shuffle } from "lucide-react";
 import { Link, useSearch } from "@tanstack/react-router";
-import { Search, Shuffle } from "lucide-react";
 import { useRef, useState } from "react";
 import { SearchField } from "@/search/SearchField";
 import { Wordmark } from "./Wordmark";
@@ -64,6 +64,11 @@ export const AppHeader = () => {
         <button type="button" aria-label="Search" className={`${buttonStyles} desktop:hidden`} onClick={unfold}>
           <Search className="size-[17px] stroke-2" />
         </button>
+        {/* YouTube's API terms want the privacy notice reachable from every
+            Page; a footer would never be reached past the endless lists. */}
+        <Link to="/about" aria-label="About & privacy" title="About & privacy" className={buttonStyles}>
+          <Info className="size-4 stroke-[1.75]" />
+        </Link>
         <Link
           to="/watch/$episodeId"
           params={{ episodeId: "random-event" }}
