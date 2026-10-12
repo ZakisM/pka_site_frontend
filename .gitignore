@@ -4,6 +4,10 @@
 # Build output
 /dist
 
+# Browser test results (bun run test:e2e)
+/test-results
+/playwright-report
+
 # Local environment
 .env.local
 .env.*.local

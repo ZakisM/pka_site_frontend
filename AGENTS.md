@@ -24,6 +24,8 @@ Feature folders own their own state and hooks; anything imported by two features
 
 Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint, type-aware via tsgolint) format with `bun run format` (oxfmt, 120 columns) and test with `bun run test` (Bun's runner; tests sit beside their source as `*.test.ts`, typechecked by `tsconfig.test.json`).
 
+Browser tests run with `bun run test:e2e`: Playwright drives the production build in Chromium at desktop and phone sizes (`e2e/*.e2e.ts`, typechecked by `tsconfig.e2e.json`; run `bunx playwright install chromium` once first). The API and YouTube are faked inside each test (`e2e/archive.ts`, `e2e/fixtures.ts`), so nothing else needs to be running and no request leaves the machine. A bug in how the app behaves, rather than what it computes, gets a browser test, and that test must fail with the fix removed before it counts.
+
 **Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
 ## Coding Style & Naming Conventions
@@ -45,4 +47,4 @@ oxlint runs every rule category at error, with the React, jsx-a11y, import and p
 
 ## Commit & Pull Request Guidelines
 
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues. Never link an AI coding session (a `claude.ai/code/session_…` URL or a `Claude-Session:` trailer) in commit messages, PR descriptions or comments: the repository is public.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests, build and the browser tests on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues. Never link an AI coding session (a `claude.ai/code/session_…` URL or a `Claude-Session:` trailer) in commit messages, PR descriptions or comments: the repository is public.

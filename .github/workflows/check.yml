@@ -7,7 +7,7 @@ on:
 
 jobs:
   check:
-    name: Typecheck, lint, format, test and build
+    name: Typecheck, lint, format, test, build and browser tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,3 +28,21 @@ jobs:
         run: bun run test
       - name: Build
         run: bun run build
+      - name: Cache Playwright's browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - name: Install Playwright's browser
+        run: bunx playwright install --with-deps chromium
+      - name: Browser tests
+        run: bun run test:e2e
+      - name: Upload the browser test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
