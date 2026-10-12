@@ -45,4 +45,4 @@ oxlint runs every rule category at error, with the React, jsx-a11y, import and p
 
 ## Commit & Pull Request Guidelines
 
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues. Never link an AI coding session (a `claude.ai/code/session_…` URL or a `Claude-Session:` trailer) in commit messages, PR descriptions or comments: the repository is public.
