@@ -122,13 +122,16 @@ export const seed = async (page: Page, { watched = {} }: Seed) => {
   });
 };
 
-/** Every page gets the fake API and player, and no traffic leaves the machine. */
+/**
+ * Every page gets the fake API and player, and no traffic leaves the machine:
+ * Set on the context, so a second tab opened from it gets them too.
+ */
 export const test = base.extend({
-  page: async ({ page }, provide) => {
-    await page.addInitScript(installFakeYouTube);
-    await page.route("**/api/v1/**", answer);
-    await page.route(/^https?:\/\/(?!localhost)/u, async (route) => route.abort());
-    await provide(page);
+  context: async ({ context }, provide) => {
+    await context.addInitScript(installFakeYouTube);
+    await context.route("**/api/v1/**", answer);
+    await context.route(/^https?:\/\/(?!localhost)/u, async (route) => route.abort());
+    await provide(context);
   },
 });
 

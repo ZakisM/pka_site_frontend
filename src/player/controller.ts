@@ -1,6 +1,6 @@
 import { PlayerState, embedPlayer, loadYouTubeApi } from "@/lib/youtube";
+import { claimPosition, positionOf, savePosition } from "./watchHistory";
 import { pendingAt, settle } from "./settle";
-import { positionOf, savePosition } from "./watchHistory";
 import type { Pending } from "./settle";
 import type { YouTubePlayer } from "@/lib/youtube";
 import { createStore } from "@/lib/store";
@@ -30,10 +30,7 @@ const POLL_MS = 250;
 const SWITCH_RETRY_MS = 3000;
 const SWITCH_RETRIES = 2;
 
-const timers: {
-  poll?: ReturnType<typeof setInterval>;
-  reset?: ReturnType<typeof setTimeout>;
-} = {};
+const timers: { poll?: ReturnType<typeof setInterval>; reset?: ReturnType<typeof setTimeout> } = {};
 
 let host: HTMLElement | null = null;
 let creatingIn: HTMLElement | null = null;
@@ -227,6 +224,7 @@ const reset = () => {
   destroy();
   host = null;
   videoId = null;
+  claimPosition(null);
   wantPlay = false;
   pending = null;
   sent = null;
@@ -245,6 +243,7 @@ export const player = {
 
     if (id !== videoId) {
       videoId = id;
+      claimPosition(id);
       // Switching videos inside a running player keeps it playing.
       aim(fresh ? start.seconds : positionOf(id), fresh ? start.play : yt !== null);
       void create();
