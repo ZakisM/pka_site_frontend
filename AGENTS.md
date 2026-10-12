@@ -11,6 +11,7 @@ The React + Vite app lives under `src`, organised by feature rather than by file
 | `home/`   | The home page — continue watching and the archive grid, filterable by year                    |
 | `watch/`  | The watch screen — player, episode bar, moments rail                                          |
 | `search/` | The header search field and the results page drawn over any page via `?q=`                    |
+| `about/`  | About & privacy: what the site stores, and the notices YouTube's API terms require            |
 | `ui/`     | Shared presentation: header, wordmark, thumbnail, highlight, loaders, error page              |
 | `lib/`    | Non-visual shared code: API client, query options, formatters, small hooks                    |
 

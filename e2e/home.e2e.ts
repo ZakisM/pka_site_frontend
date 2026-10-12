@@ -45,3 +45,20 @@ test("an episode that doesn't exist says so", async ({ page }) => {
 
   await expect(page.getByText("That episode isn’t in the index")).toBeVisible();
 });
+
+// YouTube's API terms want these notices reachable from every page.
+test("the header's (i) opens About & privacy, with YouTube's and Google's terms", async ({ page }) => {
+  await page.goto("/watch/1");
+  await page.getByRole("link", { name: "About & privacy" }).click();
+
+  await expect(page).toHaveURL("/about");
+  await expect(page.getByRole("heading", { name: "About & privacy" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "YouTube Terms of Service" })).toHaveAttribute(
+    "href",
+    "https://www.youtube.com/t/terms",
+  );
+  await expect(page.getByRole("link", { name: "Google Privacy Policy" })).toHaveAttribute(
+    "href",
+    "https://www.google.com/policies/privacy",
+  );
+});
