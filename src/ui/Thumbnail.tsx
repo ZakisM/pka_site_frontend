@@ -12,31 +12,54 @@ interface ThumbnailProps {
   progress?: WatchProgress;
 }
 
+type Source = "webp" | "jpg" | "none";
+
+// WebP first, about an eighth smaller: thumbnails are most of what a page
+// Downloads. YouTube has no WebP for many of its oldest videos, so those fall
+// Back to the JPEG, and a removed video shows its episode number instead.
+const FALLBACK: Record<Source, Source> = { webp: "jpg", jpg: "none", none: "none" };
+
+// A missing thumbnail isn't an error: YouTube answers with a 120×90 grey
+// Placeholder, which loads like any image. The real one is 320×180.
+const PLACEHOLDER_MAX_WIDTH = 120;
+
 /**
  * A flat placeholder that the image fades into once it has loaded — no
  * Spinner: dozens of these load at once and a field of spinners reads as slow.
- * If YouTube has no thumbnail (a removed video), the episode number stands in.
  */
 export const Thumbnail = ({ episodeNumber, lengthSeconds, videoId, progress }: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(false);
+  // Per video: a card reused for another episode starts again from WebP.
+  const [attempt, setAttempt] = useState<{ videoId: string; source: Source }>({ videoId, source: "webp" });
+
+  if (attempt.videoId !== videoId) {
+    setAttempt({ videoId, source: "webp" });
+  }
+
+  const source = attempt.videoId === videoId ? attempt.source : "webp";
 
   return (
     <div className="@container relative aspect-video w-full overflow-hidden bg-raised">
-      {failed ? (
+      {source === "none" ? (
         <span className="absolute inset-0 grid place-items-center text-[26px] font-bold tabular-nums text-dim">
           {formatEpisodeNumber(episodeNumber)}
         </span>
       ) : (
         <img
-          key={videoId}
-          src={thumbnailUrl(videoId)}
+          key={`${videoId}.${source}`}
+          src={thumbnailUrl(videoId, source)}
           alt=""
           loading="lazy"
           decoding="async"
           className={`absolute inset-0 size-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
+          onLoad={(event) => {
+            if (event.currentTarget.naturalWidth <= PLACEHOLDER_MAX_WIDTH) {
+              setAttempt({ videoId, source: FALLBACK[source] });
+            } else {
+              setLoaded(true);
+            }
+          }}
+          onError={() => setAttempt({ videoId, source: FALLBACK[source] })}
         />
       )}
       {/* A plain overlay rather than a filter: filters on dozens of images are
