@@ -77,3 +77,39 @@ test("clicking a moment plays from it", async ({ page }) => {
 
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
 });
+
+// Each tab saved its own position every second and took the other's from
+// Storage, so both lists flicked between the two tabs' moments.
+test("another tab playing the same episode leaves this one's moment alone", async ({ page, context }) => {
+  await page.goto(`/watch/${TARGET.episode}`);
+  await page.locator("aside [data-index='5']").click();
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+
+  const other = await context.newPage();
+
+  await other.goto(`/watch/${TARGET.episode}`);
+  await other.locator("aside [data-index='10']").click();
+  await expect.poll(async () => playingMoment(other)).toEqual({ time: clock(10), inView: true });
+
+  // Every moment either list marks as playing over a couple of seconds.
+  const marked = async (tab: typeof page) =>
+    tab.evaluate(
+      async () =>
+        new Promise<string[]>((resolve) => {
+          const seen = new Set<string>();
+          const sample = setInterval(() => {
+            seen.add(document.querySelector("aside [data-active] time")?.textContent ?? "");
+          }, 50);
+
+          setTimeout(() => {
+            clearInterval(sample);
+            resolve([...seen]);
+          }, 2000);
+        }),
+    );
+
+  const [here, there] = await Promise.all([marked(page), marked(other)]);
+
+  expect(here).toEqual([clock(5)]);
+  expect(there).toEqual([clock(10)]);
+});

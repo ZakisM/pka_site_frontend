@@ -8,13 +8,16 @@ const local = () => localStorage;
 // They have always been stored, so progress saved before carries over.
 const VIDEO_ID = /^[\w-]{11}$/u;
 
+const isPosition = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0;
+
 const loadPositions = () => {
   const loaded = new Map<string, number>();
 
   for (const key of storageKeys(local)) {
     const value = VIDEO_ID.test(key) ? readJson(local, key) : undefined;
 
-    if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    if (isPosition(value)) {
       loaded.set(key, value);
     }
   }
@@ -40,6 +43,32 @@ export const savePosition = (videoId: string, seconds: number) => {
   writeJson(local, videoId, seconds);
 };
 
+// The video this tab's player has loaded. Its position is the player's own:
+// Another tab playing it elsewhere would otherwise overwrite it each second,
+// And this tab's player overwrite it back, so both tabs' moments flicked
+// Between the two places.
+let claimed: string | null = null;
+
+const takeStored = (videoId: string) => {
+  const value = readJson(local, videoId);
+
+  if (isPosition(value)) {
+    positions.update((previous) => new Map(previous).set(videoId, value));
+  }
+};
+
+/** The player has `videoId` loaded (or nothing): only it moves that position. */
+export const claimPosition = (videoId: string | null) => {
+  const released = claimed;
+
+  claimed = videoId;
+
+  // Catch up with whatever other tabs saved while this one held it.
+  if (released !== null && released !== videoId) {
+    takeStored(released);
+  }
+};
+
 export const usePosition = (videoId: string) => useSyncExternalStore(positions.subscribe, () => positionOf(videoId));
 
 export const usePositions = () => useStore(positions);
@@ -59,21 +88,17 @@ const recentEpisodes = createStore<readonly number[]>(loadRecent(), (value) => w
 
 export const useRecentEpisodes = () => useStore(recentEpisodes);
 
-// Another tab watching keeps this one current. Taking its value back writes
-// The same string, which raises no further event, so tabs can't ping-pong.
-globalThis.addEventListener("storage", ({ storageArea, key, newValue }) => {
+// Another tab watching keeps this one current, except for the video this
+// Tab's own player has loaded (see claimPosition).
+globalThis.addEventListener("storage", ({ storageArea, key }) => {
   if (storageArea !== localStorage || key === null) {
     return;
   }
 
   if (key === RECENT_KEY) {
     recentEpisodes.set(loadRecent());
-  } else if (VIDEO_ID.test(key)) {
-    const value = Number(newValue);
-
-    if (newValue !== null && Number.isFinite(value) && value >= 0) {
-      positions.update((previous) => new Map(previous).set(key, value));
-    }
+  } else if (VIDEO_ID.test(key) && key !== claimed) {
+    takeStored(key);
   }
 });
 
