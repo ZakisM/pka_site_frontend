@@ -2,12 +2,12 @@ import { Search, X } from "lucide-react";
 import { formatDuration, formatTimestamp } from "@/lib/time";
 import { isSpent, spend } from "@/lib/intents";
 import { matchesTerms, searchTerms } from "@/lib/searchTerms";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLocation, useRouter } from "@tanstack/react-router";
 import { Highlight } from "@/ui/Highlight";
 import type { PkaEvent } from "@/lib/api";
 import { player } from "@/player/controller";
 import { smoothScroll } from "@/lib/motion";
-import { useLocation } from "@tanstack/react-router";
 
 interface MomentRowProps {
   event: PkaEvent;
@@ -57,9 +57,56 @@ const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior)
   return row !== null;
 };
 
+/**
+ * Keeps the router's scroll restoration off the list. The router restores
+ * The scroll of every element that has scrolled, and carries one over to the
+ * Next page when that page has an element in the same place — which the next
+ * Episode's list is. Its restore lands after this hook has placed the playing
+ * Moment, and put the list back at the last episode's offset. It runs before
+ * Any listener added here, so this puts the list back where it was left.
+ */
+const useOwnScroll = (listRef: React.RefObject<HTMLDivElement | null>) => {
+  const router = useRouter();
+  const ownTopRef = useRef(0);
+
+  useLayoutEffect(() => {
+    const list = listRef.current;
+
+    if (!list) {
+      return;
+    }
+
+    ownTopRef.current = list.scrollTop;
+
+    const record = () => {
+      ownTopRef.current = list.scrollTop;
+    };
+    const unsubscribe = router.subscribe("onRendered", () => {
+      if (list.scrollTop !== ownTopRef.current) {
+        list.scrollTop = ownTopRef.current;
+      }
+    });
+
+    list.addEventListener("scroll", record, { passive: true });
+
+    return () => {
+      unsubscribe();
+      list.removeEventListener("scroll", record);
+    };
+  }, [listRef, router]);
+
+  // Scroll events arrive a frame late; a scroll made here is recorded now, so
+  // A restore in between can't win. Stable, so effects using it run only when
+  // Their own inputs change.
+  return useCallback((list: HTMLElement) => {
+    ownTopRef.current = list.scrollTop;
+  }, []);
+};
+
 const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, activeIndex: number, filter: string) => {
   const previousRef = useRef<number | null>(null);
   const activeRef = useRef(activeIndex);
+  const recordOwn = useOwnScroll(listRef);
 
   useLayoutEffect(() => {
     const list = listRef.current;
@@ -73,8 +120,9 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
       const adjacent = previous !== null && Math.abs(activeIndex - previous) === 1;
 
       scrollToRow(list, activeIndex, adjacent ? smoothScroll() : "instant");
+      recordOwn(list);
     }
-  }, [listRef, activeIndex]);
+  }, [listRef, activeIndex, recordOwn]);
 
   // Changing the filter changes which rows exist: bring the playing moment
   // Back into view (clearing the filter should not strand the list wherever
@@ -93,7 +141,9 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
     if (!scrollToRow(list, activeRef.current, "instant")) {
       list.scrollTop = 0;
     }
-  }, [listRef, filter]);
+
+    recordOwn(list);
+  }, [listRef, filter, recordOwn]);
 
   // A resize (or the layout switching between beside and below the video)
   // Changes the list's height; put the playing moment back in its place.
@@ -106,12 +156,13 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
 
     const observer = new ResizeObserver(() => {
       scrollToRow(list, activeRef.current, "instant");
+      recordOwn(list);
     });
 
     observer.observe(list);
 
     return () => observer.disconnect();
-  }, [listRef]);
+  }, [listRef, recordOwn]);
 };
 
 interface MomentsRailProps {
