@@ -20,6 +20,17 @@
   }
 }
 
+/* The wordmark's letters (P K A I N D E X) from Raleway Black, OFL, subset
+   from @fontsource-variable/raleway: the whole family is ~50KB for one word.
+   At 3.5KB Vite inlines it into this stylesheet, so the logo never waits on a
+   request of its own. Regenerate with fontTools if the wordmark's text changes. */
+@font-face {
+  font-family: "Raleway Wordmark";
+  src: url("./assets/fonts/raleway-wordmark.woff2") format("woff2");
+  font-weight: 900;
+  font-display: block;
+}
+
 @theme {
   /* The app's one entrance: a short fade where content swaps. Opacity only,
      and quick — a longer fade's in-between frames read as a rendering bug. */
@@ -28,7 +39,7 @@
   /* Geist carries all UI copy; Raleway is only the wordmark — its old-style
      Figures made episode numbers look uneven. */
   --font-sans: "Geist Variable", system-ui, -apple-system, sans-serif;
-  --font-raleway: Raleway Variable;
+  --font-raleway: "Raleway Wordmark", system-ui, sans-serif;
 
   /* High-chroma oklch, deliberately outside sRGB so wide-gamut (P3) displays
      Render it more vividly than any hex could. The brand pack specifies
