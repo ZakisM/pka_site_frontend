@@ -120,6 +120,15 @@
       "rules": {
         "import/unambiguous": "off"
       }
+    },
+    {
+      "files": ["playwright.config.ts"],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "import/no-default-export": "off"
+      }
     }
   ]
 }
