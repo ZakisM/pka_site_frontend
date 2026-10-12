@@ -41,16 +41,19 @@ const MomentRow = ({ event, index, active, remaining, terms, onSeek }: MomentRow
   </button>
 );
 
+// The list holds still under a mouse, so a row doesn't move as it's pointed
+// At. Only where there is a mouse: a phone keeps whatever was last tapped
+// :hover, which stopped the list following playback after a single tap.
+const pointedAt = (list: HTMLElement) => globalThis.matchMedia("(hover: hover)").matches && list.matches(":hover");
+
 /**
  * Keeps the playing moment a third of the way down the list, gliding one row
- * At a time during playback and snapping for anything further. Only when the
- * List scrolls on its own: on phones it is part of the page, and moving the
- * Page under someone's thumb would be worse than not following.
+ * At a time during playback and snapping for anything further.
  */
 const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior) => {
   const row = list.querySelector<HTMLElement>(`[data-index="${index}"]`);
 
-  if (row && !list.matches(":hover") && list.scrollHeight > list.clientHeight + 1) {
+  if (row && !pointedAt(list) && list.scrollHeight > list.clientHeight + 1) {
     list.scrollTo({ top: row.offsetTop - list.clientHeight / 3, behavior });
   }
 
@@ -145,8 +148,11 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
     recordOwn(list);
   }, [listRef, filter, recordOwn]);
 
-  // A resize (or the layout switching between beside and below the video)
-  // Changes the list's height; put the playing moment back in its place.
+  // A new layout (the list moving between beside and below the video, or a
+  // Rotation) changes its width: put the playing moment back in its place.
+  // Not for a change of height alone: phones resize the list as their
+  // Toolbars slide away while the page scrolls, and following then scrolled
+  // The list by itself while the reader was scrolling past it.
   useLayoutEffect(() => {
     const list = listRef.current;
 
@@ -154,7 +160,13 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
       return;
     }
 
+    let width = list.clientWidth;
     const observer = new ResizeObserver(() => {
+      if (list.clientWidth === width) {
+        return;
+      }
+
+      width = list.clientWidth;
       scrollToRow(list, activeRef.current, "instant");
       recordOwn(list);
     });
@@ -238,7 +250,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
         </div>
         <div
           ref={listRef}
-          className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto mobile:max-h-[60dvh] mobile:overflow-y-auto"
+          className="relative min-h-0 flex-1 border-t border-line py-2 [scrollbar-color:var(--color-line-strong)_transparent] [scrollbar-width:thin] desktop:overflow-y-auto mobile:max-h-[60svh] mobile:overflow-y-auto"
         >
           {events.length === 0 && (
             <p className="px-5 py-6 text-[14px]/[1.5] text-dim">Nobody has timestamped this episode yet.</p>

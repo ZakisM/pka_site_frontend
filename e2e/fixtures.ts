@@ -2,6 +2,11 @@ import { answer, videoIdOf } from "./archive";
 import type { Page } from "@playwright/test";
 import { test as base } from "@playwright/test";
 
+declare global {
+  // The fake player below, for tests to drive playback with.
+  var fakePlayer: { scrubTo: (seconds: number) => void } | undefined;
+}
+
 /**
  * A stand-in for YouTube's IFrame API, installed before the app loads so its
  * Loader finds `YT` already there: no network, no video, no audio. It answers
@@ -32,7 +37,15 @@ const installFakeYouTube = () => {
       this.state = options.playerVars.autoplay ? PLAYING : CUED;
       this.events = options.events;
       host.dataset.fakePlayer = "true";
+      // For tests to move playback the way YouTube's own controls would.
+      Object.assign(globalThis, { fakePlayer: this });
       setTimeout(() => this.events.onReady?.({ target: this, data: this.state }), 0);
+    }
+
+    // As if the viewer dragged YouTube's scrubber and playback carried on.
+    public scrubTo(seconds: number) {
+      this.time = seconds;
+      this.change(PLAYING);
     }
 
     public cueVideoById(videoId: string, seconds = 0) {
