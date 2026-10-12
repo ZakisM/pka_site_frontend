@@ -22,7 +22,7 @@ Feature folders own their own state and hooks; anything imported by two features
 
 ## Build, Test, and Development Commands
 
-Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint, type-aware via tsgolint) and format with `bun run format` (oxfmt, 120 columns).
+Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint, type-aware via tsgolint) format with `bun run format` (oxfmt, 120 columns) and test with `bun run test` (Bun's runner; tests sit beside their source as `*.test.ts`, typechecked by `tsconfig.test.json`).
 
 **Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
@@ -45,4 +45,4 @@ oxlint runs every rule category at error, with the React, jsx-a11y, import and p
 
 ## Commit & Pull Request Guidelines
 
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests and build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues.

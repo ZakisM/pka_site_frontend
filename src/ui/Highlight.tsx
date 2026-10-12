@@ -1,12 +1,12 @@
-// Splits on the query's words, so every term the search matched is marked.
-const escapeRegExp = (term: string) => term.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
+import { termsPattern } from "@/lib/searchTerms";
 
+// Splits on the query's words, so every term the search matched is marked.
 export const Highlight = ({ text, terms }: { text: string; terms: string[] }) => {
   if (terms.length === 0) {
     return text;
   }
 
-  const pattern = new RegExp(`(${terms.map((term) => escapeRegExp(term)).join("|")})`, "giu");
+  const pattern = termsPattern(terms);
 
   // Split with a capture group alternates plain, match, plain, match… Each
   // Match is keyed by where it starts in the text, which is what it is.

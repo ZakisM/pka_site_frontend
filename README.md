@@ -21,6 +21,7 @@ reverse proxy as [the backend](https://github.com/ZakisM/pka_site_backend/):
 | `bun run typecheck` | TypeScript, app and tooling configs      |
 | `bun run lint`      | oxlint, with type-aware rules            |
 | `bun run format`    | oxfmt; CI runs `bun run format:check`    |
+| `bun run test`      | Unit tests (`*.test.ts`, Bun's runner)   |
 | `bun run build`     | Production bundle in `dist/`             |
 
 Measure performance against `bun run serve`, never `dev`: React's development

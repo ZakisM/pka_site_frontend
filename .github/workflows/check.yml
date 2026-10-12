@@ -7,7 +7,7 @@ on:
 
 jobs:
   check:
-    name: Typecheck, lint, format and build
+    name: Typecheck, lint, format, test and build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -24,5 +24,7 @@ jobs:
         run: bun run lint
       - name: Format
         run: bun run format:check
+      - name: Test
+        run: bun run test
       - name: Build
         run: bun run build

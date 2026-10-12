@@ -1,11 +1,11 @@
 import { Search, X } from "lucide-react";
 import { formatDuration, formatTimestamp } from "@/lib/time";
 import { isSpent, spend } from "@/lib/intents";
+import { matchesTerms, searchTerms } from "@/lib/searchTerms";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Highlight } from "@/ui/Highlight";
 import type { PkaEvent } from "@/lib/api";
 import { player } from "@/player/controller";
-import { searchTerms } from "@/lib/searchTerms";
 import { smoothScroll } from "@/lib/motion";
 import { useLocation } from "@tanstack/react-router";
 
@@ -150,7 +150,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
   const terms = searchTerms(filter);
   const rows = events
     .map((event, index) => ({ event, index }))
-    .filter(({ event }) => terms.every((term) => event.description.toLowerCase().includes(term)));
+    .filter(({ event }) => matchesTerms(event.description, terms));
 
   return (
     // Keyed per episode by its parent, so a new episode's moments fade in.
