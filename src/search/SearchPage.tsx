@@ -22,10 +22,11 @@ const SORTS: { value: SearchSort; label: string }[] = [
   { value: "matches", label: "Most matches" },
 ];
 
-// Same page edges as the header; wide screens get two columns of results.
-const pageStyles = "px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14";
-const groupsStyles =
-  "grid grid-cols-[repeat(auto-fill,minmax(min(100%,640px),1fr))] gap-x-12 transition-opacity duration-150";
+// One column, centred under the search box. Each episode lists every moment
+// That matched, so they vary too much in height to sit side by side: a row
+// Takes its tallest, and a short group beside a long one leaves a hole.
+const pageStyles = "mx-auto max-w-[1008px] px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14";
+const groupsStyles = "transition-opacity duration-150";
 
 // Phones close from the header's Cancel; desktops get this beside the sort.
 const CloseButton = ({ onClose }: { onClose: () => void }) => (
