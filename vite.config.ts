@@ -1,4 +1,4 @@
-import { brotliCompressSync, constants, gzipSync } from "node:zlib";
+import { constants, gzipSync } from "node:zlib";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import type { Plugin } from "vite";
@@ -15,10 +15,9 @@ const COMPRESSIBLE = /\.(?:js|css|html|svg|json)$/u;
 const MIN_COMPRESS_BYTES = 1024;
 
 /**
- * Writes `.br` and `.gz` beside every built text file, at the highest
- * settings: done once here rather than per request, and nginx serves them as
- * they are (brotli_static, gzip_static). Brotli 11 is about an eighth smaller
- * than nginx's on-the-fly gzip for the main bundle.
+ * Writes `.gz` beside every built text file, at the highest setting: done once
+ * here rather than per request, and nginx serves them as they are
+ * (gzip_static).
  */
 const precompress = (outDir: string): Plugin => ({
   name: "pka:precompress",
@@ -30,15 +29,6 @@ const precompress = (outDir: string): Plugin => ({
       .filter(({ data }) => data.length >= MIN_COMPRESS_BYTES);
 
     for (const { file, data } of files) {
-      writeFileSync(
-        `${file}.br`,
-        brotliCompressSync(data, {
-          params: {
-            [constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
-            [constants.BROTLI_PARAM_SIZE_HINT]: data.length,
-          },
-        }),
-      );
       writeFileSync(`${file}.gz`, gzipSync(data, { level: constants.Z_BEST_COMPRESSION }));
     }
   },
