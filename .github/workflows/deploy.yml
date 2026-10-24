@@ -5,6 +5,11 @@ on:
     paths-ignore:
       - "README.md"
     branches: [master]
+  # rebuilt weekly even without a push, so fixes in nginx's image and Alpine
+  # reach the published image; the server still has to pull it
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -26,6 +31,9 @@ jobs:
         uses: docker/metadata-action@v5.5.1
         with:
           images: zakism/pka-index-frontend
+          # :master however the build was started, so a scheduled one doesn't
+          # also publish metadata-action's default :nightly
+          tags: type=raw,value=master,enable={{is_default_branch}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
         with:

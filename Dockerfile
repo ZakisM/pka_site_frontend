@@ -12,9 +12,11 @@ COPY /src ./src
 RUN bun install --frozen-lockfile
 RUN bun run build
 
-FROM fholzer/nginx-brotli
+FROM nginx:stable-alpine
+
+# Alpine's security fixes land between nginx's own image releases, so take them
+# on every build
+RUN apk upgrade --no-cache
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /pka_site_frontend/dist /usr/share/nginx/html
-
-CMD ["-g", "daemon off;"]
