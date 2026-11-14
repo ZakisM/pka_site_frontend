@@ -167,3 +167,25 @@ test("storage cleared in another tab stays cleared", async ({ page, context }) =
   await expect(page).toHaveURL("/watch/29");
   await expect.poll(async () => other.evaluate(() => localStorage.getItem("recent-episodes"))).toBe("[29]");
 });
+
+// A route's code that fails to load triggers one reload onto the current
+// build. A failure the reload doesn't fix reloaded again, forever.
+test("a route's code that never loads reloads once, then says so", async ({ page }) => {
+  let loads = 0;
+
+  page.on("load", () => {
+    loads += 1;
+  });
+  await page.route("**/assets/watch.*.js", async (route) => route.abort());
+  await page.goto("/");
+  await page.locator("a[href='/watch/30']").first().click();
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeVisible();
+
+  // Ours, then TanStack Router's own once-per-error reload: then it stops.
+  const settled = loads;
+
+  await page.waitForTimeout(2000);
+  expect(loads).toBe(settled);
+  expect(loads).toBeLessThanOrEqual(3);
+});
