@@ -1,6 +1,6 @@
 import { answer, videoIdOf } from "./archive";
+import { test as base, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { test as base } from "@playwright/test";
 
 declare global {
   // The fake player below, for tests to drive playback with.
@@ -124,14 +124,25 @@ export const seed = async (page: Page, { watched = {} }: Seed) => {
 
 /**
  * Every page gets the fake API and player, and no traffic leaves the machine:
- * set on the context, so a second tab opened from it gets them too.
+ * set on the context, so a second tab opened from it gets them too. The
+ * preview sends the site's Content-Security-Policy (security-headers.conf),
+ * and anything it blocks fails the test: the policy is checked against
+ * everything the tests make the app do.
  */
 export const test = base.extend({
   context: async ({ context }, provide) => {
+    const violations: string[] = [];
+
+    context.on("console", (message) => {
+      if (message.text().includes("Content Security Policy")) {
+        violations.push(message.text());
+      }
+    });
     await context.addInitScript(installFakeYouTube);
     await context.route("**/api/v1/**", answer);
     await context.route(/^https?:\/\/(?!localhost)/u, async (route) => route.abort());
     await provide(context);
+    expect(violations, "the Content-Security-Policy blocked something").toEqual([]);
   },
 });
 
@@ -155,4 +166,4 @@ export const playingMoment = async (page: Page) =>
   });
 
 export { expect } from "@playwright/test";
-export { SOURCE, TARGET, clock, timestampOf, yearOf } from "./archive";
+export { SOURCE, TARGET, clock, timestampOf, videoIdOf, yearOf } from "./archive";

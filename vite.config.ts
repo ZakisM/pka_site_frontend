@@ -39,6 +39,30 @@ const precompress = (): Plugin => {
   };
 };
 
+/**
+ * The headers nginx sends with every response (security-headers.conf), for
+ * `vp preview` to send too, so the browser tests run under the same policy.
+ * Not the dev server: its hot reload runs inline scripts the policy forbids.
+ */
+const securityHeaders = () => {
+  const lines = readFileSync(path.resolve(import.meta.dirname, "security-headers.conf"), "utf8").split("\n");
+  const headers: Record<string, string> = {};
+
+  for (const line of lines) {
+    const groups = /^add_header\s+(?<name>\S+)\s+"(?<value>[^"]*)"\s+always;$/u.exec(line.trim())?.groups;
+
+    if (groups?.name !== undefined && groups.value !== undefined) {
+      headers[groups.name] = groups.value;
+    }
+  }
+
+  if (!("Content-Security-Policy" in headers)) {
+    throw new Error("security-headers.conf: no Content-Security-Policy found");
+  }
+
+  return headers;
+};
+
 const HOST = { port: 5678, strictPort: true, host: "0.0.0.0", allowedHosts: ["www.pkaindextest.com"] };
 
 export default defineConfig({
@@ -57,7 +81,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   server: { ...HOST, hmr: { protocol: "ws" } },
-  preview: HOST,
+  preview: { ...HOST, headers: securityHeaders() },
   test: {
     include: ["src/**/*.test.ts"],
   },

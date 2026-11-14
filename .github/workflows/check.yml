@@ -81,6 +81,26 @@ jobs:
         run: docker build --tag pka-index-frontend .
       - name: Check nginx accepts its config
         run: docker run --rm pka-index-frontend nginx -t
+      - name: Check the image doesn't run as root
+        run: test "$(docker run --rm pka-index-frontend id -u)" != 0
+      # A location that sets add_header of its own drops the server's, so the
+      # security headers are checked on a response from each one: the app
+      # shell, a route it falls back to, an asset, an icon and a missing asset.
+      - name: Check every response carries the security headers
+        run: |
+          docker run --detach --name site --publish 5678:5678 pka-index-frontend
+          trap 'docker rm --force site' EXIT
+          for _ in $(seq 20); do curl -fs -o /dev/null localhost:5678/ && break; sleep 0.5; done
+          asset=$(docker exec site sh -c 'ls /usr/share/nginx/html/assets/*.js | head -n 1 | xargs basename')
+          for path in / /watch/1 "/assets/$asset" /favicon-32x32.png /assets/missing.js; do
+            headers=$(curl -sI "localhost:5678$path")
+            for name in Content-Security-Policy X-Content-Type-Options Referrer-Policy Permissions-Policy; do
+              if ! grep -qi "^$name:" <<<"$headers"; then
+                echo "::error::$path is served without $name"
+                exit 1
+              fi
+            done
+          done
 
   # Publishes the image, but only for master and only once everything above
   # has passed.

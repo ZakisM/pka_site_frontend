@@ -1,4 +1,4 @@
-import { SOURCE, TARGET, clock, expect, playingMoment, seed, test, timestampOf } from "./fixtures";
+import { SOURCE, TARGET, clock, expect, playingMoment, seed, test, timestampOf, videoIdOf } from "./fixtures";
 
 test("a shared link starts at its moment", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}?timestamp=${timestampOf(TARGET.index)}`);
@@ -112,4 +112,46 @@ test("another tab playing the same episode leaves this one's moment alone", asyn
 
   expect(here).toEqual([clock(5)]);
   expect(there).toEqual([clock(10)]);
+});
+
+// A search hit asks the watch page to start at its moment once. Reloading the
+// page, or coming Back to it, keeps the same history entry and its request:
+// acting on it again would throw the viewer back to the hit's moment.
+test("a moment opened from search is played once: a reload or Back resumes instead", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("textbox", { name: "Search every episode and moment" }).fill("hellraiser");
+  await page.locator("[data-hit]", { hasText: TARGET.description }).click();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+
+  // The viewer moves on to another moment, and the position is saved.
+  await page.locator("aside [data-index='5']").click();
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+  await expect
+    .poll(async () => page.evaluate((id) => localStorage.getItem(id), videoIdOf(TARGET.episode)))
+    .toBe(String(timestampOf(5)));
+
+  const settlesOn = async (index: number) => {
+    await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(index), inView: true });
+    // A request acted on again would land a moment after the page settles.
+    await page.waitForTimeout(1000);
+    expect(await playingMoment(page)).toEqual({ time: clock(index), inView: true });
+  };
+
+  await page.reload();
+  await settlesOn(5);
+
+  await page.getByRole("link", { name: "About & privacy" }).click();
+  await page.goBack();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  await settlesOn(5);
+});
+
+test("the header's random moment opens its episode at that moment", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Random moment" }).click();
+
+  // The fake API's random moment is TARGET; the URL is the episode's own.
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
 });
