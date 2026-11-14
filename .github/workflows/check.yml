@@ -21,6 +21,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing pushes, so keep the token out of .git/config, where
+          # dependency install scripts could read it.
+          persist-credentials: false
       # Installs the Vite+ in the lockfile, the Node in .node-version and the
       # pnpm in package.json, then the dependencies.
       - name: Set up Vite+
@@ -69,6 +73,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing pushes, so keep the token out of .git/config, where
+          # dependency install scripts could read it.
+          persist-credentials: false
       - name: Build the image
         run: docker build --tag pka-index-frontend .
       - name: Check nginx accepts its config
