@@ -98,3 +98,52 @@ test("a failed refetch leaves the archive on screen", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeHidden();
   await expect(cards.first()).toHaveAttribute("href", "/watch/30");
 });
+
+// The watch page's loader asked for the episode once: a single failed request
+// on a shared link showed the error page, though a retry would have worked.
+test("an episode whose first request fails opens on the retry", async ({ page }) => {
+  let failures = 0;
+
+  await page.route("**/api/v1/episodes/12", async (route) => {
+    if (failures === 0) {
+      failures += 1;
+      await route.fulfill({ status: 503, body: "" });
+    } else {
+      await route.fallback();
+    }
+  });
+  await page.goto("/watch/12");
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeHidden();
+  await expect(page.getByRole("textbox", { name: "Filter moments" })).toBeVisible();
+  expect(failures).toBe(1);
+});
+
+// The id is decoded from the URL: put into the API's path as it was, an
+// escaped slash asked a different endpoint and the page crashed on its answer.
+test("an episode id is only ever an episode id", async ({ page }) => {
+  await page.goto("/watch/..%2Fevents%2Frandom");
+
+  await expect(page.getByText("That episode isn’t in the index")).toBeVisible();
+});
+
+// However the browser words a failed request, and for the API's own timeout,
+// the page says the API couldn't be reached rather than showing the raw error.
+test("an API that never answers is reported as unreachable", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/api/v1/episodes/12", async () => {
+    // Never answered.
+  });
+  await page.goto("/watch/12");
+
+  const heading = page.getByRole("heading", { name: "Something went wrong" });
+
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(30_000);
+
+      return heading.isVisible();
+    })
+    .toBe(true);
+  await expect(page.getByText("We couldn't reach the PKA Index API.")).toBeVisible();
+});

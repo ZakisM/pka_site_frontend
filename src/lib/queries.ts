@@ -1,9 +1,17 @@
+import { HTTPError, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
 import { QueryClient, infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query";
-import { fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
 import type { SearchSort } from "./api";
 
 export const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 60 * 1000 } },
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+      // React Query's three retries, for loaders too (queryClient.query
+      // doesn't retry unless told to), but not for a 4xx: that is the
+      // answer, and retrying only delays "That episode isn't in the index".
+      retry: (failures, error) => failures < 3 && !(error instanceof HTTPError && error.response.status < 500),
+    },
+  },
 });
 
 export const episodeKey = (episodeId: string) => ["episode", episodeId];
@@ -29,6 +37,7 @@ export const relatedQuery = (episodeNumber: number, timestamp: number) =>
     queryKey: ["related", episodeNumber, timestamp],
     queryFn: async ({ signal }) => fetchRelated(signal, episodeNumber, timestamp),
     staleTime: Infinity,
+    gcTime: Infinity,
     // The section swaps when the next answer lands rather than blinking out.
     placeholderData: keepPreviousData,
   });
