@@ -4,33 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite build && vite preview --port 5678",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p tsconfig.e2e.json",
-    "test": "bun test",
-    "test:e2e": "playwright test",
-    "lint": "oxlint",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "serve": "vp build && vp preview",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
     "@tanstack/react-query": "^5.104.1",
     "@tanstack/react-router": "^1.170.42",
-    "@tanstack/react-router-devtools": "^1.167.2",
     "lucide-react": "^1.55.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
@@ -41,21 +21,17 @@
     "@rolldown/plugin-babel": "^0.2.4",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query-devtools": "^5.104.1",
+    "@tanstack/react-router-devtools": "^1.167.2",
     "@tanstack/router-plugin": "^1.168.43",
-    "@types/bun": "^1.4.2",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "browserslist": "^4.29.3",
-    "caniuse-lite": "^1.0.30001815",
-    "lightningcss": "^1.33.0",
-    "oxfmt": "^0.72.0",
-    "oxlint": "^1.87.0",
-    "oxlint-tsgolint": "^7.0.2004",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.3.4"
-  }
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "packageManager": "pnpm@12.18.0"
 }

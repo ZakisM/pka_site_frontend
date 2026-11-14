@@ -1,11 +1,9 @@
 import { constants, gzipSync } from "node:zlib";
+import { defineConfig, lazyPlugins } from "vite-plus";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
-import type { Plugin } from "vite";
+import type { Plugin } from "vite-plus";
 import babel from "@rolldown/plugin-babel";
-import browserslist from "browserslist";
-import { browserslistToTargets } from "lightningcss";
-import { defineConfig } from "vite";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -19,72 +17,191 @@ const MIN_COMPRESS_BYTES = 1024;
  * here rather than per request, and nginx serves them as they are
  * (gzip_static).
  */
-const precompress = (outDir: string): Plugin => ({
-  name: "pka:precompress",
-  apply: "build",
-  closeBundle() {
-    const files = readdirSync(outDir, { recursive: true, encoding: "utf8" })
-      .filter((entry) => COMPRESSIBLE.test(entry))
-      .map((entry) => ({ file: path.join(outDir, entry), data: readFileSync(path.join(outDir, entry)) }))
-      .filter(({ data }) => data.length >= MIN_COMPRESS_BYTES);
-
-    for (const { file, data } of files) {
-      writeFileSync(`${file}.gz`, gzipSync(data, { level: constants.Z_BEST_COMPRESSION }));
-    }
-  },
-});
-
-export default defineConfig(({ mode }) => {
-  const isProduction = mode === "production";
+const precompress = (): Plugin => {
+  let outDir = "dist";
 
   return {
-    css: {
-      transformer: "lightningcss",
-      lightningcss: {
-        targets: browserslistToTargets(
-          browserslist(undefined, {
-            env: mode,
-          }),
-        ),
-      },
+    name: "pka:precompress",
+    apply: "build",
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
     },
-    plugins: [
-      tanstackRouter({ target: "react", autoCodeSplitting: true }),
-      tailwindcss(),
-      react(),
-      // Plugin-react 6 dropped its babel option, which silently switched the
-      // React Compiler off; it now runs through its own Babel plugin.
-      babel({ presets: [reactCompilerPreset()] }),
-      ...(isProduction ? [precompress(path.resolve(import.meta.dirname, "dist"))] : []),
-    ],
-    resolve: {
-      alias: {
-        "@": path.resolve(import.meta.dirname, "./src"),
-      },
-    },
-    define: {
-      "process.env.NODE_ENV": JSON.stringify(mode),
-    },
-    server: {
-      port: 5678,
-      strictPort: true,
-      host: "0.0.0.0",
-      allowedHosts: ["www.pkaindextest.com"],
-      hmr: {
-        protocol: "ws",
-      },
-    },
-    preview: {
-      port: 5678,
-      strictPort: true,
-      host: "0.0.0.0",
-      allowedHosts: ["www.pkaindextest.com"],
-    },
-    build: {
-      outDir: "dist",
-      sourcemap: false,
-      target: "esnext",
-      cssMinify: "lightningcss",
+    closeBundle() {
+      const files = readdirSync(outDir, { recursive: true, encoding: "utf8" })
+        .filter((entry) => COMPRESSIBLE.test(entry))
+        .map((entry) => ({ file: path.join(outDir, entry), data: readFileSync(path.join(outDir, entry)) }))
+        .filter(({ data }) => data.length >= MIN_COMPRESS_BYTES);
+
+      for (const { file, data } of files) {
+        writeFileSync(`${file}.gz`, gzipSync(data, { level: constants.Z_BEST_COMPRESSION }));
+      }
     },
   };
+};
+
+const HOST = { port: 5678, strictPort: true, host: "0.0.0.0", allowedHosts: ["www.pkaindextest.com"] };
+
+export default defineConfig({
+  // Lazy, so `vp check` and the editor don't load the build's plugins.
+  plugins: lazyPlugins(() => [
+    tanstackRouter({ target: "react", autoCodeSplitting: true }),
+    tailwindcss(),
+    react(),
+    // Plugin-react 6 dropped its babel option, which silently switched the
+    // React Compiler off; it now runs through its own Babel plugin.
+    babel({ presets: [reactCompilerPreset()] }),
+    precompress(),
+  ]),
+  resolve: {
+    // The `@/` alias, read from tsconfig.app.json's `paths`.
+    tsconfigPaths: true,
+  },
+  server: { ...HOST, hmr: { protocol: "ws" } },
+  preview: HOST,
+  test: {
+    include: ["src/**/*.test.ts"],
+  },
+  fmt: {
+    printWidth: 120,
+    sortPackageJson: false,
+    ignorePatterns: ["src/routeTree.gen.ts"],
+  },
+  lint: {
+    plugins: ["eslint", "typescript", "unicorn", "oxc", "react", "jsx-a11y", "import", "promise"],
+    options: {
+      typeAware: true,
+      reportUnusedDisableDirectives: "error",
+      typeCheck: true,
+    },
+    env: {
+      browser: true,
+    },
+    ignorePatterns: ["src/routeTree.gen.ts"],
+    categories: {
+      correctness: "error",
+      suspicious: "error",
+      pedantic: "error",
+      perf: "error",
+      style: "error",
+      restriction: "error",
+      nursery: "error",
+    },
+    rules: {
+      "eslint/id-length": "off",
+      "eslint/max-depth": "off",
+      "eslint/max-lines-per-function": "off",
+      "eslint/max-nested-callbacks": "off",
+      "eslint/max-statements": "off",
+      "eslint/new-cap": "off",
+      "eslint/no-console": "off",
+      "eslint/no-duplicate-imports": [
+        "error",
+        {
+          allowSeparateTypeImports: true,
+        },
+      ],
+      "eslint/no-magic-numbers": "off",
+      "eslint/no-ternary": "off",
+      "eslint/no-undefined": "off",
+      "eslint/no-void": [
+        "error",
+        {
+          allowAsStatement: true,
+        },
+      ],
+      "eslint/one-var": "off",
+      "eslint/require-await": "off",
+      "eslint/sort-keys": "off",
+      "eslint/yoda": "off",
+      "import/exports-last": "off",
+      "import/group-exports": "off",
+      "import/max-dependencies": "off",
+      "import/no-named-export": "off",
+      "import/no-unassigned-import": "off",
+      "import/prefer-default-export": "off",
+      "oxc/no-async-await": "off",
+      "oxc/no-optional-chaining": "off",
+      "oxc/no-rest-spread-properties": "off",
+      "promise/avoid-new": "off",
+      "react/forbid-component-props": "off",
+      "react/function-component-definition": [
+        "error",
+        {
+          namedComponents: "arrow-function",
+          unnamedComponents: "arrow-function",
+        },
+      ],
+      "react/jsx-filename-extension": "off",
+      "react/jsx-handler-names": "off",
+      "react/jsx-max-depth": "off",
+      "react/jsx-no-literals": "off",
+      "react/no-multi-comp": "off",
+      "react/react-in-jsx-scope": "off",
+      "typescript/consistent-indexed-object-style": "off",
+      "typescript/consistent-return": "off",
+      "typescript/consistent-type-definitions": "off",
+      "typescript/explicit-function-return-type": "off",
+      "typescript/explicit-module-boundary-types": "off",
+      "typescript/no-confusing-void-expression": [
+        "error",
+        {
+          ignoreArrowShorthand: true,
+        },
+      ],
+      "typescript/no-explicit-any": "off",
+      "typescript/only-throw-error": [
+        "error",
+        {
+          allow: [
+            {
+              from: "package",
+              name: "Redirect",
+              package: "@tanstack/router-core",
+            },
+          ],
+        },
+      ],
+      "typescript/prefer-readonly-parameter-types": "off",
+      "typescript/require-await": "error",
+      "unicorn/filename-case": "off",
+      "unicorn/no-null": "off",
+      "vite-plus/prefer-vite-plus-imports": "error",
+    },
+    overrides: [
+      {
+        files: ["vite.config.ts"],
+        rules: {
+          "import/no-default-export": "off",
+          "import/no-nodejs-modules": "off",
+        },
+      },
+      {
+        files: ["src/routes/**"],
+        rules: {
+          "react/only-export-components": "off",
+        },
+      },
+      {
+        files: ["**/*.d.ts"],
+        rules: {
+          "import/unambiguous": "off",
+        },
+      },
+      {
+        files: ["playwright.config.ts"],
+        env: {
+          node: true,
+        },
+        rules: {
+          "import/no-default-export": "off",
+        },
+      },
+    ],
+    jsPlugins: [
+      {
+        name: "vite-plus",
+        specifier: "vite-plus/oxlint-plugin",
+      },
+    ],
+  },
 });

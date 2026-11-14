@@ -10,21 +10,25 @@ The app calls the API on its own origin (`/api/v1`), so it runs behind the same
 reverse proxy as [the backend](https://github.com/ZakisM/pka_site_backend/):
 
 1. Set up and start the backend.
-2. `bun install`
-3. `bun run dev` serves the app on port 5678.
-4. Visit https://www.pkaindextest.com.
+2. Install [Vite+](https://viteplus.dev/guide/): `curl -fsSL https://vite.plus | bash`. Its `vp` command runs
+   everything below, on the Node in `.node-version` and the pnpm in `package.json`, fetching both itself.
+3. `vp install`
+4. `vp dev` serves the app on port 5678.
+5. Visit https://www.pkaindextest.com.
 
-| Command             | Does                                     |
-| ------------------- | ---------------------------------------- |
-| `bun run dev`       | Vite dev server on port 5678             |
-| `bun run serve`     | Production build, previewed on port 5678 |
-| `bun run typecheck` | TypeScript, app and tooling configs      |
-| `bun run lint`      | oxlint, with type-aware rules            |
-| `bun run format`    | oxfmt; CI runs `bun run format:check`    |
-| `bun run test`      | Unit tests (`*.test.ts`, Bun's runner)   |
-| `bun run build`     | Production bundle in `dist/`             |
+| Command           | Does                                                      |
+| ----------------- | --------------------------------------------------------- |
+| `vp dev`          | Vite dev server on port 5678                              |
+| `vp run serve`    | Production build, previewed on port 5678                  |
+| `vp check`        | Format check (oxfmt), lint (oxlint) and typecheck at once |
+| `vp check --fix`  | The same, fixing what it can                              |
+| `vp test`         | Unit tests (`*.test.ts`, Vitest)                          |
+| `vp run test:e2e` | Browser tests (Playwright)                                |
+| `vp build`        | Production bundle in `dist/`                              |
 
-Measure performance against `bun run serve`, never `dev`: React's development
+Without `vp` installed, `pnpm install` and then `pnpm vp <command>` do the same.
+
+Measure performance against `vp run serve`, never `vp dev`: React's development
 build makes large lists look far slower than they ship.
 
 ## Docker

@@ -1,0 +1,7 @@
+# The Dockerfile copies what the build needs by name; this keeps the rest out
+# of the build context.
+.git
+node_modules
+dist
+test-results
+playwright-report

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { matchesTerms, searchTerms, termsPattern } from "./searchTerms";
 
 // The first three mirror the backend's own matcher tests (catalog/search.rs),
