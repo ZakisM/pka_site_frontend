@@ -1,4 +1,5 @@
-import { expect, seed, test, yearOf } from "./fixtures";
+import { TARGET, clock, expect, playingMoment, seed, test, yearOf } from "./fixtures";
+import type { Route } from "@playwright/test";
 
 test("lists the archive newest first, and narrows it to a year", async ({ page }) => {
   await page.goto("/");
@@ -188,4 +189,35 @@ test("a route's code that never loads reloads once, then says so", async ({ page
   await page.waitForTimeout(2000);
   expect(loads).toBe(settled);
   expect(loads).toBeLessThanOrEqual(3);
+});
+
+// The aliases asked the API directly, outside React Query, so they never
+// retried: one failed request showed the error page.
+test("the latest episode and a random moment open on the retry too", async ({ page }) => {
+  const asked = { latest: 0, random: 0 };
+  const failFirst = (name: keyof typeof asked) => async (route: Route) => {
+    asked[name] += 1;
+    await (asked[name] === 1 ? route.fulfill({ status: 503, body: "" }) : route.fallback());
+  };
+
+  await page.route("**/api/v1/episodes/latest", failFirst("latest"));
+  await page.route("**/api/v1/events/random", failFirst("random"));
+
+  await page.goto("/watch/latest");
+  await expect(page).toHaveURL("/watch/30");
+  await expect(page.getByRole("textbox", { name: "Filter moments" })).toBeVisible();
+  expect(asked.latest).toBe(2);
+
+  const random = page.getByRole("link", { name: "Random moment" });
+
+  await random.click();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+  expect(asked.random).toBe(2);
+
+  // Asked again every time: a remembered answer would be the same "random" moment.
+  await page.goto("/");
+  await random.click();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  expect(asked.random).toBe(3);
 });

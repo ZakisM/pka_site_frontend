@@ -1,4 +1,4 @@
-import { HTTPError, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
+import { HTTPError, fetchEpisodeById, fetchEpisodes, fetchRandomEvent, fetchRelated, searchPage } from "./api";
 import { QueryClient, infiniteQueryOptions, keepPreviousData, queryOptions, skipToken } from "@tanstack/react-query";
 import type { SearchSort } from "./api";
 
@@ -21,6 +21,17 @@ export const episodeQuery = (episodeId: string) =>
     queryKey: episodeKey(episodeId),
     queryFn: async () => fetchEpisodeById(episodeId),
   });
+
+// For an answer that differs every time it is asked for (a random episode, a
+// random moment, the latest episode): asked afresh on every use and dropped
+// straight after, so React Query adds its retries and nothing else.
+export const unkept = { staleTime: 0, gcTime: 0 } as const;
+
+export const randomEventQuery = queryOptions({
+  queryKey: ["event", "random"],
+  queryFn: fetchRandomEvent,
+  ...unkept,
+});
 
 // Every episode, newest first: the home grid, prev/next on the watch page and
 // continue watching all read this one list.
