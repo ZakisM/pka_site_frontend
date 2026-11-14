@@ -3,6 +3,8 @@ import { smoothScroll } from "@/lib/motion";
 
 interface HitKeysOptions {
   containerRef: React.RefObject<HTMLDivElement | null>;
+  // Where the selected hit is announced: focus never moves to it.
+  pickedRef: React.RefObject<HTMLElement | null>;
   resetKey: unknown;
   // The query the rows on screen belong to, and whether they are still the
   // previous query's placeholder. Enter must not play a row for a query the
@@ -16,7 +18,7 @@ interface HitKeysOptions {
  * search box. The selection is a DOM attribute rather than React state so a
  * keypress never re-renders a list that may hold hundreds of rows.
  */
-export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOptions) => {
+export const useHitKeys = ({ containerRef, pickedRef, resetKey, query, current }: HitKeysOptions) => {
   const selectedRef = useRef(-1);
   const rowsForRef = useRef({ query, current });
 
@@ -31,9 +33,13 @@ export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOp
     if (selected) {
       delete selected.dataset.selected;
     }
+
+    if (pickedRef.current) {
+      pickedRef.current.textContent = "";
+    }
     // `resetKey` is the trigger: new rows start with nothing selected.
     // eslint-disable-next-line react/exhaustive-effect-dependencies
-  }, [containerRef, resetKey]);
+  }, [containerRef, pickedRef, resetKey]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -80,6 +86,11 @@ export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOp
 
       if (hit) {
         hit.dataset.selected = "";
+
+        if (pickedRef.current) {
+          pickedRef.current.textContent = hit.dataset.hit ?? "";
+        }
+
         // Glides for a single press; a held key moves too fast to animate.
         hit.scrollIntoView({ block: "nearest", behavior: event.repeat ? "instant" : smoothScroll() });
       }
@@ -88,5 +99,5 @@ export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOp
     document.addEventListener("keydown", onKeyDown);
 
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [containerRef]);
+  }, [containerRef, pickedRef]);
 };

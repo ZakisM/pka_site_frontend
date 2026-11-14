@@ -1,9 +1,10 @@
 import { ResultGroup, ResultGroupSkeleton } from "./ResultGroup";
-import { filterMoments, playFrom } from "@/lib/intents";
+import { arriveAt, filterMoments, playFrom } from "@/lib/intents";
 import { searchSort, useCloseSearch } from "./searchState";
 import { useCallback, useEffect, useRef } from "react";
 import type { HistoryState } from "@tanstack/react-router";
 import type { SearchSort } from "@/lib/api";
+import { SearchStatus } from "./SearchStatus";
 import { Ticks } from "@/ui/Loaders";
 import { X } from "lucide-react";
 import { pluralise } from "@/lib/time";
@@ -158,9 +159,10 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
     scrollRoot,
   });
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const pickedRef = useRef<HTMLOutputElement | null>(null);
   const terms = searchTerms(query);
 
-  useHitKeys({ containerRef, resetKey: `${query}|${sort}`, query, current: !isPlaceholderData });
+  useHitKeys({ containerRef, pickedRef, resetKey: `${query}|${sort}`, query, current: !isPlaceholderData });
 
   // Esc closes the results from anywhere on them, not only from the search
   // box (which handles its own Esc, and marks it handled).
@@ -198,7 +200,13 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
         document.activeElement.blur();
       }
 
-      void navigate({ to: "/watch/$episodeId", params: { episodeId: String(episodeNumber) }, search: {}, state });
+      // ...and on to the episode's title once it is there, not left on nothing.
+      void navigate({
+        to: "/watch/$episodeId",
+        params: { episodeId: String(episodeNumber) },
+        search: {},
+        state: { ...state, ...arriveAt(episodeNumber) },
+      });
     },
     [navigate],
   );
@@ -228,6 +236,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
 
   return (
     <div ref={containerRef} className={pageStyles}>
+      <SearchStatus query={query} totals={totals} updating={isPlaceholderData} pickedRef={pickedRef} />
       {groups && groups.length === 0 && !isPlaceholderData ? (
         <div className="flex items-start justify-between gap-4">
           <p className="py-10 text-[14px]/[1.6] text-muted">

@@ -29,6 +29,9 @@ test("a moment opens its episode, with that moment in view", async ({ page }) =>
 
   await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+  // Focus is on the episode's title: out of the search box, so the keyboard
+  // is away, and not on nothing.
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
 });
 
 test("continue watching is a row to swipe, without paging buttons", async ({ page }) => {

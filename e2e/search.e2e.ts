@@ -10,7 +10,7 @@ test("finds moments, grouped by episode", async ({ page }) => {
   await page.goto("/");
   await searchBox(page).fill("hellraiser");
 
-  await expect(page.getByText("2 moments in 2 episodes")).toBeVisible();
+  await expect(page.locator("p", { hasText: "2 moments in 2 episodes" })).toBeVisible();
   await expect(page.locator("[data-hit]")).toHaveText([
     new RegExp(SOURCE.description, "u"),
     new RegExp(TARGET.description, "u"),
@@ -43,7 +43,7 @@ test("a search with no matches says so", async ({ page }) => {
   await page.goto("/");
   await searchBox(page).fill("zzzqqq");
 
-  await expect(page.getByText("Nothing matches “zzzqqq”.")).toBeVisible();
+  await expect(page.locator("p", { hasText: "Nothing matches “zzzqqq”." })).toBeVisible();
 });
 
 test("a moment opens its episode, with that moment in view", async ({ page }) => {
@@ -115,7 +115,7 @@ const descending = (from: number) => Array.from({ length: from }, (_, index) => 
 test("results load page by page as they scroll, in the sort chosen", async ({ page }) => {
   await page.goto("/");
   await searchBox(page).fill("taylor");
-  await expect(page.getByText("151 moments in 30 episodes")).toBeVisible();
+  await expect(page.locator("p", { hasText: "151 moments in 30 episodes" })).toBeVisible();
 
   // Newest first, twelve episodes a page, every page in turn.
   await expect.poll(async () => listedEpisodes(page)).toHaveLength(12);
@@ -163,7 +163,7 @@ test("a link searching for a number opens its results", async ({ page }) => {
   await page.goto("/?q=2024");
 
   await expect(searchBox(page)).toHaveValue("2024");
-  await expect(page.getByText("Nothing matches “2024”.")).toBeVisible();
+  await expect(page.locator("p", { hasText: "Nothing matches “2024”." })).toBeVisible();
 });
 
 // A search still settling must not reopen results the viewer just closed.

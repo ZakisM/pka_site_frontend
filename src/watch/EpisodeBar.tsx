@@ -1,9 +1,11 @@
 import { Check, Copy } from "lucide-react";
 import { formatEpisodeNumber, formatShortDate, formatTimestamp } from "@/lib/time";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useSearch } from "@tanstack/react-router";
 import type { PkaEpisodeWithAll } from "@/lib/api";
 import { displayTitle } from "@/lib/titles";
+import { spend } from "@/lib/intents";
 import { usePosition } from "@/player/watchHistory";
-import { useState } from "react";
 
 const COPIED_FEEDBACK_MS = 1600;
 
@@ -12,6 +14,19 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
   const { videoId, title, lengthSeconds } = episode.youtubeDetails;
   const position = usePosition(videoId);
   const [copied, setCopied] = useState(false);
+
+  // A search result opened here asks for focus on the title (see lib/intents),
+  // once the results are off the page: under them it is inert and can't take it.
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const arrival = useLocation({ select: (location) => location.state.arrive });
+  const covered = useSearch({ strict: false, select: (search) => search.q !== undefined });
+  const episodeNumber = episode.episode.number;
+
+  useEffect(() => {
+    if (!covered && arrival?.episodeNumber === episodeNumber && spend(arrival.id)) {
+      titleRef.current?.focus({ preventScroll: true });
+    }
+  }, [covered, arrival, episodeNumber]);
 
   const shareFrom = Math.floor(position);
 
@@ -56,7 +71,11 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
         {/* Read out when it changes; the button's own new label may not be. */}
         <output className="sr-only">{copied ? "Link copied" : ""}</output>
       </div>
-      <h1 className="mt-1.5 text-[22px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[18px]/[1.3]">
+      <h1
+        ref={titleRef}
+        tabIndex={-1}
+        className="outline-none mt-1.5 text-[22px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[18px]/[1.3]"
+      >
         {displayTitle(title)}
       </h1>
     </section>

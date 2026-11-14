@@ -30,6 +30,9 @@ declare module "@tanstack/react-router" {
   interface HistoryState {
     playFrom?: PlayFrom;
     filterMoments?: FilterMoments;
+    // "Say where this landed": a search result, opened from a search box that
+    // gives focus up, so focus goes to the episode's title.
+    arrive?: Intent;
   }
 }
 
@@ -43,6 +46,10 @@ const newId = () => {
 
 export const playFrom = (episodeNumber: number, seconds: number): HistoryState => ({
   playFrom: { id: newId(), episodeNumber, seconds },
+});
+
+export const arriveAt = (episodeNumber: number): HistoryState => ({
+  arrive: { id: newId(), episodeNumber },
 });
 
 export const filterMoments = (episodeNumber: number, filter: string): HistoryState => ({
