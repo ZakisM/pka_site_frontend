@@ -184,3 +184,30 @@ test("a moment the viewer pauses on at once stays paused through a search", asyn
 
   expect(await page.evaluate(() => globalThis.fakePlayer?.getPlayerState())).toBe(PAUSED);
 });
+
+test.describe("without YouTube's script", () => {
+  // The real IFrame API script, blocked like every request leaving the machine.
+  test.use({ fakeYouTube: false });
+
+  // The script's promise never settled when it failed, so the player spun for
+  // good and nothing tried again until a reload.
+  test("a player whose script can't load says so, and tries again", async ({ page }) => {
+    let requests = 0;
+
+    page.on("request", (request) => {
+      if (request.url() === "https://www.youtube.com/iframe_api") {
+        requests += 1;
+      }
+    });
+    await page.goto(`/watch/${TARGET.episode}`);
+
+    await expect(page.getByText("YouTube’s player didn’t load.")).toBeVisible();
+
+    // The route's loader may already have tried once before the player did.
+    const before = requests;
+
+    await page.getByRole("button", { name: "Try again" }).click();
+    await expect.poll(() => requests).toBe(before + 1);
+    await expect(page.getByText("YouTube’s player didn’t load.")).toBeVisible();
+  });
+});

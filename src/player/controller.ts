@@ -1,3 +1,6 @@
+// The one place that touches the YouTube player (AGENTS.md): its state is
+// shared by everything here, so it stays one file however long.
+/* eslint-disable max-lines */
 import { PlayerState, embedPlayer, loadYouTubeApi } from "@/lib/youtube";
 import { claimPosition, positionOf, savePosition } from "./watchHistory";
 import { pendingAt, settle } from "./settle";
@@ -52,6 +55,8 @@ let obscured = false;
 let resumeOnReveal = false;
 
 export const playerReady = createStore(false);
+// YouTube's script didn't load: Player says so and offers to try again.
+export const playerFailed = createStore(false);
 
 const now = () => Date.now();
 
@@ -188,11 +193,20 @@ const create = async () => {
   }
 
   creatingIn = element;
-  const api = await loadYouTubeApi();
+  playerFailed.set(false);
+
+  const api = await loadYouTubeApi().catch(() => null);
 
   // Taken out, or moved to another element, while the script loaded: either
   // way destroy() has cleared this.
   if (creatingIn !== element) {
+    return;
+  }
+
+  if (!api) {
+    creatingIn = null;
+    playerFailed.set(true);
+
     return;
   }
 
@@ -218,6 +232,7 @@ const destroy = () => {
   ready = false;
   creatingIn = null;
   playerReady.set(false);
+  playerFailed.set(false);
 };
 
 const reset = () => {
@@ -295,5 +310,10 @@ export const player = {
     return () => {
       timers.reset = setTimeout(reset, 0);
     };
+  },
+
+  // After YouTube's script failed to load: fetch it again and embed.
+  retry: () => {
+    void create();
   },
 };
