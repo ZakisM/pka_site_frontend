@@ -9,7 +9,8 @@ WORKDIR /app
 COPY --chown=vp:vp package.json pnpm-lock.yaml pnpm-workspace.yaml .node-version ./
 RUN vp install --frozen-lockfile
 
-COPY --chown=vp:vp index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
+# vite.config.ts reads security-headers.conf, for the headers `vp preview` sends.
+COPY --chown=vp:vp index.html vite.config.ts security-headers.conf tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY --chown=vp:vp public ./public
 COPY --chown=vp:vp src ./src
 RUN vp build
