@@ -1,5 +1,8 @@
-import { SOURCE, TARGET, clock, expect, playingMoment, test } from "./fixtures";
+import { SOURCE, TARGET, clock, expect, playback, playingMoment, test } from "./fixtures";
 import type { Page } from "@playwright/test";
+
+const PLAYING = 1;
+const PAUSED = 2;
 
 const searchBox = (page: Page) => page.getByRole("textbox", { name: "Search every episode and moment" });
 
@@ -70,15 +73,20 @@ test("arrow keys pick a moment and Enter plays it", async ({ page }) => {
 test("over an episode, the results pause it and closing returns to it", async ({ page }) => {
   await page.goto(`/watch/${SOURCE.episode}?timestamp=${SOURCE.index * 300}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(SOURCE.index), inView: true });
+  // Playing, so there is something for the results to pause.
+  await page.locator(`aside [data-index='${SOURCE.index}']`).click();
+  await expect.poll(async () => playback(page)).toEqual({ state: PLAYING, time: SOURCE.index * 300 });
 
   const box = searchBox(page);
 
   await box.fill("kyle");
   await expect(page.locator("[data-hit]").first()).toBeVisible();
+  await expect.poll(async () => playback(page)).toEqual({ state: PAUSED, time: SOURCE.index * 300 });
   await box.press("Escape");
 
   await expect(page).toHaveURL(new RegExp(`/watch/${SOURCE.episode}`, "u"));
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(SOURCE.index), inView: true });
+  await expect.poll(async () => playback(page)).toEqual({ state: PLAYING, time: SOURCE.index * 300 });
 });
 
 // Episodes in the order the results list them, as numbers.

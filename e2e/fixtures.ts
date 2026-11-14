@@ -5,7 +5,12 @@ import type { Page } from "@playwright/test";
 declare global {
   // The fake player below, for tests to drive playback with.
   var fakePlayer:
-    | { scrubTo: (seconds: number) => void; pauseVideo: () => void; getPlayerState: () => number }
+    | {
+        scrubTo: (seconds: number) => void;
+        pauseVideo: () => void;
+        getPlayerState: () => number;
+        getCurrentTime: () => number;
+      }
     | undefined;
 }
 
@@ -155,6 +160,13 @@ export const test = base.extend<{ fakeYouTube: boolean }>({
     expect(violations, "the Content-Security-Policy blocked something").toEqual([]);
   },
 });
+
+/** What the fake player is doing: its state (1 playing, 2 paused, 5 cued) and time. */
+export const playback = async (page: Page) =>
+  page.evaluate(() => ({
+    state: globalThis.fakePlayer?.getPlayerState(),
+    time: globalThis.fakePlayer?.getCurrentTime(),
+  }));
 
 /** Which moment the list marks as playing, and whether it can be seen. */
 export const playingMoment = async (page: Page) =>

@@ -1,9 +1,12 @@
-import { SOURCE, TARGET, clock, expect, playingMoment, seed, test, timestampOf, videoIdOf } from "./fixtures";
+import { SOURCE, TARGET, clock, expect, playback, playingMoment, seed, test, timestampOf, videoIdOf } from "./fixtures";
 
 test("a shared link starts at its moment", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}?timestamp=${timestampOf(TARGET.index)}`);
 
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+  // The player itself is there, cued rather than playing: the list alone shows
+  // the position asked for, whatever the player did with it.
+  await expect.poll(async () => playback(page)).toEqual({ state: 5, time: timestampOf(TARGET.index) });
 });
 
 // Resize observers report every element once when first observed. Here that
@@ -76,6 +79,7 @@ test("clicking a moment plays from it", async ({ page }) => {
   await page.locator("aside [data-index='5']").click();
 
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+  await expect.poll(async () => playback(page)).toEqual({ state: 1, time: timestampOf(5) });
 });
 
 // Each tab saved its own position every second and took the other's from
