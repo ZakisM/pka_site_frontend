@@ -35,8 +35,8 @@ build makes large lists look far slower than they ship.
 
 The image is an optimised build served by nginx, not suited to development.
 
-1. `docker build -t zakism/pka-site-frontend:latest .`
-2. `docker run -p 5678:5678 zakism/pka-site-frontend:latest`
+1. `docker build -t pka-index-frontend .`
+2. `docker run -p 5678:5678 pka-index-frontend`
 3. Visit https://www.pkaindextest.com.
 
-Pushes to `master` build and publish the image once Check passes; it is also rebuilt every Monday for base-image fixes.
+Pushes to `master` build and publish the image, as `zakism/pka-index-frontend:master`, once Check passes; it is also rebuilt every Monday for base-image fixes.
