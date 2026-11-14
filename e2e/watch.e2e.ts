@@ -124,15 +124,9 @@ test("a moment opened from search is played once: a reload or Back resumes inste
   await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
 
-  // The viewer moves on, and the position is saved. Repeated until the player
-  // has settled on the hit's moment and lets the jump stand.
-  await expect
-    .poll(async () => {
-      await page.evaluate((seconds) => globalThis.fakePlayer?.scrubTo(seconds), timestampOf(5));
-
-      return playingMoment(page);
-    })
-    .toEqual({ time: clock(5), inView: true });
+  // The viewer moves on to another moment, and the position is saved.
+  await page.locator("aside [data-index='5']").click();
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
   await expect
     .poll(async () => page.evaluate((id) => localStorage.getItem(id), videoIdOf(TARGET.episode)))
     .toBe(String(timestampOf(5)));
