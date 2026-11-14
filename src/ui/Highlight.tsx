@@ -9,7 +9,7 @@ export const Highlight = ({ text, terms }: { text: string; terms: string[] }) =>
   const pattern = termsPattern(terms);
 
   // Split with a capture group alternates plain, match, plain, match… Each
-  // Match is keyed by where it starts in the text, which is what it is.
+  // match is keyed by where it starts in the text, which is what it is.
   let offset = 0;
 
   return text.split(pattern).map((part, index) => {

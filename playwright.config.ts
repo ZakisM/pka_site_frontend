@@ -5,8 +5,8 @@ const CI = Boolean(process.env.CI);
 
 /**
  * Browser tests of the built app (e2e/). The API and YouTube are faked inside
- * Each test (see e2e/fixtures.ts), so nothing else needs to be running and no
- * Request leaves the machine.
+ * each test (see e2e/fixtures.ts), so nothing else needs to be running and no
+ * request leaves the machine.
  */
 export default defineConfig({
   testDir: "./e2e",

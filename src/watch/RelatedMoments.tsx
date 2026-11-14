@@ -15,7 +15,7 @@ interface RelatedMomentsProps {
 
 /**
  * The moment now playing, everywhere else it came up: other episodes' moments
- * About the same subject, each opening that episode at that point.
+ * about the same subject, each opening that episode at that point.
  */
 export const RelatedMoments = ({ episodeNumber, moment, fallback }: RelatedMomentsProps) => {
   const navigate = useNavigate();

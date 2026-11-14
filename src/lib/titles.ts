@@ -1,9 +1,9 @@
 // Episode titles changed format many times over fifteen years — "Painkiller
 // Already 45", "PKA 279 w PhillyD Puberty, UFC 200…", "PKA 825 W/ Harley:
 // Redemption Of Wings", "Woody Snaps? : PKA 719 W/ Harley". Guests can't be
-// Extracted reliably, so titles are shown as written with one exception: the
-// Episode number is already on screen, so a leading "PKA 825" goes, and a
-// Trailing ": PKA 719 W/ Harley" keeps its guest but loses the number.
+// extracted reliably, so titles are shown as written with one exception: the
+// episode number is already on screen, so a leading "PKA 825" goes, and a
+// trailing ": PKA 719 W/ Harley" keeps its guest but loses the number.
 
 const LEADING_NUMBER = /^(?:PKA|Painkiller(?: Already)?)\s*(?:Ep\.?|Episode)?\s*#?\d+(?:\.\d+)?\s*(?:[-:|–—]\s*)?/iu;
 const TRAILING_NUMBER = /^(?<before>.+?)\s*[:|]?\s*PKA\s*\d+\s*(?<after>.*)$/u;

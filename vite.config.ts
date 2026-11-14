@@ -87,6 +87,9 @@ export default defineConfig({
       nursery: "error",
     },
     rules: {
+      // Only a comment's first line starts with a capital; the lines it
+      // wraps onto carry on the sentence.
+      "eslint/capitalized-comments": ["error", "always", { ignoreConsecutiveComments: true }],
       "eslint/id-length": "off",
       "eslint/max-depth": "off",
       "eslint/max-lines-per-function": "off",

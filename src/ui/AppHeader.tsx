@@ -11,8 +11,8 @@ const buttonStyles =
 
 /**
  * Wordmark, search, random moment — the search box centred on the page, with
- * The outer columns sharing what is left. On phones it folds into an icon so
- * The full wordmark keeps its room, unfolding while typing or showing a query.
+ * the outer columns sharing what is left. On phones it folds into an icon so
+ * the full wordmark keeps its room, unfolding while typing or showing a query.
  */
 export const AppHeader = () => {
   const closeSearch = useCloseSearch();
@@ -23,8 +23,8 @@ export const AppHeader = () => {
 
   // Tapping the icon counts as clicking into the box: it focuses it and, with
   // A query kept from before, brings those results straight back. Unfolded
-  // Synchronously so the focus lands inside the tap itself, which is the only
-  // Time iOS will raise the keyboard for it.
+  // synchronously so the focus lands inside the tap itself, which is the only
+  // time iOS will raise the keyboard for it.
   const unfold = () => {
     flushSync(() => setUnfolded(true));
     inputRef.current?.focus();

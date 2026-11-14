@@ -14,7 +14,7 @@ export class HTTPError extends Error {
 const RESPONSE_TIMEOUT_MS = 30_000;
 
 // Every response is `{ data }`; anything else (the SPA's HTML coming back
-// While the backend is down) is an error rather than a bad cast.
+// while the backend is down) is an error rather than a bad cast.
 const hasData = (payload: unknown): payload is { data: unknown } =>
   typeof payload === "object" && payload !== null && "data" in payload;
 
@@ -26,7 +26,7 @@ interface GetOptions {
 /**
  * A GET against the API, unwrapping its `{ data }` envelope. Plain fetch:
  * React Query already retries failures, so this needs nothing more than a
- * Timeout on the response arriving (the body may then take as long as it needs).
+ * timeout on the response arriving (the body may then take as long as it needs).
  */
 const get = async <T>(path: string, { signal, searchParams }: GetOptions = {}): Promise<T> => {
   const query = searchParams
@@ -57,7 +57,7 @@ const get = async <T>(path: string, { signal, searchParams }: GetOptions = {}): 
     }
 
     // The API is ours and typed here; checking every field of every response
-    // Would cost more than it could catch.
+    // would cost more than it could catch.
     // eslint-disable-next-line typescript/no-unsafe-type-assertion
     return payload.data as T;
   } finally {
@@ -81,8 +81,8 @@ export interface PkaYoutubeDetails {
 }
 
 // Exactly what GET /episodes/:id returns per event — no id and no episode
-// Number, so callers must supply the episode from their own context and key
-// Rows by timestamp.
+// number, so callers must supply the episode from their own context and key
+// rows by timestamp.
 export interface PkaEvent {
   timestamp: number;
   description: string;
@@ -125,7 +125,7 @@ export interface SearchHit {
 }
 
 // One episode in the results: its first few matching moments, in order, and
-// How many matched altogether.
+// how many matched altogether.
 export interface SearchGroup {
   episode: EpisodeSummary;
   matchCount: number;
@@ -157,7 +157,7 @@ export const fetchRelated = async (signal: AbortSignal, episodeNumber: number, t
 export const fetchEpisodes = async (signal: AbortSignal) => get<EpisodeSummary[]>("episodes", { signal });
 
 // Searching and grouping happen on the server, which returns one page of
-// Episode groups at a time — the device only ever handles a page.
+// episode groups at a time — the device only ever handles a page.
 export const searchPage = async ({
   signal,
   query,

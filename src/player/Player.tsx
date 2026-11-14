@@ -15,13 +15,13 @@ interface PlayerProps {
 
 /**
  * The YouTube iframe. Nothing may be drawn over it — YouTube's own controls
- * Are the only chrome inside this box, per the embed terms — so this renders a
- * Bare host element and hands it to the player controller.
+ * are the only chrome inside this box, per the embed terms — so this renders a
+ * bare host element and hands it to the player controller.
  *
  * A slow connection would otherwise leave the box empty and black, so ticks
- * Fill that gap. They sit *behind* the host element: the iframe is opaque, so
- * The instant it exists it covers them, and nothing of ours is ever painted
- * Over the player.
+ * fill that gap. They sit *behind* the host element: the iframe is opaque, so
+ * the instant it exists it covers them, and nothing of ours is ever painted
+ * over the player.
  */
 export const Player = ({ videoId, start }: PlayerProps) => {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -29,8 +29,8 @@ export const Player = ({ videoId, start }: PlayerProps) => {
   const showLoader = useDebounced(!ready, LOADER_DELAY_MS) && !ready;
 
   // Before attaching, so the iframe is created already on the right episode
-  // At the right time. Sending the same request again is harmless: the
-  // Controller acts on each one once.
+  // at the right time. Sending the same request again is harmless: the
+  // controller acts on each one once.
   useEffect(() => {
     player.request(videoId, start);
   }, [videoId, start]);

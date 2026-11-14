@@ -14,15 +14,15 @@ declare module "@tanstack/react-router" {
 export const searchSort = createStore<SearchSort>("newest");
 
 // Where each query's results were last scrolled to, for this session: opening
-// The kept query again from the box puts them back there. A query typed
-// Afresh forgets its entry and starts at the top.
+// the kept query again from the box puts them back there. A query typed
+// afresh forgets its entry and starts at the top.
 export const resultsScroll = new Map<string, number>();
 
 /**
  * Closes the results. When they were opened over a page in this session, that
- * Is a step back in history, so the page underneath returns with its scroll
- * Position; a shared results link has nothing to go back to, so it just drops
- * The query.
+ * is a step back in history, so the page underneath returns with its scroll
+ * position; a shared results link has nothing to go back to, so it just drops
+ * the query.
  */
 export const useCloseSearch = () => {
   const router = useRouter();

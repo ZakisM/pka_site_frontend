@@ -1,10 +1,10 @@
 // A direct binding to YouTube's IFrame API.
 //
 // We hold the real player rather than going through a wrapper library: those
-// Return a promise-proxied player whose calls are queued, and a queued
+// return a promise-proxied player whose calls are queued, and a queued
 // `cueVideoById` issued while the previous video was playing got silently
-// Dropped — the episode never changed. Owning the instance means every call is
-// Synchronous and its effect can be verified on the next line.
+// dropped — the episode never changed. Owning the instance means every call is
+// synchronous and its effect can be verified on the next line.
 
 export enum PlayerState {
   UNSTARTED = -1,
@@ -54,7 +54,7 @@ declare global {
 const API_SRC = "https://www.youtube.com/iframe_api";
 
 // YouTube's own 16:9 thumbnail (320×180). Linked rather than proxied, which is
-// How the embed terms expect thumbnails to be used.
+// how the embed terms expect thumbnails to be used.
 export const thumbnailUrl = (videoId: string, format: "webp" | "jpg") =>
   format === "webp"
     ? `https://i.ytimg.com/vi_webp/${videoId}/mqdefault.webp`
@@ -72,7 +72,7 @@ export const loadYouTubeApi = async () => {
     }
 
     // The API calls this global exactly once; chain onto anything already
-    // Registered rather than clobbering it.
+    // registered rather than clobbering it.
     const previous = globalThis.onYouTubeIframeAPIReady;
 
     globalThis.onYouTubeIframeAPIReady = () => {
@@ -110,7 +110,7 @@ export const embedPlayer = (api: YouTubeApi, host: HTMLElement, options: EmbedOp
     playerVars: {
       autoplay: options.autoplay ? 1 : 0,
       // YouTube's own controls are the only in-frame chrome: nothing of ours
-      // May sit over the iframe, per the embed terms.
+      // may sit over the iframe, per the embed terms.
       controls: 1,
       playsinline: 1,
       rel: 0,

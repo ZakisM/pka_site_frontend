@@ -8,8 +8,8 @@ const GAP = 20;
 
 /**
  * A row that scrolls sideways. On desktops each card is exactly one archive
- * Column wide; `edges` says whether there is more to either side, for the
- * Paging buttons, and `page` scrolls by a screenful.
+ * column wide; `edges` says whether there is more to either side, for the
+ * paging buttons, and `page` scrolls by a screenful.
  */
 export const useShelf = (itemCount: number) => {
   const [row, setRow] = useState<HTMLDivElement | null>(null);
@@ -41,7 +41,7 @@ export const useShelf = (itemCount: number) => {
       row.removeEventListener("scroll", update);
     };
     // `itemCount` is a trigger: new cards change the row's scroll edges without
-    // Resizing it, so nothing else would re-measure.
+    // resizing it, so nothing else would re-measure.
     // eslint-disable-next-line react/exhaustive-effect-dependencies
   }, [row, itemCount]);
 

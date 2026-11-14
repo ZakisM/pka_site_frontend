@@ -7,8 +7,8 @@ test("a shared link starts at its moment", async ({ page }) => {
 });
 
 // Resize observers report every element once when first observed. Here that
-// First report is withheld, as if it had already arrived before the router's
-// Scroll restore: which comes first is a race the test can't otherwise fix.
+// first report is withheld, as if it had already arrived before the router's
+// scroll restore: which comes first is a race the test can't otherwise fix.
 const withholdFirstResizeReports = () => {
   const Native = globalThis.ResizeObserver;
 
@@ -32,9 +32,9 @@ const withholdFirstResizeReports = () => {
 };
 
 // The router restores the scroll of anything that scrolled, and carried the
-// Last episode's list position onto the next episode's list. That hid the
-// Moment when the list opened on it straight away (an episode already watched
-// Up to that point) and nothing scrolled the list again afterwards.
+// last episode's list position onto the next episode's list. That hid the
+// moment when the list opened on it straight away (an episode already watched
+// up to that point) and nothing scrolled the list again afterwards.
 test("a moment in another episode opens with that moment in view", async ({ page }) => {
   await page.addInitScript(withholdFirstResizeReports);
   await seed(page, { watched: { [TARGET.episode]: timestampOf(TARGET.index) } });
@@ -79,7 +79,7 @@ test("clicking a moment plays from it", async ({ page }) => {
 });
 
 // Each tab saved its own position every second and took the other's from
-// Storage, so both lists flicked between the two tabs' moments.
+// storage, so both lists flicked between the two tabs' moments.
 test("another tab playing the same episode leaves this one's moment alone", async ({ page, context }) => {
   await page.goto(`/watch/${TARGET.episode}`);
   await page.locator("aside [data-index='5']").click();

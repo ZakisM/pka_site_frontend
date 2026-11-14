@@ -2,7 +2,7 @@ import { describe, expect, test } from "vite-plus/test";
 import { matchesTerms, searchTerms, termsPattern } from "./searchTerms";
 
 // The first three mirror the backend's own matcher tests (catalog/search.rs),
-// So the moments filter finds exactly what search found.
+// so the moments filter finds exactly what search found.
 describe("matchesTerms", () => {
   test("every word must match, in any case", () => {
     const terms = searchTerms("KYLE taylor");
@@ -29,7 +29,7 @@ describe("matchesTerms", () => {
 });
 
 // What a highlight would mark: split with a capture group alternates plain
-// Text and matches.
+// text and matches.
 const marked = (text: string, query: string) =>
   text.split(termsPattern(searchTerms(query))).filter((_, index) => index % 2 === 1);
 

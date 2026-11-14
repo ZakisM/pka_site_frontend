@@ -23,8 +23,8 @@ const SORTS: { value: SearchSort; label: string }[] = [
 ];
 
 // One column, centred under the search box. Each episode lists every moment
-// That matched, so they vary too much in height to sit side by side: a row
-// Takes its tallest, and a short group beside a long one leaves a hole.
+// that matched, so they vary too much in height to sit side by side: a row
+// takes its tallest, and a short group beside a long one leaves a hole.
 const pageStyles = "mx-auto max-w-[1008px] px-6 pt-8 pb-18 mobile:px-4 mobile:pt-6 mobile:pb-14";
 const groupsStyles = "transition-opacity duration-150";
 
@@ -90,8 +90,8 @@ interface QueryOutcome {
 }
 
 // The first page failed — including when the rows on screen are the previous
-// Query's placeholder, which would otherwise sit under the new query with a
-// Spinner that never stops. A failed later page is shown at the list's end.
+// query's placeholder, which would otherwise sit under the new query with a
+// spinner that never stops. A failed later page is shown at the list's end.
 const searchFailed = ({ isError, isFetchNextPageError, hasData, isPlaceholderData }: QueryOutcome) =>
   isError && !isFetchNextPageError && (!hasData || isPlaceholderData);
 
@@ -161,7 +161,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   useHitKeys({ containerRef, resetKey: `${query}|${sort}`, query, current: !isPlaceholderData });
 
   // Esc closes the results from anywhere on them, not only from the search
-  // Box (which handles its own Esc, and marks it handled).
+  // box (which handles its own Esc, and marks it handled).
   const closeSearch = useCloseSearch();
 
   useEffect(() => {
@@ -183,7 +183,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   const open = useCallback(
     (episodeNumber: number, state: HistoryState) => {
       // Out of the search box: on phones this puts the keyboard away, and a
-      // Focused box would otherwise sit over the episode now playing.
+      // focused box would otherwise sit over the episode now playing.
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
@@ -204,7 +204,7 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
   );
 
   // Shown in place, never thrown: an error boundary above this would take the
-  // Header and the page underneath (and its player) down with it.
+  // header and the page underneath (and its player) down with it.
   if (searchFailed({ isError, isFetchNextPageError, hasData: data !== undefined, isPlaceholderData })) {
     return (
       <SearchUnavailable

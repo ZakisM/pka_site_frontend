@@ -17,9 +17,9 @@ interface WatchScreenProps {
 
 /**
  * The player, sized to leave the episode bar on screen, with the moments
- * Pinned beside it and neighbouring episodes below (on phones: player, bar,
- * Moments, episodes). Nothing is drawn over the player: YouTube's own controls
- * Are the only chrome inside it.
+ * pinned beside it and neighbouring episodes below (on phones: player, bar,
+ * moments, episodes). Nothing is drawn over the player: YouTube's own controls
+ * are the only chrome inside it.
  */
 export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
   const { videoId, title } = episode.youtubeDetails;

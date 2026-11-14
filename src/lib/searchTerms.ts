@@ -1,7 +1,7 @@
 // Matching as the server's search does it (catalog/search.rs in the backend):
-// Every word of the query, in any case, with curly and straight quotes the
-// Same. Phones type curly quotes while most descriptions use straight ones,
-// So without this "kyle’s" finds nothing the server found for it.
+// every word of the query, in any case, with curly and straight quotes the
+// same. Phones type curly quotes while most descriptions use straight ones,
+// so without this "kyle’s" finds nothing the server found for it.
 
 const foldQuotes = (text: string) => text.replaceAll(/[‘’]/gu, "'").replaceAll(/[“”]/gu, '"');
 
@@ -21,7 +21,7 @@ const escapeRegExp = (term: string) => term.replaceAll(/[.*+?^${}()|[\]\\]/gu, S
 
 /**
  * Finds any of `terms` in text as written, so they can be marked: either
- * Quote style, and the longest term first, so "taylor" wins over "tay".
+ * quote style, and the longest term first, so "taylor" wins over "tay".
  */
 export const termsPattern = (terms: string[]) => {
   const alternatives = terms

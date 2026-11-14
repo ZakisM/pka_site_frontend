@@ -7,9 +7,9 @@ import { displayTitle } from "@/lib/titles";
 import { useEpisodeProgress } from "@/player/useEpisodeProgress";
 
 // Every moment that matched, beside the episode they belong to. A long list
-// Scrolls past its episode, so the episode stays pinned beside it (above it
-// On phones, where the moments take the full width: beside a 112px thumbnail
-// They wrapped a word per line).
+// scrolls past its episode, so the episode stays pinned beside it (above it
+// on phones, where the moments take the full width: beside a 112px thumbnail
+// they wrapped a word per line).
 const groupGrid =
   "grid animate-fade-in grid-cols-[208px_1fr] items-start gap-x-6 border-t border-line py-6 mobile:block";
 const episodeStyles =

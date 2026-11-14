@@ -14,7 +14,7 @@ interface MomentRowProps {
   index: number;
   active: boolean;
   // Seconds left in this moment; only set on the active row, so other rows
-  // Never re-render on playback ticks.
+  // never re-render on playback ticks.
   remaining: number | undefined;
   terms: string[];
   onSeek: (seconds: number) => void;
@@ -42,13 +42,13 @@ const MomentRow = ({ event, index, active, remaining, terms, onSeek }: MomentRow
 );
 
 // The list holds still under a mouse, so a row doesn't move as it's pointed
-// At. Only where there is a mouse: a phone keeps whatever was last tapped
+// at. Only where there is a mouse: a phone keeps whatever was last tapped
 // :hover, which stopped the list following playback after a single tap.
 const pointedAt = (list: HTMLElement) => globalThis.matchMedia("(hover: hover)").matches && list.matches(":hover");
 
 /**
  * Keeps the playing moment a third of the way down the list, gliding one row
- * At a time during playback and snapping for anything further.
+ * at a time during playback and snapping for anything further.
  */
 const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior) => {
   const row = list.querySelector<HTMLElement>(`[data-index="${index}"]`);
@@ -62,11 +62,11 @@ const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior)
 
 /**
  * Keeps the router's scroll restoration off the list. The router restores
- * The scroll of every element that has scrolled, and carries one over to the
- * Next page when that page has an element in the same place — which the next
- * Episode's list is. Its restore lands after this hook has placed the playing
- * Moment, and put the list back at the last episode's offset. It runs before
- * Any listener added here, so this puts the list back where it was left.
+ * the scroll of every element that has scrolled, and carries one over to the
+ * next page when that page has an element in the same place — which the next
+ * episode's list is. Its restore lands after this hook has placed the playing
+ * moment, and put the list back at the last episode's offset. It runs before
+ * any listener added here, so this puts the list back where it was left.
  */
 const useOwnScroll = (listRef: React.RefObject<HTMLDivElement | null>) => {
   const router = useRouter();
@@ -100,7 +100,7 @@ const useOwnScroll = (listRef: React.RefObject<HTMLDivElement | null>) => {
 
   // Scroll events arrive a frame late; a scroll made here is recorded now, so
   // A restore in between can't win. Stable, so effects using it run only when
-  // Their own inputs change.
+  // their own inputs change.
   return useCallback((list: HTMLElement) => {
     ownTopRef.current = list.scrollTop;
   }, []);
@@ -128,8 +128,8 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
   }, [listRef, activeIndex, recordOwn]);
 
   // Changing the filter changes which rows exist: bring the playing moment
-  // Back into view (clearing the filter should not strand the list wherever
-  // The filtered rows left it), or start from the top if it was filtered out.
+  // back into view (clearing the filter should not strand the list wherever
+  // the filtered rows left it), or start from the top if it was filtered out.
   const filterRef = useRef(filter);
 
   useLayoutEffect(() => {
@@ -149,10 +149,10 @@ const useFollowActive = (listRef: React.RefObject<HTMLDivElement | null>, active
   }, [listRef, filter, recordOwn]);
 
   // A new layout (the list moving between beside and below the video, or a
-  // Rotation) changes its width: put the playing moment back in its place.
+  // rotation) changes its width: put the playing moment back in its place.
   // Not for a change of height alone: phones resize the list as their
-  // Toolbars slide away while the page scrolls, and following then scrolled
-  // The list by itself while the reader was scrolling past it.
+  // toolbars slide away while the page scrolls, and following then scrolled
+  // the list by itself while the reader was scrolling past it.
   useLayoutEffect(() => {
     const list = listRef.current;
 
@@ -190,8 +190,8 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
 
   // A search's "more moments in this episode" applies its query here, once
   // (see lib/intents): on the first render when it opens a new episode, so
-  // The full list never flashes, and whenever it arrives for the episode
-  // Already on screen.
+  // the full list never flashes, and whenever it arrives for the episode
+  // already on screen.
   const intent = useLocation({ select: (location) => location.state.filterMoments });
   const wanted = intent?.episodeNumber === episodeNumber && !isSpent(intent.id) ? intent : undefined;
   const [filter, setFilter] = useState(() => wanted?.filter ?? "");
