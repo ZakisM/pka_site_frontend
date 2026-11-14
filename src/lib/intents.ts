@@ -17,12 +17,12 @@ interface Intent {
 
 // "Open this episode at this moment": a search hit, a related moment, the
 // Random moment.
-export interface PlayFrom extends Intent {
+interface PlayFrom extends Intent {
   seconds: number;
 }
 
 // "Open this episode with its moments filtered": a search's "N more moments".
-export interface FilterMoments extends Intent {
+interface FilterMoments extends Intent {
   filter: string;
 }
 
