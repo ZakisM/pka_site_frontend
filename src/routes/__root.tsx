@@ -120,7 +120,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   // The search query belongs to every page: results are drawn over whichever
   // one it was typed on.
-  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
-    q: typeof search.q === "string" && search.q.trim() ? search.q.trim() : undefined,
-  }),
+  // The router JSON-parses unquoted values, so a hand-written ?q=2024 arrives
+  // as a number: read it back as the text it was.
+  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+    const { q } = search;
+    const text = typeof q === "string" || typeof q === "number" || typeof q === "boolean" ? String(q).trim() : "";
+
+    return { q: text || undefined };
+  },
 });

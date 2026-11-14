@@ -148,3 +148,32 @@ test("closing the results gives the tab back the page's title", async ({ page })
   await page.getByRole("button", { name: "Close" }).click();
   await expect(page).toHaveTitle("PKA Index");
 });
+
+// The router reads an unquoted ?q=2024 as the number 2024: a hand-written or
+// shared link like that was dropped, leaving an empty box and no results.
+test("a link searching for a number opens its results", async ({ page }) => {
+  await page.goto("/?q=2024");
+
+  await expect(searchBox(page)).toHaveValue("2024");
+  await expect(page.getByText("Nothing matches “2024”.")).toBeVisible();
+});
+
+// A search still settling must not reopen results the viewer just closed.
+test("Close straight after typing keeps the results closed", async ({ page }) => {
+  await page.goto("/");
+
+  const box = searchBox(page);
+  const hits = page.locator("[data-hit]");
+
+  await box.fill("hellraiser");
+  await expect(hits).toHaveCount(2);
+  await box.press("End");
+  await box.pressSequentially(" kyle");
+  await page.getByRole("button", { name: "Close" }).click();
+  await expect(hits).toHaveCount(0);
+
+  // Well past the moment typing settles.
+  await page.waitForTimeout(1000);
+  await expect(hits).toHaveCount(0);
+  await expect(page).toHaveURL("/");
+});
