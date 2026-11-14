@@ -27,7 +27,7 @@ export interface YouTubePlayer {
   destroy: () => void;
 }
 
-export interface PlayerEvent {
+interface PlayerEvent {
   target: YouTubePlayer;
   data: number;
 }

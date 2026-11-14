@@ -66,14 +66,14 @@ const get = async <T>(path: string, { signal, searchParams }: GetOptions = {}): 
   }
 };
 
-export interface PkaEpisode {
+interface PkaEpisode {
   number: number;
   name: string;
   youtubeLink: string;
   uploadDate: number;
 }
 
-export interface PkaYoutubeDetails {
+interface PkaYoutubeDetails {
   videoId: string;
   episodeNumber: number;
   title: string;
@@ -118,7 +118,7 @@ export interface EpisodeSummary {
   eventCount: number;
 }
 
-export interface SearchHit {
+interface SearchHit {
   timestamp: number;
   description: string;
   lengthSeconds: number;
