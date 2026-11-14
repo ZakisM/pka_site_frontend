@@ -147,3 +147,23 @@ test("an API that never answers is reported as unreachable", async ({ page }) =>
     .toBe(true);
   await expect(page.getByText("We couldn't reach the PKA Index API.")).toBeVisible();
 });
+
+// Clearing storage in one tab fires a storage event with no key, which the
+// other tabs ignored: they kept the cleared list and wrote it back.
+test("storage cleared in another tab stays cleared", async ({ page, context }) => {
+  await seed(page, { watched: { 3: 600, 2: 600 } });
+  await page.goto("/");
+  await expect(page.locator("a[href='/watch/3']").first()).toBeVisible();
+
+  const other = await context.newPage();
+
+  await other.goto("/about");
+  await other.evaluate(() => {
+    localStorage.clear();
+  });
+
+  // Opening an episode here records it as the only one opened since.
+  await page.locator("a[href='/watch/29']").first().click();
+  await expect(page).toHaveURL("/watch/29");
+  await expect.poll(async () => other.evaluate(() => localStorage.getItem("recent-episodes"))).toBe("[29]");
+});
