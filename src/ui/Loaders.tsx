@@ -1,5 +1,5 @@
 // The brand loading states from pka_index_brand_assets. The rules live in
-// Styles.css; these are the markup each one expects.
+// styles.css; these are the markup each one expects.
 
 type TicksSize = "sm" | "md" | "lg";
 type TicksTone = "red" | "muted" | "dim";
@@ -24,7 +24,7 @@ interface TicksProps {
 }
 
 // The general-purpose spinner — for where the shape of what is loading is not
-// Known, or inline in a button.
+// known, or inline in a button.
 export const Ticks = ({ size = "md", tone = "red", className = "", label = "Loading" }: TicksProps) => (
   <output aria-label={label} className={`pka-ticks ${SIZES[size]} ${TONES[tone]} ${className}`}>
     <i />
@@ -45,7 +45,7 @@ interface SkeletonProps {
 }
 
 // Use wherever the shape of the result is already known, so nothing jumps when
-// The data lands.
+// the data lands.
 export const Skeleton = ({ className = "", soft = false, delay = 0, style }: SkeletonProps) => (
   <span
     aria-hidden

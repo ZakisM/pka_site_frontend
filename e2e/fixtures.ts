@@ -9,8 +9,8 @@ declare global {
 
 /**
  * A stand-in for YouTube's IFrame API, installed before the app loads so its
- * Loader finds `YT` already there: no network, no video, no audio. It answers
- * The player controller the way YouTube does, minus the clock moving.
+ * loader finds `YT` already there: no network, no video, no audio. It answers
+ * the player controller the way YouTube does, minus the clock moving.
  */
 const installFakeYouTube = () => {
   const CUED = 5;
@@ -104,7 +104,7 @@ interface Seed {
 }
 
 // Saved progress, as the app keeps it: a position per video id, and the
-// Episodes most recently opened.
+// episodes most recently opened.
 const seedStorage = ({ positions, recent }: { positions: Record<string, number>; recent: number[] }) => {
   for (const [videoId, seconds] of Object.entries(positions)) {
     localStorage.setItem(videoId, JSON.stringify(seconds));
@@ -124,7 +124,7 @@ export const seed = async (page: Page, { watched = {} }: Seed) => {
 
 /**
  * Every page gets the fake API and player, and no traffic leaves the machine:
- * Set on the context, so a second tab opened from it gets them too.
+ * set on the context, so a second tab opened from it gets them too.
  */
 export const test = base.extend({
   context: async ({ context }, provide) => {

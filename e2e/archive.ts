@@ -1,8 +1,8 @@
 import type { Route } from "@playwright/test";
 
 // A small archive the fake API serves, built so the tests can rely on it:
-// Enough moments per episode that the moments list scrolls, and two episodes
-// About the same subject, one halfway down its list and one near the end.
+// enough moments per episode that the moments list scrolls, and two episodes
+// about the same subject, one halfway down its list and one near the end.
 
 const DAY = 86_400;
 // Episode 1 a week after this, then weekly: 2024 for the first seventeen.
@@ -23,7 +23,7 @@ const TOPICS = [
 ];
 
 // Episode 20 opens on this moment, halfway down its list: far enough that the
-// List has scrolled to show it, which is what the router then carried over...
+// list has scrolled to show it, which is what the router then carried over...
 export const SOURCE = { episode: 20, index: 20, description: "Why Hellraiser still terrifies Kyle" };
 // ...which is related to this one, near the end of episode 12's.
 export const TARGET = { episode: 12, index: 38, description: "Taylor watches Hellraiser for the first time" };

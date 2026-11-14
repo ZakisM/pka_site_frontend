@@ -12,11 +12,11 @@ const router = createRouter({
   routeTree,
   context: { queryClient },
   // Deliberately no pendingComponent: it would replace the route's tree on
-  // Every navigation and take the player's iframe with it. The root renders
-  // The scan bar and the first-load skeleton instead.
+  // every navigation and take the player's iframe with it. The root renders
+  // the scan bar and the first-load skeleton instead.
   defaultPreloadStaleTime: 0,
   // Back and Forward return every page — home, results, an episode — to where
-  // It was scrolled.
+  // it was scrolled.
   scrollRestoration: true,
   defaultNotFoundComponent: () => <Navigate to="/" replace />,
   defaultErrorComponent: ({ error }) => <ErrorPage error={error} />,
@@ -29,7 +29,7 @@ declare module "@tanstack/react-router" {
 }
 
 // A tab opened before a deploy still runs the old build, whose route chunks
-// The deploy removed: when one fails to load, reload onto the new build.
+// the deploy removed: when one fails to load, reload onto the new build.
 globalThis.addEventListener("vite:preloadError", () => {
   globalThis.location.reload();
 });

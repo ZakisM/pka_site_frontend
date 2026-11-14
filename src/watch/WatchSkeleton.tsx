@@ -5,7 +5,7 @@ const RAIL_ROWS = ["78%", "94%", "62%", "88%", "71%", "96%", "58%", "83%", "74%"
 
 /**
  * The watch screen's shape while the first episode loads: player box, episode
- * Bar and rail all hold their real positions, so nothing moves when it lands.
+ * bar and rail all hold their real positions, so nothing moves when it lands.
  */
 export const WatchSkeleton = () => (
   <div className="desktop:grid desktop:grid-cols-[minmax(0,1fr)_380px] desktop:grid-rows-[auto_1fr]">

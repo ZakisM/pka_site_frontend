@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 const COUNT = 6;
 
 // The episodes closest to this one in the archive, nearest first, then shown
-// Newest first — so the next and previous episodes are always among them.
+// newest first — so the next and previous episodes are always among them.
 const neighbours = (episodes: EpisodeSummary[], episodeNumber: number) => {
   const index = episodes.findIndex((episode) => episode.episodeNumber === episodeNumber);
 

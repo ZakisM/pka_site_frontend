@@ -4,9 +4,9 @@ import { useLocation } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 // A shared link's ?timestamp is an entry point, honoured when the page is
-// Loaded with it. Its id is unique to this page load, so it is spent from then
-// On: Back to it resumes where the viewer actually was, but a reload of the
-// Link starts at its moment again.
+// loaded with it. Its id is unique to this page load, so it is spent from then
+// on: Back to it resumes where the viewer actually was, but a reload of the
+// link starts at its moment again.
 const PAGE_LOAD = Date.now().toString(36);
 
 const parseTimestamp = (timestamp: unknown) => {
@@ -18,12 +18,12 @@ const parseTimestamp = (timestamp: unknown) => {
 
 /**
  * Where this episode should start, if anything asked: the navigation that
- * Opened it (see lib/intents), or a shared link. The player acts on each
- * Request once.
+ * opened it (see lib/intents), or a shared link. The player acts on each
+ * request once.
  */
 export const useStartRequest = (episodeNumber: number, urlTimestamp: unknown): StartRequest | undefined => {
   // The location runs ahead of the screen while the next episode loads, so
-  // Only a request for the episode on screen counts.
+  // only a request for the episode on screen counts.
   const intent = useLocation({ select: (location) => location.state.playFrom });
 
   if (intent?.episodeNumber === episodeNumber) {
@@ -39,9 +39,9 @@ export const useStartRequest = (episodeNumber: number, urlTimestamp: unknown): S
 
 /**
  * Index of the moment currently playing. Derived rather than stored: the
- * Position updates once a second and any state here would need resetting on
- * Every episode change. Events are ordered, so the active one is the last that
- * Has started — which also covers gaps between moments.
+ * position updates once a second and any state here would need resetting on
+ * every episode change. Events are ordered, so the active one is the last that
+ * has started — which also covers gaps between moments.
  */
 export const useActiveMoment = (events: PkaEvent[], position: number) =>
   useMemo(() => {

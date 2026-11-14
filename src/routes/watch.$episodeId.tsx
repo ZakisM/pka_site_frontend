@@ -18,8 +18,8 @@ const Watch = () => {
 };
 
 // The aliases resolve to a real episode number, then redirect so the URL is
-// Always shareable. Priming the cache under that number means the redirected
-// Route loads without a second request.
+// always shareable. Priming the cache under that number means the redirected
+// route loads without a second request.
 const resolveEpisode = async (queryClient: QueryClient, episodeId: string) => {
   const episode = await fetchEpisodeById(episodeId);
   const resolved = String(episode.episode.number);
@@ -32,13 +32,13 @@ const resolveEpisode = async (queryClient: QueryClient, episodeId: string) => {
 export const Route = createFileRoute("/watch/$episodeId")({
   component: Watch,
   // ?timestamp is an entry point for shared links only; the app never writes
-  // It back, so nothing else needs to be in the URL.
+  // it back, so nothing else needs to be in the URL.
   validateSearch: (search: Record<string, unknown>): { timestamp?: number } => search,
   loader: async ({ context, params }) => {
     const { episodeId } = params;
 
     // Fetched alongside the episode rather than after it renders: the player
-    // Can't start until YouTube's script is in. Once per page; a no-op after.
+    // can't start until YouTube's script is in. Once per page; a no-op after.
     void loadYouTubeApi();
 
     if (episodeId === "latest" || episodeId === "random") {

@@ -6,7 +6,7 @@ import { useState } from "react";
 interface ThumbnailProps {
   episodeNumber: number;
   // The episode's running time, badged in the corner; omitted where the
-  // Thumbnail stands for a moment rather than the whole episode.
+  // thumbnail stands for a moment rather than the whole episode.
   lengthSeconds?: number;
   videoId: string;
   progress?: WatchProgress;
@@ -15,17 +15,17 @@ interface ThumbnailProps {
 type Source = "webp" | "jpg" | "none";
 
 // WebP first, about an eighth smaller: thumbnails are most of what a page
-// Downloads. YouTube has no WebP for many of its oldest videos, so those fall
-// Back to the JPEG, and a removed video shows its episode number instead.
+// downloads. YouTube has no WebP for many of its oldest videos, so those fall
+// back to the JPEG, and a removed video shows its episode number instead.
 const FALLBACK: Record<Source, Source> = { webp: "jpg", jpg: "none", none: "none" };
 
 // A missing thumbnail isn't an error: YouTube answers with a 120×90 grey
-// Placeholder, which loads like any image. The real one is 320×180.
+// placeholder, which loads like any image. The real one is 320×180.
 const PLACEHOLDER_MAX_WIDTH = 120;
 
 /**
  * A flat placeholder that the image fades into once it has loaded — no
- * Spinner: dozens of these load at once and a field of spinners reads as slow.
+ * spinner: dozens of these load at once and a field of spinners reads as slow.
  */
 export const Thumbnail = ({ episodeNumber, lengthSeconds, videoId, progress }: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);

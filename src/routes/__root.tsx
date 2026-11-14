@@ -13,14 +13,14 @@ import { resultsScroll } from "@/search/searchState";
 
 /**
  * While a query is showing, the page it was typed over stays mounted, still
- * And untouched, under the results: unmounting the watch page would destroy
- * The player's iframe, and the page keeps its scroll position for when the
- * Results close. The page's own scrolling is locked meanwhile.
+ * and untouched, under the results: unmounting the watch page would destroy
+ * the player's iframe, and the page keeps its scroll position for when the
+ * results close. The page's own scrolling is locked meanwhile.
  */
 const useSearchOverlay = (searching: boolean) => {
   // The video should not keep playing under the results. Undone in the
-  // Cleanup, which React runs before any new effect: opening a result reveals
-  // The player before it is asked to play.
+  // cleanup, which React runs before any new effect: opening a result reveals
+  // the player before it is asked to play.
   useEffect(() => {
     if (!searching) {
       return;
@@ -39,7 +39,7 @@ const useSearchOverlay = (searching: boolean) => {
 const RootComponent = () => {
   const query = useSearch({ strict: false, select: (search) => search.q });
   // Status, not isLoading or isTransitioning — those stay false for the whole
-  // Pending window, so the bar would never appear.
+  // pending window, so the bar would never appear.
   const pending = useRouterState({ select: (state) => state.status === "pending" });
   const onWatch = useRouterState({
     select: (state) => state.location.pathname.startsWith("/watch"),
@@ -47,9 +47,9 @@ const RootComponent = () => {
   const routeId = useRouterState({ select: (state) => state.matches.at(-1)?.routeId });
 
   // The watch skeleton is for the very first paint only. A route-level
-  // PendingComponent would replace the screen on every navigation and take
-  // The player's iframe with it; afterwards the outgoing screen simply stays
-  // Put under the scan bar until the next one is ready.
+  // pendingComponent would replace the screen on every navigation and take
+  // the player's iframe with it; afterwards the outgoing screen simply stays
+  // put under the scan bar until the next one is ready.
   const [loadedOnce, setLoadedOnce] = useState(false);
 
   if (!pending && !loadedOnce) {
@@ -63,7 +63,7 @@ const RootComponent = () => {
   const shownRouteRef = useRef(routeId);
 
   // Home and watch fade into each other. Not one episode into the next: that
-  // Is the same page, and the player stays put while its video swaps.
+  // is the same page, and the player stays put while its video swaps.
   useLayoutEffect(() => {
     if (shownRouteRef.current !== routeId) {
       shownRouteRef.current = routeId;
@@ -72,8 +72,8 @@ const RootComponent = () => {
   }, [routeId]);
 
   // Reopening a query's results puts them back where they were left. (Back
-  // And Forward are handled by the router's restoration; this covers opening
-  // Them again from the search box, which is a new history entry.)
+  // and Forward are handled by the router's restoration; this covers opening
+  // them again from the search box, which is a new history entry.)
   useLayoutEffect(() => {
     const layer = resultsRef.current;
     const saved = query === undefined ? undefined : resultsScroll.get(query);
@@ -93,8 +93,8 @@ const RootComponent = () => {
       </div>
       {query !== undefined && (
         // A layer over the page with its own scroll, rather than hiding the
-        // Page: hiding it shortened the document and the browser clipped the
-        // Page's scroll position. Its own position is restored on Back by id.
+        // page: hiding it shortened the document and the browser clipped the
+        // page's scroll position. Its own position is restored on Back by id.
         <div
           ref={resultsRef}
           data-scroll-restoration-id="search-results"
@@ -119,7 +119,7 @@ export interface RouterContext {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   // The search query belongs to every page: results are drawn over whichever
-  // One it was typed on.
+  // one it was typed on.
   validateSearch: (search: Record<string, unknown>): { q?: string } => ({
     q: typeof search.q === "string" && search.q.trim() ? search.q.trim() : undefined,
   }),

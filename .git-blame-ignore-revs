@@ -3,3 +3,6 @@
 
 # Format the codebase with oxfmt
 8b3be8f3300e3cf0205c93b375aeacfb31bdba73
+
+# Lowercase comment lines that capitalized-comments had forced
+bd0e6f785c307c85b2a5d39bac527a188dd8903e

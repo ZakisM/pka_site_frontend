@@ -11,8 +11,8 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 
 /**
  * What the site is, where its videos and moments come from, and what it
- * Stores. YouTube's API terms require sites using them to say most of this,
- * And to keep it easy to reach from every page: hence the header's (i).
+ * stores. YouTube's API terms require sites using them to say most of this,
+ * and to keep it easy to reach from every page: hence the header's (i).
  */
 export const AboutPage = () => {
   useEffect(() => {

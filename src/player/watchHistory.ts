@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 const local = () => localStorage;
 
 // Positions are kept as a JSON number under the bare video id, which is how
-// They have always been stored, so progress saved before carries over.
+// they have always been stored, so progress saved before carries over.
 const VIDEO_ID = /^[\w-]{11}$/u;
 
 const isPosition = (value: unknown): value is number =>
@@ -44,9 +44,9 @@ export const savePosition = (videoId: string, seconds: number) => {
 };
 
 // The video this tab's player has loaded. Its position is the player's own:
-// Another tab playing it elsewhere would otherwise overwrite it each second,
-// And this tab's player overwrite it back, so both tabs' moments flicked
-// Between the two places.
+// another tab playing it elsewhere would otherwise overwrite it each second,
+// and this tab's player overwrite it back, so both tabs' moments flicked
+// between the two places.
 let claimed: string | null = null;
 
 const takeStored = (videoId: string) => {
@@ -89,7 +89,7 @@ const recentEpisodes = createStore<readonly number[]>(loadRecent(), (value) => w
 export const useRecentEpisodes = () => useStore(recentEpisodes);
 
 // Another tab watching keeps this one current, except for the video this
-// Tab's own player has loaded (see claimPosition).
+// tab's own player has loaded (see claimPosition).
 globalThis.addEventListener("storage", ({ storageArea, key }) => {
   if (storageArea !== localStorage || key === null) {
     return;

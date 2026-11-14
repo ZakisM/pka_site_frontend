@@ -51,7 +51,7 @@ test("continue watching is a row to swipe, without paging buttons", async ({ pag
 
 // Phones resize the list as their toolbars slide away while the page scrolls.
 // The list used to re-centre on every resize, so scrolling down to the
-// Related moments scrolled the list too, by itself.
+// related moments scrolled the list too, by itself.
 test("scrolling the page leaves the moments list where it is", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}?timestamp=${timestampOf(TARGET.index)}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
@@ -73,15 +73,15 @@ test("scrolling the page leaves the moments list where it is", async ({ page }) 
 });
 
 // A tapped element stays :hover on a phone, and the list doesn't follow
-// Playback while hovered (so it never moves under a mouse), so after one tap
-// It stopped following altogether.
+// playback while hovered (so it never moves under a mouse), so after one tap
+// it stopped following altogether.
 test("after tapping a moment, the list keeps following playback", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}`);
   await page.locator("aside [data-index='2']").tap();
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(2), inView: true });
 
   // Playback moves far down the list, with no further taps. Repeated until
-  // The player has settled on the tapped moment and lets the jump stand.
+  // the player has settled on the tapped moment and lets the jump stand.
   await expect
     .poll(async () => {
       await page.evaluate((seconds) => globalThis.fakePlayer?.scrubTo(seconds), timestampOf(TARGET.index));

@@ -2,12 +2,12 @@ import { readJson, writeJson } from "./storage";
 import type { HistoryState } from "@tanstack/react-router";
 
 // What a navigation asks the watch page to do when it arrives. Carried in that
-// History entry's state, not the URL — the address bar is for sharing — and
-// Not in global state, where a request could outlive its navigation (one
-// Cancelled by Back, say) and ambush the next visit to that episode.
+// history entry's state, not the URL — the address bar is for sharing — and
+// not in global state, where a request could outlive its navigation (one
+// cancelled by Back, say) and ambush the next visit to that episode.
 //
 // Each request is scoped to its episode, because the location runs ahead of
-// The screen while an episode loads, and has an id so it is acted on once:
+// the screen while an episode loads, and has an id so it is acted on once:
 // Back to the entry, or a reload, resumes instead of replaying it.
 
 interface Intent {
@@ -16,7 +16,7 @@ interface Intent {
 }
 
 // "Open this episode at this moment": a search hit, a related moment, the
-// Random moment.
+// random moment.
 interface PlayFrom extends Intent {
   seconds: number;
 }
@@ -50,7 +50,7 @@ export const filterMoments = (episodeNumber: number, filter: string): HistorySta
 });
 
 // Requests already acted on. Per tab, like the history entries they live in,
-// So a reload remembers them too.
+// so a reload remembers them too.
 const SPENT_KEY = "spent-intents";
 const SPENT_LIMIT = 100;
 const session = () => sessionStorage;

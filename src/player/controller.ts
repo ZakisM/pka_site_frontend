@@ -8,14 +8,14 @@ import { spend } from "@/lib/intents";
 
 /**
  * The one owner of the YouTube iframe. Whatever wants the player to do
- * Something asks here, and nothing else holds it.
+ * something asks here, and nothing else holds it.
  *
  * YouTube's API is fire-and-forget: commands cross into the iframe, its
- * Getters report a cache that lags, startSeconds is not always honoured, and a
- * Seek sent while a video loads can be lost. So no command is trusted to have
- * Worked. This keeps what *should* be on screen — a video and, until it has
- * Been seen playing there, a position — and a poll compares the player with
- * It and corrects it for as long as it takes. Nothing ever falls back to 0.
+ * getters report a cache that lags, startSeconds is not always honoured, and a
+ * seek sent while a video loads can be lost. So no command is trusted to have
+ * worked. This keeps what *should* be on screen — a video and, until it has
+ * been seen playing there, a position — and a poll compares the player with
+ * it and corrects it for as long as it takes. Nothing ever falls back to 0.
  */
 
 export interface StartRequest {
@@ -47,7 +47,7 @@ let sent: { videoId: string; at: number; retries: number; seen: boolean } | null
 let unsent = false;
 
 // The search results cover the page: nothing plays under them, and what they
-// Paused resumes when they close.
+// paused resumes when they close.
 let obscured = false;
 let resumeOnReveal = false;
 
@@ -65,7 +65,7 @@ const publish = (seconds: number) => {
 };
 
 // Load rather than cue when it should play: a load is never dropped, and if
-// It starts from 0 anyway the poll moves it.
+// it starts from 0 anyway the poll moves it.
 const switchVideo = (player: YouTubePlayer, id: string, seconds: number) => {
   if (wantPlay && !obscured) {
     player.loadVideoById(id, Math.floor(seconds));
@@ -105,7 +105,7 @@ const send = () => {
 };
 
 // Points the player at `seconds` of the current video, and keeps it there
-// Until it is seen playing from it.
+// until it is seen playing from it.
 const aim = (seconds: number, play: boolean) => {
   pending = pendingAt(seconds, now());
   wantPlay = play;
@@ -191,7 +191,7 @@ const create = async () => {
   const api = await loadYouTubeApi();
 
   // Taken out, or moved to another element, while the script loaded: either
-  // Way destroy() has cleared this.
+  // way destroy() has cleared this.
   if (creatingIn !== element) {
     return;
   }
@@ -201,7 +201,7 @@ const create = async () => {
   unsent = false;
   resumeOnReveal = wantPlay && obscured;
   // Whatever is wanted by now, not when creation began: a navigation can land
-  // While the API script loads.
+  // while the API script loads.
   yt = embedPlayer(api, element, {
     videoId,
     startSeconds: pending?.seconds ?? positionOf(videoId),
@@ -235,8 +235,8 @@ const reset = () => {
 export const player = {
   /**
    * The watch screen shows `id`, and `start` (if any) asks for a position in
-   * It. A new video resumes where it was left unless `start` is new; the
-   * Same video only moves for a new `start`.
+   * it. A new video resumes where it was left unless `start` is new; the
+   * same video only moves for a new `start`.
    */
   request: (id: string, start: StartRequest | undefined) => {
     const fresh = start !== undefined && spend(start.id);
@@ -280,8 +280,8 @@ export const player = {
   },
 
   // Puts the iframe in `element`; the returned function takes it out a tick
-  // Later, so an immediate re-attach to the same element (React re-running
-  // Effects in development) keeps the player and its requests.
+  // later, so an immediate re-attach to the same element (React re-running
+  // effects in development) keeps the player and its requests.
   attach: (element: HTMLElement) => {
     clearTimeout(timers.reset);
 

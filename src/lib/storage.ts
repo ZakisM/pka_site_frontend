@@ -1,5 +1,5 @@
 // Web storage that never throws: a private window, blocked site data or a
-// Full quota only costs persistence, never the page.
+// full quota only costs persistence, never the page.
 
 export const readJson = (storage: () => Storage, key: string): unknown => {
   try {

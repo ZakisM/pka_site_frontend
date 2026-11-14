@@ -15,16 +15,16 @@ export const useDebounced = <T>(value: T, delayMs: number) => {
 
 /**
  * A ref for an element at the end of a list; `onReach` runs whenever it comes
- * Within a screen or so of view. `generation` should change each time the
- * List grows: re-observing makes the observer report again if the end is
- * Still in range, so a tall screen keeps filling itself.
+ * within a screen or so of view. `generation` should change each time the
+ * list grows: re-observing makes the observer report again if the end is
+ * still in range, so a tall screen keeps filling itself.
  */
 interface SentinelOptions {
   onReach: () => void;
   enabled: boolean;
   generation: number;
   // The scrolling element, when the list scrolls inside one rather than the
-  // Page; the look-ahead margin only applies to the observer's root.
+  // page; the look-ahead margin only applies to the observer's root.
   scrollRoot?: React.RefObject<HTMLElement | null>;
 }
 
@@ -58,20 +58,20 @@ export const useSentinel = ({ onReach, enabled, generation, scrollRoot }: Sentin
 };
 
 // How far each list had been revealed, so coming back to it (Back from an
-// Episode) renders enough of it for the scroll position to be restored.
+// episode) renders enough of it for the scroll position to be restored.
 const revealed = new Map<string, number>();
 
 /**
  * How many of `total` already-loaded items to render, growing by `page` as
- * The end of the list nears. `listKey` names the list: a new one starts from
- * The first page, one seen before resumes where it was.
+ * the end of the list nears. `listKey` names the list: a new one starts from
+ * the first page, one seen before resumes where it was.
  */
 export const useRevealMore = (total: number, page: number, listKey: string) => {
   const [count, setCount] = useState(() => revealed.get(listKey) ?? page);
   const [key, setKey] = useState(listKey);
 
   // Switch lists during render rather than in an effect, so the first frame
-  // Of the new list is already the right length.
+  // of the new list is already the right length.
   if (key !== listKey) {
     setKey(listKey);
     setCount(revealed.get(listKey) ?? page);

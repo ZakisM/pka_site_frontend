@@ -23,7 +23,7 @@ export const formatDuration = (seconds: number) => {
 };
 
 // Hand-rolled rather than date-fns: grids and result lists format hundreds of
-// These per page.
+// these per page.
 export const formatShortDate = (unixSeconds: number) => {
   const date = new Date(unixSeconds * 1000);
 

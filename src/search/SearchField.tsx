@@ -14,11 +14,11 @@ interface SearchFieldProps {
 
 /**
  * The header's search box. The query lives in the URL (`?q=`) on whatever
- * Page is open, so results sit over that page instead of replacing it: the
- * Player keeps its iframe and the page keeps its place.
+ * page is open, so results sit over that page instead of replacing it: the
+ * player keeps its iframe and the page keeps its place.
  *
  * The text stays in the box after a result is opened, like any search bar;
- * Focusing the box (or Enter) brings those results back where they were left.
+ * focusing the box (or Enter) brings those results back where they were left.
  * Only clearing empties it.
  */
 export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
@@ -30,7 +30,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
 
   // The last query this field wrote. A different query arriving from the URL
   // (Back or Forward between searches) is copied into the box; our own is
-  // Not, so a slow navigation never overwrites what is still being typed.
+  // not, so a slow navigation never overwrites what is still being typed.
   const writtenRef = useRef(query);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
 
       if (query !== "") {
         // Not derived during render: telling our own query from another needs
-        // The ref, which render must not read.
+        // the ref, which render must not read.
         // eslint-disable-next-line react/set-state-in-effect
         setValue(query);
       }
@@ -68,7 +68,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   const focusingClickRef = useRef(false);
 
   // Typing searches as it settles. Only a change to the text does: the box
-  // Keeping its text after a result is opened must not reopen the results.
+  // keeping its text after a result is opened must not reopen the results.
   const typedRef = useRef(false);
 
   useEffect(() => {
@@ -117,12 +117,12 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
           setValue(event.target.value);
         }}
         // Focusing selects the kept query so typing replaces it. The mouseup
-        // Of the click that focused the box would collapse that selection to
+        // of the click that focused the box would collapse that selection to
         // A caret, so that one mouseup is cancelled.
         onFocus={(event) => event.currentTarget.select()}
         // Clicking back into a kept query brings its results back as they
-        // Were. On click, not focus: returning to the browser window re-fires
-        // Focus on the box and would cover the video with old results.
+        // were. On click, not focus: returning to the browser window re-fires
+        // focus on the box and would cover the video with old results.
         onClick={() => {
           if (value.trim() && !query) {
             showResults(value.trim());
@@ -140,7 +140,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
         onKeyDown={(event) => {
           if (event.key === "Enter" && value.trim() && !query) {
             // Handled: the results this opens must not also read this Enter
-            // As "play the first hit".
+            // as "play the first hit".
             event.preventDefault();
             showResults(value.trim());
 
@@ -148,7 +148,7 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
           }
 
           // Esc closes the results like their Close button does, keeping
-          // The query in the box to come back to; the × is what clears it.
+          // the query in the box to come back to; the × is what clears it.
           if (event.key === "Escape") {
             event.preventDefault();
             // A search still settling must not reopen what Esc just closed.

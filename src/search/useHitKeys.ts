@@ -5,16 +5,16 @@ interface HitKeysOptions {
   containerRef: React.RefObject<HTMLDivElement | null>;
   resetKey: unknown;
   // The query the rows on screen belong to, and whether they are still the
-  // Previous query's placeholder. Enter must not play a row for a query the
-  // Box has already moved past.
+  // previous query's placeholder. Enter must not play a row for a query the
+  // box has already moved past.
   query: string;
   current: boolean;
 }
 
 /**
  * ↑/↓ walk the visible hits and Enter plays one, while focus stays in the
- * Search box. The selection is a DOM attribute rather than React state so a
- * Keypress never re-renders a list that may hold hundreds of rows.
+ * search box. The selection is a DOM attribute rather than React state so a
+ * keypress never re-renders a list that may hold hundreds of rows.
  */
 export const useHitKeys = ({ containerRef, resetKey, query, current }: HitKeysOptions) => {
   const selectedRef = useRef(-1);

@@ -1,10 +1,8 @@
 name: Build and Push images
 
 on:
-  push:
-    paths-ignore:
-      - "README.md"
-    branches: [master]
+  # A push to master publishes from Check (check.yml), once its checks pass.
+  workflow_call:
   # rebuilt weekly even without a push, so fixes in nginx's image and Alpine
   # reach the published image; the server still has to pull it
   schedule:
@@ -16,11 +14,20 @@ jobs:
     name: Build and Push pka-index-frontend
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # One publish at a time, the newest waiting its turn, so an older build
+    # can't finish last and overwrite a newer :master.
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
     permissions:
       contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing pushes, so keep the token out of .git/config, where
+          # dependency install scripts could read it.
+          persist-credentials: false
       - name: Log in to DockerHub
         uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:

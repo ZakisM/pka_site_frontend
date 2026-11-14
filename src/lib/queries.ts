@@ -15,7 +15,7 @@ export const episodeQuery = (episodeId: string) =>
   });
 
 // Every episode, newest first: the home grid, prev/next on the watch page and
-// Continue watching all read this one list.
+// continue watching all read this one list.
 export const allEpisodesQuery = queryOptions({
   queryKey: ["episodes", "all"],
   queryFn: async ({ signal }) => fetchEpisodes(signal),
@@ -23,7 +23,7 @@ export const allEpisodesQuery = queryOptions({
 });
 
 // Moments elsewhere about the moment now playing. They only change when the
-// Archive does, so they are cached for the session.
+// archive does, so they are cached for the session.
 export const relatedQuery = (episodeNumber: number, timestamp: number) =>
   queryOptions({
     queryKey: ["related", episodeNumber, timestamp],
@@ -34,7 +34,7 @@ export const relatedQuery = (episodeNumber: number, timestamp: number) =>
   });
 
 // Pages of grouped results. keepPreviousData holds the last term's results on
-// Screen while the next one loads, so the list never blinks empty mid-type.
+// screen while the next one loads, so the list never blinks empty mid-type.
 export const searchQuery = (query: string, sort: SearchSort) =>
   infiniteQueryOptions({
     queryKey: ["search", query, sort],
@@ -43,6 +43,6 @@ export const searchQuery = (query: string, sort: SearchSort) =>
     getNextPageParam: (last) => last.nextPage ?? undefined,
     placeholderData: keepPreviousData,
     // Kept long enough that reopening a recent search is instant, with every
-    // Page that had been loaded.
+    // page that had been loaded.
     gcTime: 30 * 60 * 1000,
   });
