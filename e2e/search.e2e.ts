@@ -80,3 +80,50 @@ test("over an episode, the results pause it and closing returns to it", async ({
   await expect(page).toHaveURL(new RegExp(`/watch/${SOURCE.episode}`, "u"));
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(SOURCE.index), inView: true });
 });
+
+// Episodes in the order the results list them, as numbers.
+const listedEpisodes = async (page: Page) =>
+  page
+    .locator("[data-hit]")
+    .evaluateAll((hits) => [
+      ...new Set(
+        hits.map((hit) =>
+          Number(hit.closest("section")?.querySelector("header a")?.getAttribute("href")?.split("/").pop()),
+        ),
+      ),
+    ]);
+
+// Scrolls the results to their end until every page has loaded.
+const loadEvery = async (page: Page, count: number) => {
+  await expect(async () => {
+    await page.locator("[data-hit]").last().scrollIntoViewIfNeeded();
+    expect(await listedEpisodes(page)).toHaveLength(count);
+  }).toPass();
+};
+
+const descending = (from: number) => Array.from({ length: from }, (_, index) => from - index);
+
+// "taylor" is in five moments of every episode, and a sixth in TARGET's.
+test("results load page by page as they scroll, in the sort chosen", async ({ page }) => {
+  await page.goto("/");
+  await searchBox(page).fill("taylor");
+  await expect(page.getByText("151 moments in 30 episodes")).toBeVisible();
+
+  // Newest first, twelve episodes a page, every page in turn.
+  await expect.poll(async () => listedEpisodes(page)).toHaveLength(12);
+  await loadEvery(page, 30);
+  expect(await listedEpisodes(page)).toEqual(descending(30));
+
+  // Most matches: TARGET's episode first, the rest still newest first.
+  await page.getByRole("button", { name: "Most matches" }).click();
+  await expect(page.getByRole("button", { name: "Most matches" })).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      const [first] = await listedEpisodes(page);
+
+      return first;
+    })
+    .toBe(TARGET.episode);
+  await loadEvery(page, 30);
+  expect(await listedEpisodes(page)).toEqual([TARGET.episode, ...descending(30).filter((n) => n !== TARGET.episode)]);
+});

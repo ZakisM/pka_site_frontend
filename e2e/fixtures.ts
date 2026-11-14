@@ -155,4 +155,4 @@ export const playingMoment = async (page: Page) =>
   });
 
 export { expect } from "@playwright/test";
-export { SOURCE, TARGET, clock, timestampOf, yearOf } from "./archive";
+export { SOURCE, TARGET, clock, timestampOf, videoIdOf, yearOf } from "./archive";
