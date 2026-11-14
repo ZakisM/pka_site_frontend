@@ -33,6 +33,11 @@ jobs:
         run: vp test
       - name: Build
         run: vp build
+      # The compiler has gone off silently before (see vite.config.ts). The
+      # watch page's chunk is app code alone, so it only holds the compiler's
+      # cache marker if the compiler ran.
+      - name: Check the React Compiler ran
+        run: grep -q 'react.memo_cache_sentinel' dist/assets/watch.*.js
       - name: Read Playwright's version
         id: playwright
         run: echo "version=$(vp exec playwright --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
