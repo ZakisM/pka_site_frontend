@@ -39,4 +39,4 @@ The image is an optimised build served by nginx, not suited to development.
 2. `docker run -p 5678:5678 zakism/pka-site-frontend:latest`
 3. Visit https://www.pkaindextest.com.
 
-Pushes to `master` build and publish the image.
+Pushes to `master` build and publish the image once Check passes; it is also rebuilt every Monday for base-image fixes.

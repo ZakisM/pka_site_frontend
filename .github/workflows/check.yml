@@ -68,3 +68,14 @@ jobs:
         run: docker build --tag pka-index-frontend .
       - name: Check nginx accepts its config
         run: docker run --rm pka-index-frontend nginx -t
+
+  # Publishes the image, but only for master and only once everything above
+  # has passed.
+  deploy:
+    name: Publish
+    needs: [check, image]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
