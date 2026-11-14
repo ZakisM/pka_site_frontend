@@ -151,7 +151,9 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
     onReach: useCallback(() => {
       void fetchNextPage();
     }, [fetchNextPage]),
-    enabled: hasNextPage && !isFetchingNextPage && !isPlaceholderData,
+    // Off while the end-of-list marker is swapped for the error, so it is
+    // watched afresh when it comes back, however the error cleared.
+    enabled: hasNextPage && !isFetchingNextPage && !isPlaceholderData && !isFetchNextPageError,
     generation: data?.pages.length ?? 0,
     scrollRoot,
   });
@@ -259,7 +261,8 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
             {isFetchingNextPage && <ResultGroupSkeleton />}
           </div>
           {hasNextPage && !isFetchNextPageError && <div ref={sentinelRef} aria-hidden className="h-px" />}
-          {isFetchNextPageError && (
+          {/* A retry keeps the error until it succeeds: hide it meanwhile. */}
+          {isFetchNextPageError && !isFetchingNextPage && (
             <LoadMoreFailed
               onRetry={() => {
                 void fetchNextPage();

@@ -177,3 +177,81 @@ test("Close straight after typing keeps the results closed", async ({ page }) =>
   await expect(hits).toHaveCount(0);
   await expect(page).toHaveURL("/");
 });
+
+const isSearch = (url: URL) => url.pathname === "/api/v1/search";
+const pageOf = (url: string) => new URL(url).searchParams.get("page");
+const loadMoreFailed = (page: Page) => page.getByText("Couldn’t load more results.");
+
+// Scrolls to the end of the results, running the fake clock so React Query's
+// retries play out, until `done` holds.
+const scrollUntil = async (page: Page, done: () => Promise<boolean>) => {
+  await expect
+    .poll(async () => {
+      await page.locator("[data-hit]").last().scrollIntoViewIfNeeded();
+      await page.clock.runFor(5000);
+
+      return done();
+    })
+    .toBe(true);
+};
+
+test("a failed next page's message goes while its retry runs", async ({ page }) => {
+  await page.clock.install();
+
+  const held = Promise.withResolvers<boolean>();
+  let attempts = 0;
+
+  await page.route(isSearch, async (route) => {
+    if (pageOf(route.request().url()) !== "1") {
+      await route.fallback();
+
+      return;
+    }
+
+    attempts += 1;
+
+    // Every automatic try fails; the one Try again asks for waits to answer.
+    if (attempts <= 4) {
+      await route.fulfill({ status: 503, body: "" });
+    } else {
+      await held.promise;
+      await route.fallback();
+    }
+  });
+  await page.goto("/?q=taylor");
+  await scrollUntil(page, async () => loadMoreFailed(page).isVisible());
+
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(loadMoreFailed(page)).toBeHidden({ timeout: 1000 });
+  held.resolve(true);
+  await expect.poll(async () => listedEpisodes(page)).toHaveLength(24);
+});
+
+// A background refresh can clear a failed next page without loading it. The
+// end-of-list marker then came back as a new element nothing watched, so the
+// rest of the results never loaded, with no Try again left to ask for them.
+test("results go on loading after a background refresh clears a failed page", async ({ page }) => {
+  await page.clock.install();
+
+  let failing = true;
+
+  await page.route(isSearch, async (route) => {
+    await (failing && pageOf(route.request().url()) === "1"
+      ? route.fulfill({ status: 503, body: "" })
+      : route.fallback());
+  });
+  await page.goto("/?q=taylor");
+  await scrollUntil(page, async () => loadMoreFailed(page).isVisible());
+
+  // The results go stale, and the tab is looked at again.
+  failing = false;
+  await page.clock.fastForward("02:00");
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange", { bubbles: true })));
+  await expect(loadMoreFailed(page)).toBeHidden();
+
+  await scrollUntil(page, async () => {
+    const listed = await listedEpisodes(page);
+
+    return listed.length === 24;
+  });
+});
