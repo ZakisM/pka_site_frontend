@@ -86,6 +86,10 @@ export default defineConfig({
     // The `@/` alias, read from tsconfig.app.json's `paths`.
     tsconfigPaths: true,
   },
+  // Plain ws:// on purpose, though the dev site is https: the browser blocks it
+  // on the page's own host, and Vite's client then falls back to
+  // ws://localhost:5678, which it allows. wss would rely on the reverse proxy
+  // passing WebSocket upgrades through instead.
   server: { ...HOST, hmr: { protocol: "ws" } },
   preview: { ...HOST, headers: securityHeaders() },
   test: {
