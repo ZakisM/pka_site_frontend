@@ -5,10 +5,11 @@ on:
   push:
     branches: [master]
 
-# A newer push to a pull request replaces the run already under way.
+# A newer push replaces the run already under way. On master that includes its
+# Publish, so an older commit can't be published after a newer one.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -82,7 +83,11 @@ jobs:
       - name: Check nginx accepts its config
         run: docker run --rm pka-index-frontend nginx -t
       - name: Check the image doesn't run as root
-        run: test "$(docker run --rm pka-index-frontend id -u)" != 0
+        # A docker run that fails, or prints nothing, fails the step too.
+        run: |
+          uid=$(docker run --rm pka-index-frontend id -u)
+          test -n "$uid"
+          test "$uid" != 0
       # A location that sets add_header of its own drops the server's, so the
       # security headers are checked on a response from each one: the app
       # shell, a route it falls back to, an asset, an icon and a missing asset.
@@ -90,7 +95,12 @@ jobs:
         run: |
           docker run --detach --name site --publish 5678:5678 pka-index-frontend
           trap 'docker rm --force site' EXIT
-          for _ in $(seq 20); do curl -fs -o /dev/null localhost:5678/ && break; sleep 0.5; done
+          # The container is up before nginx is: give it up to 20 seconds.
+          if ! curl -fs --retry 20 --retry-delay 1 --retry-all-errors -o /dev/null localhost:5678/; then
+            echo "::error::nginx didn't answer within 20 seconds"
+            docker logs site
+            exit 1
+          fi
           asset=$(docker exec site sh -c 'ls /usr/share/nginx/html/assets/*.js | head -n 1 | xargs basename')
           for path in / /watch/1 "/assets/$asset" /favicon-32x32.png /assets/missing.js; do
             headers=$(curl -sI "localhost:5678$path")

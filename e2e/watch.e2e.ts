@@ -1,9 +1,24 @@
-import { SOURCE, TARGET, clock, expect, playingMoment, seed, test, timestampOf, videoIdOf } from "./fixtures";
+import {
+  COLD_OPEN,
+  SOURCE,
+  TARGET,
+  clock,
+  expect,
+  playback,
+  playingMoment,
+  seed,
+  test,
+  timestampOf,
+  videoIdOf,
+} from "./fixtures";
 
 test("a shared link starts at its moment", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}?timestamp=${timestampOf(TARGET.index)}`);
 
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+  // The player itself is there, cued rather than playing: the list alone shows
+  // the position asked for, whatever the player did with it.
+  await expect.poll(async () => playback(page)).toEqual({ state: 5, time: timestampOf(TARGET.index) });
 });
 
 // Resize observers report every element once when first observed. Here that
@@ -67,6 +82,8 @@ test("clearing the filter brings the playing moment back into view", async ({ pa
 
   await page.getByRole("button", { name: "Clear filter" }).click();
   await expect(rows).toHaveCount(40);
+  // The button goes with the text: focus goes back to the box, not the page.
+  await expect(filter).toBeFocused();
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
 });
 
@@ -76,6 +93,7 @@ test("clicking a moment plays from it", async ({ page }) => {
   await page.locator("aside [data-index='5']").click();
 
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+  await expect.poll(async () => playback(page)).toEqual({ state: 1, time: timestampOf(5) });
 });
 
 // Each tab saved its own position every second and took the other's from
@@ -154,4 +172,111 @@ test("the header's random moment opens its episode at that moment", async ({ pag
   // The fake API's random moment is TARGET; the URL is the episode's own.
   await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+});
+
+// A moment counted as reached only once the player was seen playing there, so
+// pausing first left the request open: the controller went on seeking back to
+// it, and closing search resumed a video the viewer had paused.
+test("a moment the viewer pauses on at once stays paused through a search", async ({ page }) => {
+  await page.goto(`/watch/${TARGET.episode}`);
+  await expect(page.locator("aside [data-index='5']")).toBeVisible();
+
+  // The click and the pause land together, before the player is seen playing.
+  await page.evaluate(() => {
+    document.querySelector<HTMLElement>("aside [data-index='5']")?.click();
+    globalThis.fakePlayer?.pauseVideo();
+  });
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+  // Long enough for the player's polls to see it paused at the moment.
+  await page.waitForTimeout(1000);
+
+  const box = page.getByRole("textbox", { name: "Search every episode and moment" });
+
+  await box.fill("kyle");
+  await expect(page.locator("[data-hit]").first()).toBeVisible();
+  await box.press("Escape");
+  await expect(page.locator("[data-hit]")).toHaveCount(0);
+  await page.waitForTimeout(1000);
+
+  const PAUSED = 2;
+
+  expect(await page.evaluate(() => globalThis.fakePlayer?.getPlayerState())).toBe(PAUSED);
+});
+
+test.describe("without YouTube's script", () => {
+  // The real IFrame API script, blocked like every request leaving the machine.
+  test.use({ fakeYouTube: false });
+
+  // The script's promise never settled when it failed, so the player spun for
+  // good and nothing tried again until a reload.
+  test("a player whose script can't load says so, and tries again", async ({ page }) => {
+    let requests = 0;
+
+    page.on("request", (request) => {
+      if (request.url() === "https://www.youtube.com/iframe_api") {
+        requests += 1;
+      }
+    });
+    await page.goto(`/watch/${TARGET.episode}`);
+
+    await expect(page.getByText("YouTube’s player didn’t load.")).toBeVisible();
+
+    // The route's loader may already have tried once before the player did.
+    const before = requests;
+
+    await page.getByRole("button", { name: "Try again" }).click();
+    await expect.poll(() => requests).toBe(before + 1);
+    await expect(page.getByText("YouTube’s player didn’t load.")).toBeVisible();
+  });
+});
+
+// The button's label changing is all a screen reader had, and a label change
+// on the focused button isn't reliably read out.
+test("copying a moment's link is announced", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(`/watch/${TARGET.episode}`);
+  await page.getByRole("button", { name: /^Copy a link to/u }).click();
+
+  await expect(page.getByRole("status")).toHaveText("Link copied");
+});
+
+// The first moment was marked as playing from 0:00, however late it started:
+// highlighted, counting down from longer than it lasts, its related moments shown.
+test("nothing is marked as playing before the first moment starts", async ({ page }) => {
+  const held = Promise.withResolvers<boolean>();
+
+  await page.route("**/api/v1/events/related**", async (route) => {
+    await held.promise;
+    await route.fallback();
+  });
+  await page.goto(`/watch/${COLD_OPEN.episode}`);
+
+  const first = page.locator("aside [data-index='0']");
+  const more = page.getByRole("heading", { name: "More episodes" });
+  const related = page.getByRole("heading", { name: "In other episodes" });
+
+  await expect(more).toBeVisible();
+  expect(await playingMoment(page)).toEqual({ time: null, inView: false });
+  await expect(first).toContainText("5m");
+  await expect(first).not.toContainText("left");
+
+  // It starts: marked, counting down, and the episodes below stay until its
+  // related moments have loaded.
+  await first.click();
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: "01:30", inView: true });
+  await expect(first).toContainText("5m left");
+  await page.waitForTimeout(300);
+  await expect(more).toBeVisible();
+  held.resolve(true);
+  await expect(related).toBeVisible();
+
+  // Scrubbed back to the start, nothing is playing again.
+  await expect
+    .poll(async () => {
+      await page.evaluate(() => globalThis.fakePlayer?.scrubTo(0));
+
+      return playingMoment(page);
+    })
+    .toEqual({ time: null, inView: false });
+  await expect(more).toBeVisible();
 });

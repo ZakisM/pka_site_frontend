@@ -31,7 +31,10 @@ export const ResultGroup = ({ group: { episode, matchCount, hits }, terms, onPla
   return (
     <section className={groupGrid}>
       <header className={episodeStyles}>
-        <Link to="/watch/$episodeId" params={{ episodeId }} tabIndex={-1} className="group">
+        {/* The same link as the title beside it, for the mouse: kept out of
+            the tab order and the accessibility tree, where it would be named
+            only by the running time on the thumbnail. */}
+        <Link to="/watch/$episodeId" params={{ episodeId }} tabIndex={-1} aria-hidden className="group">
           <Thumbnail
             episodeNumber={episode.episodeNumber}
             lengthSeconds={episode.lengthSeconds}
@@ -55,7 +58,8 @@ export const ResultGroup = ({ group: { episode, matchCount, hits }, terms, onPla
             <button
               key={hit.timestamp}
               type="button"
-              data-hit
+              // What the arrow keys announce when they reach it (useHitKeys).
+              data-hit={`Episode ${episodeId}, ${formatTimestamp(hit.timestamp)}, ${hit.description}`}
               className="-mx-2.5 grid w-[calc(100%+20px)] cursor-pointer scroll-mt-6 grid-cols-[64px_1fr] gap-3 px-2.5 py-2 text-left text-[14px]/[1.45] text-secondary transition-colors duration-100 hover:bg-hover hover:text-ink data-selected:bg-hover data-selected:text-ink data-selected:shadow-[inset_2px_0_var(--color-primary)] mobile:scroll-mt-24 mobile:grid-cols-[58px_1fr] mobile:gap-3"
               onClick={() => onPlay(episode.episodeNumber, hit.timestamp)}
             >

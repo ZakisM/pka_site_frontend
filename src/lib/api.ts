@@ -9,6 +9,21 @@ export class HTTPError extends Error {
   }
 }
 
+// The API couldn't be reached, didn't answer in time, or answered with
+// something other than JSON (the SPA's HTML while the backend is down).
+// Marked here because every browser words these failures differently.
+const UNREACHABLE = "APIUnreachableError";
+
+const unreachableError = (cause: unknown) => {
+  const error = new Error(cause instanceof Error ? cause.message : String(cause), { cause });
+
+  error.name = UNREACHABLE;
+
+  return error;
+};
+
+export const isUnreachable = (error: Error) => error.name === UNREACHABLE;
+
 // Long enough for a slow connection to get the first byte of the episode list;
 // A request with no answer by then has stalled, and React Query retries it.
 const RESPONSE_TIMEOUT_MS = 30_000;
@@ -42,7 +57,12 @@ const get = async <T>(path: string, { signal, searchParams }: GetOptions = {}): 
   signal?.addEventListener("abort", abort, { once: true });
 
   try {
-    const response = await fetch(`/api/v1/${path}${query}`, { signal: controller.signal });
+    // A request the caller cancelled stays a cancellation; anything else that
+    // stops an answer arriving means the API is out of reach.
+    const unreachable = (error: unknown) => (signal?.aborted === true ? error : unreachableError(error));
+    const response = await fetch(`/api/v1/${path}${query}`, { signal: controller.signal }).catch((error: unknown) => {
+      throw unreachable(error);
+    });
 
     clearTimeout(timeout);
 
@@ -50,7 +70,9 @@ const get = async <T>(path: string, { signal, searchParams }: GetOptions = {}): 
       throw new HTTPError(response);
     }
 
-    const payload: unknown = await response.json();
+    const payload: unknown = await response.json().catch((error: unknown) => {
+      throw unreachable(error);
+    });
 
     if (!hasData(payload)) {
       throw new Error("Unexpected API response");
@@ -104,7 +126,8 @@ export interface RandomPkaEvent {
   uploadDate: number;
 }
 
-export const fetchEpisodeById = async (episodeId: string) => get<PkaEpisodeWithAll>(`episodes/${episodeId}`);
+export const fetchEpisodeById = async (episodeId: string) =>
+  get<PkaEpisodeWithAll>(`episodes/${encodeURIComponent(episodeId)}`);
 
 export const fetchRandomEvent = async () => get<RandomPkaEvent>("events/random");
 

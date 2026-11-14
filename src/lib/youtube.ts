@@ -62,9 +62,11 @@ export const thumbnailUrl = (videoId: string, format: "webp" | "jpg") =>
 
 let apiPromise: Promise<YouTubeApi> | null = null;
 
-// Fetched once per page and shared by every player.
+// Fetched once per page and shared by every player. A script that fails to
+// load (a blocker, a dropped connection) rejects, and is forgotten so the
+// next call tries again.
 export const loadYouTubeApi = async () => {
-  apiPromise ??= new Promise<YouTubeApi>((resolve) => {
+  apiPromise ??= new Promise<YouTubeApi>((resolve, reject) => {
     if (globalThis.YT?.Player) {
       resolve(globalThis.YT);
 
@@ -88,6 +90,15 @@ export const loadYouTubeApi = async () => {
 
       script.src = API_SRC;
       script.async = true;
+      script.addEventListener(
+        "error",
+        () => {
+          script.remove();
+          apiPromise = null;
+          reject(new Error("YouTube's player script didn't load"));
+        },
+        { once: true },
+      );
       document.head.append(script);
     }
   });

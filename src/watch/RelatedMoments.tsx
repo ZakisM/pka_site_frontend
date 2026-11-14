@@ -8,7 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 
 interface RelatedMomentsProps {
   episodeNumber: number;
-  moment: PkaEvent;
+  // The moment now playing, if one is.
+  moment: PkaEvent | undefined;
   // Shown instead when nothing elsewhere is close enough to be worth showing.
   fallback: React.JSX.Element;
 }
@@ -19,7 +20,7 @@ interface RelatedMomentsProps {
  */
 export const RelatedMoments = ({ episodeNumber, moment, fallback }: RelatedMomentsProps) => {
   const navigate = useNavigate();
-  const { data: related, isPending } = useQuery(relatedQuery(episodeNumber, moment.timestamp));
+  const { data: related, isPending } = useQuery(relatedQuery(episodeNumber, moment?.timestamp));
 
   if (isPending) {
     return null;

@@ -55,15 +55,12 @@ export const WatchScreen = ({ episode, urlTimestamp }: WatchScreenProps) => {
       />
       <div className="px-8 pt-10 pb-14 desktop:col-start-1 desktop:row-start-2 mobile:px-0 mobile:pt-8">
         <div className="watch-width mx-auto">
-          {episode.events[activeIndex] ? (
-            <RelatedMoments
-              episodeNumber={episodeNumber}
-              moment={episode.events[activeIndex]}
-              fallback={<MoreEpisodes episodeNumber={episodeNumber} />}
-            />
-          ) : (
-            <MoreEpisodes episodeNumber={episodeNumber} />
-          )}
+          {/* No moment before the first has started, or with none at all. */}
+          <RelatedMoments
+            episodeNumber={episodeNumber}
+            moment={episode.events[activeIndex]}
+            fallback={<MoreEpisodes episodeNumber={episodeNumber} />}
+          />
         </div>
       </div>
     </div>

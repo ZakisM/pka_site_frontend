@@ -28,6 +28,9 @@ export const SOURCE = { episode: 20, index: 20, description: "Why Hellraiser sti
 // ...which is related to this one, near the end of episode 12's.
 export const TARGET = { episode: 12, index: 38, description: "Taylor watches Hellraiser for the first time" };
 
+// Episode 7 has a cold open: its first moment starts a minute and a half in.
+export const COLD_OPEN = { episode: 7, seconds: 90 };
+
 export const timestampOf = (index: number) => index * MOMENT_SECONDS;
 
 // As the app shows them (lib/time formatTimestamp).
@@ -58,7 +61,7 @@ const descriptionOf = (episode: number, index: number) => {
 
 const momentsOf = (episode: number) =>
   Array.from({ length: MOMENTS_PER_EPISODE }, (_, index) => ({
-    timestamp: timestampOf(index),
+    timestamp: timestampOf(index) + (episode === COLD_OPEN.episode ? COLD_OPEN.seconds : 0),
     description: descriptionOf(episode, index),
     lengthSeconds: MOMENT_SECONDS,
     uploadDate: uploadDateOf(episode),
@@ -116,7 +119,8 @@ const searchPage = (query: string, sort: string, page: number) => {
 };
 
 const related = (episode: number, timestamp: number) =>
-  episode === SOURCE.episode && timestamp === timestampOf(SOURCE.index)
+  (episode === SOURCE.episode && timestamp === timestampOf(SOURCE.index)) ||
+  (episode === COLD_OPEN.episode && timestamp === COLD_OPEN.seconds)
     ? [
         {
           episode: summaryOf(TARGET.episode),

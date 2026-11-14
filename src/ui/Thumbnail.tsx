@@ -29,11 +29,13 @@ const PLACEHOLDER_MAX_WIDTH = 120;
  */
 export const Thumbnail = ({ episodeNumber, lengthSeconds, videoId, progress }: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);
-  // Per video: a card reused for another episode starts again from WebP.
+  // Per video: a card reused for another episode starts again from WebP, and
+  // fades in again.
   const [attempt, setAttempt] = useState<{ videoId: string; source: Source }>({ videoId, source: "webp" });
 
   if (attempt.videoId !== videoId) {
     setAttempt({ videoId, source: "webp" });
+    setLoaded(false);
   }
 
   const source = attempt.videoId === videoId ? attempt.source : "webp";

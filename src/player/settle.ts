@@ -3,8 +3,10 @@ import { PlayerState } from "@/lib/youtube";
 // How far the reported position may sit from the requested one and count as
 // there.
 const TOLERANCE_SECONDS = 2;
-// Playing polls in a row at the position before it counts as reached: right
-// after a switch the cache can still report a moment of the old clock.
+// Polls in a row at the position, playing or paused, before it counts as
+// reached: right after a switch the cache can still report a moment of the old
+// clock. Paused counts too, or a viewer who pauses before it is seen playing
+// leaves it open, and is seeked back to it whenever they scrub.
 const CONFIRMATIONS = 2;
 // Long enough for a seek to land and the cache to catch up.
 const RESEEK_MS = 1000;
@@ -53,9 +55,7 @@ export const settle = (target: Pending, { state, time, at }: Report): Verdict =>
   }
 
   if (Math.abs(time - target.seconds) <= TOLERANCE_SECONDS) {
-    if (state === PlayerState.PLAYING) {
-      target.confirmations += 1;
-    }
+    target.confirmations += 1;
 
     return target.confirmations >= CONFIRMATIONS ? "reached" : "wait";
   }

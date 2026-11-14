@@ -18,7 +18,7 @@ interface SearchFieldProps {
  * player keeps its iframe and the page keeps its place.
  *
  * The text stays in the box after a result is opened, like any search bar;
- * focusing the box (or Enter) brings those results back where they were left.
+ * clicking the box (or Enter) brings those results back where they were left.
  * Only clearing empties it.
  */
 export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
@@ -33,11 +33,19 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   // not, so a slow navigation never overwrites what is still being typed.
   const writtenRef = useRef(query);
 
+  // Typing searches as it settles. Only a change to the text does: the box
+  // keeping its text after a result is opened must not reopen the results.
+  const typedRef = useRef(false);
+
   useEffect(() => {
     if (query !== writtenRef.current) {
       writtenRef.current = query;
 
-      if (query !== "") {
+      // Closed from elsewhere (Close, Back): a search still settling must not
+      // reopen it, as with Esc.
+      if (query === "") {
+        typedRef.current = false;
+      } else {
         // Not derived during render: telling our own query from another needs
         // the ref, which render must not read.
         // eslint-disable-next-line react/set-state-in-effect
@@ -66,10 +74,6 @@ export const SearchField = ({ inputRef, onEscape }: SearchFieldProps) => {
   );
 
   const focusingClickRef = useRef(false);
-
-  // Typing searches as it settles. Only a change to the text does: the box
-  // keeping its text after a result is opened must not reopen the results.
-  const typedRef = useRef(false);
 
   useEffect(() => {
     if (!typedRef.current || settled === writtenRef.current) {

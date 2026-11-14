@@ -15,8 +15,11 @@ export const formatTimestamp = (seconds: number) => {
 // A length rather than a position, rounded to what a glance needs: "2h 10m",
 // "7m", "45s".
 export const formatDuration = (seconds: number) => {
-  if (seconds >= 3600) {
-    return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  // Minutes round, so the last half minute before the hour is the hour.
+  if (seconds >= 3600 || Math.round(seconds / 60) >= 60) {
+    const whole = Math.max(seconds, 3600);
+
+    return `${Math.floor(whole / 3600)}h ${Math.floor((whole % 3600) / 60)}m`;
   }
 
   return seconds >= 60 ? `${Math.round(seconds / 60)}m` : `${Math.max(0, Math.floor(seconds))}s`;

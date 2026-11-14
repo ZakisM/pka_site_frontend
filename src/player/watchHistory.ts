@@ -91,7 +91,16 @@ export const useRecentEpisodes = () => useStore(recentEpisodes);
 // Another tab watching keeps this one current, except for the video this
 // tab's own player has loaded (see claimPosition).
 globalThis.addEventListener("storage", ({ storageArea, key }) => {
-  if (storageArea !== localStorage || key === null) {
+  if (storageArea !== localStorage) {
+    return;
+  }
+
+  // Another tab cleared this site's storage: forget it here too, or the next
+  // change writes the cleared list back.
+  if (key === null) {
+    positions.set(loadPositions());
+    recentEpisodes.set(loadRecent());
+
     return;
   }
 

@@ -51,10 +51,12 @@ const pointedAt = (list: HTMLElement) => globalThis.matchMedia("(hover: hover)")
  * at a time during playback and snapping for anything further.
  */
 const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior) => {
-  const row = list.querySelector<HTMLElement>(`[data-index="${index}"]`);
+  // Before the first moment (-1) nothing is playing: the list rests at its top.
+  const row = index < 0 ? null : list.querySelector<HTMLElement>(`[data-index="${index}"]`);
+  const top = row ? row.offsetTop - list.clientHeight / 3 : 0;
 
-  if (row && !pointedAt(list) && list.scrollHeight > list.clientHeight + 1) {
-    list.scrollTo({ top: row.offsetTop - list.clientHeight / 3, behavior });
+  if ((row || index < 0) && !pointedAt(list) && list.scrollHeight > list.clientHeight + 1) {
+    list.scrollTo({ top, behavior });
   }
 
   return row !== null;
@@ -187,6 +189,7 @@ interface MomentsRailProps {
 /** The episode's moments, filterable; every row is a play target. */
 export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: MomentsRailProps) => {
   const listRef = useRef<HTMLDivElement | null>(null);
+  const filterBoxRef = useRef<HTMLInputElement | null>(null);
 
   // A search's "more moments in this episode" applies its query here, once
   // (see lib/intents): on the first render when it opens a new episode, so
@@ -226,6 +229,7 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
             <div className="relative ml-auto flex h-8 w-44 items-center border border-line bg-raised transition-colors duration-150 focus-within:border-line-strong">
               <Search aria-hidden className="pointer-events-none absolute left-2.5 size-3.5 text-dim" />
               <input
+                ref={filterBoxRef}
                 type="text"
                 value={filter}
                 placeholder="Filter"
@@ -240,7 +244,11 @@ export const MomentsRail = ({ events, episodeNumber, activeIndex, position }: Mo
                   type="button"
                   aria-label="Clear filter"
                   className="grid h-full w-8 shrink-0 cursor-pointer place-items-center text-muted hover:text-ink"
-                  onClick={() => setFilter("")}
+                  onClick={() => {
+                    setFilter("");
+                    // This button goes with the text: keep focus in the box.
+                    filterBoxRef.current?.focus();
+                  }}
                 >
                   <X className="size-3 stroke-[1.75]" />
                 </button>

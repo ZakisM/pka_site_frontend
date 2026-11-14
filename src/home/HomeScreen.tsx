@@ -34,7 +34,8 @@ export const HomeScreen = () => {
     document.title = "PKA Index";
   }, []);
 
-  if (error) {
+  // A failed refetch keeps the episodes it had: only nothing to show is an error.
+  if (error && !episodes) {
     throw error;
   }
 

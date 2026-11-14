@@ -38,22 +38,11 @@ export const useStartRequest = (episodeNumber: number, urlTimestamp: unknown): S
 };
 
 /**
- * Index of the moment currently playing. Derived rather than stored: the
- * position updates once a second and any state here would need resetting on
- * every episode change. Events are ordered, so the active one is the last that
- * has started — which also covers gaps between moments.
+ * Index of the moment currently playing, or -1 before the first has started
+ * (a cold open, or an episode nobody has timestamped). Derived rather than
+ * stored: the position updates once a second and any state here would need
+ * resetting on every episode change. Events are ordered, so the active one is
+ * the last that has started — which also covers gaps between moments.
  */
 export const useActiveMoment = (events: PkaEvent[], position: number) =>
-  useMemo(() => {
-    let active = 0;
-
-    for (const [index, event] of events.entries()) {
-      if (event.timestamp > position) {
-        break;
-      }
-
-      active = index;
-    }
-
-    return active;
-  }, [events, position]);
+  useMemo(() => events.findLastIndex((event) => event.timestamp <= position), [events, position]);

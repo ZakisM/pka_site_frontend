@@ -1,4 +1,5 @@
-import { expect, seed, test, yearOf } from "./fixtures";
+import { TARGET, clock, expect, playingMoment, seed, test, yearOf } from "./fixtures";
+import type { Route } from "@playwright/test";
 
 test("lists the archive newest first, and narrows it to a year", async ({ page }) => {
   await page.goto("/");
@@ -61,4 +62,162 @@ test("the header's (i) opens About & privacy, with YouTube's and Google's terms"
     "href",
     "https://www.google.com/policies/privacy",
   );
+});
+
+// A refetch that fails keeps the episodes it already had: React Query holds on
+// to them, and the archive on screen is still right.
+test("a failed refetch leaves the archive on screen", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+
+  const cards = page.locator("a[href^='/watch/']:not([href$='random-event'])");
+
+  await expect(cards.first()).toHaveAttribute("href", "/watch/30");
+
+  // The list goes stale, the API goes down, and home is opened again.
+  let failed = 0;
+
+  await page.route("**/api/v1/episodes", async (route) => {
+    failed += 1;
+    await route.fulfill({ status: 503, body: "" });
+  });
+  await page.clock.fastForward("10:00");
+  await page.getByRole("link", { name: "About & privacy" }).click();
+  await expect(page).toHaveURL("/about");
+  await page.getByRole("link", { name: "PKA Index home" }).click();
+
+  // The refetch and React Query's three retries all fail.
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(5000);
+
+      return failed;
+    })
+    .toBeGreaterThanOrEqual(4);
+  await page.clock.runFor(5000);
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeHidden();
+  await expect(cards.first()).toHaveAttribute("href", "/watch/30");
+});
+
+// The watch page's loader asked for the episode once: a single failed request
+// on a shared link showed the error page, though a retry would have worked.
+test("an episode whose first request fails opens on the retry", async ({ page }) => {
+  let failures = 0;
+
+  await page.route("**/api/v1/episodes/12", async (route) => {
+    if (failures === 0) {
+      failures += 1;
+      await route.fulfill({ status: 503, body: "" });
+    } else {
+      await route.fallback();
+    }
+  });
+  await page.goto("/watch/12");
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeHidden();
+  await expect(page.getByRole("textbox", { name: "Filter moments" })).toBeVisible();
+  expect(failures).toBe(1);
+});
+
+// The id is decoded from the URL: put into the API's path as it was, an
+// escaped slash asked a different endpoint and the page crashed on its answer.
+test("an episode id is only ever an episode id", async ({ page }) => {
+  await page.goto("/watch/..%2Fevents%2Frandom");
+
+  await expect(page.getByText("That episode isn’t in the index")).toBeVisible();
+});
+
+// However the browser words a failed request, and for the API's own timeout,
+// the page says the API couldn't be reached rather than showing the raw error.
+test("an API that never answers is reported as unreachable", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/api/v1/episodes/12", async () => {
+    // Never answered.
+  });
+  await page.goto("/watch/12");
+
+  const heading = page.getByRole("heading", { name: "Something went wrong" });
+
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(30_000);
+
+      return heading.isVisible();
+    })
+    .toBe(true);
+  await expect(page.getByText("We couldn't reach the PKA Index API.")).toBeVisible();
+});
+
+// Clearing storage in one tab fires a storage event with no key, which the
+// other tabs ignored: they kept the cleared list and wrote it back.
+test("storage cleared in another tab stays cleared", async ({ page, context }) => {
+  await seed(page, { watched: { 3: 600, 2: 600 } });
+  await page.goto("/");
+  await expect(page.locator("a[href='/watch/3']").first()).toBeVisible();
+
+  const other = await context.newPage();
+
+  await other.goto("/about");
+  await other.evaluate(() => {
+    localStorage.clear();
+  });
+
+  // Opening an episode here records it as the only one opened since.
+  await page.locator("a[href='/watch/29']").first().click();
+  await expect(page).toHaveURL("/watch/29");
+  await expect.poll(async () => other.evaluate(() => localStorage.getItem("recent-episodes"))).toBe("[29]");
+});
+
+// A route's code that fails to load triggers one reload onto the current
+// build. A failure the reload doesn't fix reloaded again, forever.
+test("a route's code that never loads reloads once, then says so", async ({ page }) => {
+  let loads = 0;
+
+  page.on("load", () => {
+    loads += 1;
+  });
+  await page.route("**/assets/watch.*.js", async (route) => route.abort());
+  await page.goto("/");
+  await page.locator("a[href='/watch/30']").first().click();
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeVisible();
+
+  // Ours, then TanStack Router's own once-per-error reload: then it stops.
+  const settled = loads;
+
+  await page.waitForTimeout(2000);
+  expect(loads).toBe(settled);
+  expect(loads).toBeLessThanOrEqual(3);
+});
+
+// The aliases asked the API directly, outside React Query, so they never
+// retried: one failed request showed the error page.
+test("the latest episode and a random moment open on the retry too", async ({ page }) => {
+  const asked = { latest: 0, random: 0 };
+  const failFirst = (name: keyof typeof asked) => async (route: Route) => {
+    asked[name] += 1;
+    await (asked[name] === 1 ? route.fulfill({ status: 503, body: "" }) : route.fallback());
+  };
+
+  await page.route("**/api/v1/episodes/latest", failFirst("latest"));
+  await page.route("**/api/v1/events/random", failFirst("random"));
+
+  await page.goto("/watch/latest");
+  await expect(page).toHaveURL("/watch/30");
+  await expect(page.getByRole("textbox", { name: "Filter moments" })).toBeVisible();
+  expect(asked.latest).toBe(2);
+
+  const random = page.getByRole("link", { name: "Random moment" });
+
+  await random.click();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
+  expect(asked.random).toBe(2);
+
+  // Asked again every time: a remembered answer would be the same "random" moment.
+  await page.goto("/");
+  await random.click();
+  await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
+  expect(asked.random).toBe(3);
 });

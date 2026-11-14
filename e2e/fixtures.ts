@@ -4,7 +4,14 @@ import type { Page } from "@playwright/test";
 
 declare global {
   // The fake player below, for tests to drive playback with.
-  var fakePlayer: { scrubTo: (seconds: number) => void } | undefined;
+  var fakePlayer:
+    | {
+        scrubTo: (seconds: number) => void;
+        pauseVideo: () => void;
+        getPlayerState: () => number;
+        getCurrentTime: () => number;
+      }
+    | undefined;
 }
 
 /**
@@ -127,10 +134,15 @@ export const seed = async (page: Page, { watched = {} }: Seed) => {
  * set on the context, so a second tab opened from it gets them too. The
  * preview sends the site's Content-Security-Policy (security-headers.conf),
  * and anything it blocks fails the test: the policy is checked against
- * everything the tests make the app do.
+ * everything the tests make the app do. That leaves out YouTube's player
+ * iframe, which the fake player never creates: its `frame-src` entry is
+ * untested here.
  */
-export const test = base.extend({
-  context: async ({ context }, provide) => {
+export const test = base.extend<{ fakeYouTube: boolean }>({
+  // Off for a test of the real IFrame API script, which, like any request
+  // leaving the machine, is blocked.
+  fakeYouTube: [true, { option: true }],
+  context: async ({ context, fakeYouTube }, provide) => {
     const violations: string[] = [];
 
     context.on("console", (message) => {
@@ -138,13 +150,23 @@ export const test = base.extend({
         violations.push(message.text());
       }
     });
-    await context.addInitScript(installFakeYouTube);
+    if (fakeYouTube) {
+      await context.addInitScript(installFakeYouTube);
+    }
+
     await context.route("**/api/v1/**", answer);
     await context.route(/^https?:\/\/(?!localhost)/u, async (route) => route.abort());
     await provide(context);
     expect(violations, "the Content-Security-Policy blocked something").toEqual([]);
   },
 });
+
+/** What the fake player is doing: its state (1 playing, 2 paused, 5 cued) and time. */
+export const playback = async (page: Page) =>
+  page.evaluate(() => ({
+    state: globalThis.fakePlayer?.getPlayerState(),
+    time: globalThis.fakePlayer?.getCurrentTime(),
+  }));
 
 /** Which moment the list marks as playing, and whether it can be seen. */
 export const playingMoment = async (page: Page) =>
@@ -166,4 +188,4 @@ export const playingMoment = async (page: Page) =>
   });
 
 export { expect } from "@playwright/test";
-export { SOURCE, TARGET, clock, timestampOf, videoIdOf, yearOf } from "./archive";
+export { COLD_OPEN, SOURCE, TARGET, clock, timestampOf, videoIdOf, yearOf } from "./archive";
