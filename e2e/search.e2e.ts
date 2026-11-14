@@ -263,3 +263,13 @@ test("results go on loading after a background refresh clears a failed page", as
     return listed.length === 24;
   });
 });
+
+// Each episode's thumbnail repeats the link of its title beside it, and was
+// named only by the running time on it ("3:20:00, link").
+test("every link in the results is named by what it opens", async ({ page }) => {
+  await page.goto("/");
+  await searchBox(page).fill("hellraiser");
+  await expect(page.locator("[data-hit]")).toHaveCount(2);
+
+  await expect(page.getByRole("link", { name: /^[\d:\s]+$/u })).toHaveCount(0);
+});

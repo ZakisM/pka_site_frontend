@@ -70,6 +70,8 @@ test("clearing the filter brings the playing moment back into view", async ({ pa
 
   await page.getByRole("button", { name: "Clear filter" }).click();
   await expect(rows).toHaveCount(40);
+  // The button goes with the text: focus goes back to the box, not the page.
+  await expect(filter).toBeFocused();
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
 });
 
@@ -214,4 +216,14 @@ test.describe("without YouTube's script", () => {
     await expect.poll(() => requests).toBe(before + 1);
     await expect(page.getByText("YouTube’s player didn’t load.")).toBeVisible();
   });
+});
+
+// The button's label changing is all a screen reader had, and a label change
+// on the focused button isn't reliably read out.
+test("copying a moment's link is announced", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(`/watch/${TARGET.episode}`);
+  await page.getByRole("button", { name: /^Copy a link to/u }).click();
+
+  await expect(page.getByRole("status")).toHaveText("Link copied");
 });

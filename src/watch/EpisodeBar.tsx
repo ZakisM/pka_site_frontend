@@ -53,6 +53,8 @@ export const EpisodeBar = ({ episode }: { episode: PkaEpisodeWithAll }) => {
             <Copy className="size-4 stroke-[1.75]" />
           )}
         </button>
+        {/* Read out when it changes; the button's own new label may not be. */}
+        <output className="sr-only">{copied ? "Link copied" : ""}</output>
       </div>
       <h1 className="mt-1.5 text-[22px]/[1.3] font-medium tracking-[-0.01em] text-pretty mobile:text-[18px]/[1.3]">
         {displayTitle(title)}

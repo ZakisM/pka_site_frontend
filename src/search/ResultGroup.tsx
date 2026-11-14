@@ -31,7 +31,10 @@ export const ResultGroup = ({ group: { episode, matchCount, hits }, terms, onPla
   return (
     <section className={groupGrid}>
       <header className={episodeStyles}>
-        <Link to="/watch/$episodeId" params={{ episodeId }} tabIndex={-1} className="group">
+        {/* The same link as the title beside it, for the mouse: kept out of
+            the tab order and the accessibility tree, where it would be named
+            only by the running time on the thumbnail. */}
+        <Link to="/watch/$episodeId" params={{ episodeId }} tabIndex={-1} aria-hidden className="group">
           <Thumbnail
             episodeNumber={episode.episodeNumber}
             lengthSeconds={episode.lengthSeconds}
