@@ -48,12 +48,18 @@ const securityHeaders = () => {
   const lines = readFileSync(path.resolve(import.meta.dirname, "security-headers.conf"), "utf8").split("\n");
   const headers: Record<string, string> = {};
 
-  for (const line of lines) {
+  const directives = [...lines.entries()].filter(([, line]) => line.trim().startsWith("add_header"));
+
+  for (const [index, line] of directives) {
+    // Only this form is read. Anything else nginx accepts (no quotes, no
+    // `always`) would be left out of the preview, so it's an error instead.
     const groups = /^add_header\s+(?<name>\S+)\s+"(?<value>[^"]*)"\s+always;$/u.exec(line.trim())?.groups;
 
-    if (groups?.name !== undefined && groups.value !== undefined) {
-      headers[groups.name] = groups.value;
+    if (groups?.name === undefined || groups.value === undefined) {
+      throw new Error(`security-headers.conf:${index + 1}: write it as add_header Name "value" always;`);
     }
+
+    headers[groups.name] = groups.value;
   }
 
   if (!("Content-Security-Policy" in headers)) {

@@ -90,7 +90,12 @@ jobs:
         run: |
           docker run --detach --name site --publish 5678:5678 pka-index-frontend
           trap 'docker rm --force site' EXIT
-          for _ in $(seq 20); do curl -fs -o /dev/null localhost:5678/ && break; sleep 0.5; done
+          # The container is up before nginx is: give it up to 20 seconds.
+          if ! curl -fs --retry 20 --retry-delay 1 --retry-all-errors -o /dev/null localhost:5678/; then
+            echo "::error::nginx didn't answer within 20 seconds"
+            docker logs site
+            exit 1
+          fi
           asset=$(docker exec site sh -c 'ls /usr/share/nginx/html/assets/*.js | head -n 1 | xargs basename')
           for path in / /watch/1 "/assets/$asset" /favicon-32x32.png /assets/missing.js; do
             headers=$(curl -sI "localhost:5678$path")
