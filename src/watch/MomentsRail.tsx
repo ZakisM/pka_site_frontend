@@ -51,10 +51,12 @@ const pointedAt = (list: HTMLElement) => globalThis.matchMedia("(hover: hover)")
  * at a time during playback and snapping for anything further.
  */
 const scrollToRow = (list: HTMLElement, index: number, behavior: ScrollBehavior) => {
-  const row = list.querySelector<HTMLElement>(`[data-index="${index}"]`);
+  // Before the first moment (-1) nothing is playing: the list rests at its top.
+  const row = index < 0 ? null : list.querySelector<HTMLElement>(`[data-index="${index}"]`);
+  const top = row ? row.offsetTop - list.clientHeight / 3 : 0;
 
-  if (row && !pointedAt(list) && list.scrollHeight > list.clientHeight + 1) {
-    list.scrollTo({ top: row.offsetTop - list.clientHeight / 3, behavior });
+  if ((row || index < 0) && !pointedAt(list) && list.scrollHeight > list.clientHeight + 1) {
+    list.scrollTo({ top, behavior });
   }
 
   return row !== null;

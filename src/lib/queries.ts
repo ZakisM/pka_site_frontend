@@ -1,5 +1,5 @@
 import { HTTPError, fetchEpisodeById, fetchEpisodes, fetchRelated, searchPage } from "./api";
-import { QueryClient, infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query";
+import { QueryClient, infiniteQueryOptions, keepPreviousData, queryOptions, skipToken } from "@tanstack/react-query";
 import type { SearchSort } from "./api";
 
 export const queryClient = new QueryClient({
@@ -32,10 +32,14 @@ export const allEpisodesQuery = queryOptions({
 
 // Moments elsewhere about the moment now playing. They only change when the
 // archive does, so they are cached for the session.
-export const relatedQuery = (episodeNumber: number, timestamp: number) =>
+// With no moment playing (before the first starts) nothing is
+// related, and that is known without asking: an answer like any other, so the
+// section holds it until the first moment's own answer lands.
+export const relatedQuery = (episodeNumber: number, timestamp: number | undefined) =>
   queryOptions({
-    queryKey: ["related", episodeNumber, timestamp],
-    queryFn: async ({ signal }) => fetchRelated(signal, episodeNumber, timestamp),
+    queryKey: ["related", episodeNumber, timestamp ?? null],
+    queryFn: timestamp === undefined ? skipToken : async ({ signal }) => fetchRelated(signal, episodeNumber, timestamp),
+    initialData: timestamp === undefined ? [] : undefined,
     staleTime: Infinity,
     gcTime: Infinity,
     // The section swaps when the next answer lands rather than blinking out.

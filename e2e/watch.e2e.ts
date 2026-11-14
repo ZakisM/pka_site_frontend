@@ -1,4 +1,16 @@
-import { SOURCE, TARGET, clock, expect, playback, playingMoment, seed, test, timestampOf, videoIdOf } from "./fixtures";
+import {
+  COLD_OPEN,
+  SOURCE,
+  TARGET,
+  clock,
+  expect,
+  playback,
+  playingMoment,
+  seed,
+  test,
+  timestampOf,
+  videoIdOf,
+} from "./fixtures";
 
 test("a shared link starts at its moment", async ({ page }) => {
   await page.goto(`/watch/${TARGET.episode}?timestamp=${timestampOf(TARGET.index)}`);
@@ -226,4 +238,45 @@ test("copying a moment's link is announced", async ({ page, context }) => {
   await page.getByRole("button", { name: /^Copy a link to/u }).click();
 
   await expect(page.getByRole("status")).toHaveText("Link copied");
+});
+
+// The first moment was marked as playing from 0:00, however late it started:
+// highlighted, counting down from longer than it lasts, its related moments shown.
+test("nothing is marked as playing before the first moment starts", async ({ page }) => {
+  const held = Promise.withResolvers<boolean>();
+
+  await page.route("**/api/v1/events/related**", async (route) => {
+    await held.promise;
+    await route.fallback();
+  });
+  await page.goto(`/watch/${COLD_OPEN.episode}`);
+
+  const first = page.locator("aside [data-index='0']");
+  const more = page.getByRole("heading", { name: "More episodes" });
+  const related = page.getByRole("heading", { name: "In other episodes" });
+
+  await expect(more).toBeVisible();
+  expect(await playingMoment(page)).toEqual({ time: null, inView: false });
+  await expect(first).toContainText("5m");
+  await expect(first).not.toContainText("left");
+
+  // It starts: marked, counting down, and the episodes below stay until its
+  // related moments have loaded.
+  await first.click();
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: "01:30", inView: true });
+  await expect(first).toContainText("5m left");
+  await page.waitForTimeout(300);
+  await expect(more).toBeVisible();
+  held.resolve(true);
+  await expect(related).toBeVisible();
+
+  // Scrubbed back to the start, nothing is playing again.
+  await expect
+    .poll(async () => {
+      await page.evaluate(() => globalThis.fakePlayer?.scrubTo(0));
+
+      return playingMoment(page);
+    })
+    .toEqual({ time: null, inView: false });
+  await expect(more).toBeVisible();
 });
