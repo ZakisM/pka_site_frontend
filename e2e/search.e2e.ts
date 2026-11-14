@@ -127,3 +127,24 @@ test("results load page by page as they scroll, in the sort chosen", async ({ pa
   await loadEvery(page, 30);
   expect(await listedEpisodes(page)).toEqual([TARGET.episode, ...descending(30).filter((n) => n !== TARGET.episode)]);
 });
+
+// The results set the tab's title to the query, and the page underneath, kept
+// mounted, never sets its own again: closing them has to put it back.
+test("closing the results gives the tab back the page's title", async ({ page }) => {
+  await page.goto(`/watch/${TARGET.episode}`);
+  await expect(page).toHaveTitle(/^12 · /u);
+
+  const title = await page.title();
+
+  await searchBox(page).fill("kyle");
+  await expect(page).toHaveTitle("kyle · PKA Index");
+  await searchBox(page).press("Escape");
+  await expect(page).toHaveTitle(title);
+
+  await page.goto("/");
+  await expect(page).toHaveTitle("PKA Index");
+  await searchBox(page).fill("kyle");
+  await expect(page).toHaveTitle("kyle · PKA Index");
+  await page.getByRole("button", { name: "Close" }).click();
+  await expect(page).toHaveTitle("PKA Index");
+});

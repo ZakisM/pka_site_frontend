@@ -176,8 +176,16 @@ export const SearchPage = ({ query, scrollRoot }: SearchPageProps) => {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [closeSearch]);
 
+  // The page underneath stays mounted and won't set its title again, so give
+  // it back when the results close.
   useEffect(() => {
+    const underneath = document.title;
+
     document.title = `${query} · PKA Index`;
+
+    return () => {
+      document.title = underneath;
+    };
   }, [query]);
 
   const open = useCallback(
