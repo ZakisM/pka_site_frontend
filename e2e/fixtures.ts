@@ -4,7 +4,9 @@ import type { Page } from "@playwright/test";
 
 declare global {
   // The fake player below, for tests to drive playback with.
-  var fakePlayer: { scrubTo: (seconds: number) => void } | undefined;
+  var fakePlayer:
+    | { scrubTo: (seconds: number) => void; pauseVideo: () => void; getPlayerState: () => number }
+    | undefined;
 }
 
 /**

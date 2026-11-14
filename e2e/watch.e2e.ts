@@ -155,3 +155,32 @@ test("the header's random moment opens its episode at that moment", async ({ pag
   await expect(page).toHaveURL(`/watch/${TARGET.episode}`);
   await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(TARGET.index), inView: true });
 });
+
+// A moment counted as reached only once the player was seen playing there, so
+// pausing first left the request open: the controller went on seeking back to
+// it, and closing search resumed a video the viewer had paused.
+test("a moment the viewer pauses on at once stays paused through a search", async ({ page }) => {
+  await page.goto(`/watch/${TARGET.episode}`);
+  await expect(page.locator("aside [data-index='5']")).toBeVisible();
+
+  // The click and the pause land together, before the player is seen playing.
+  await page.evaluate(() => {
+    document.querySelector<HTMLElement>("aside [data-index='5']")?.click();
+    globalThis.fakePlayer?.pauseVideo();
+  });
+  await expect.poll(async () => playingMoment(page)).toEqual({ time: clock(5), inView: true });
+  // Long enough for the player's polls to see it paused at the moment.
+  await page.waitForTimeout(1000);
+
+  const box = page.getByRole("textbox", { name: "Search every episode and moment" });
+
+  await box.fill("kyle");
+  await expect(page.locator("[data-hit]").first()).toBeVisible();
+  await box.press("Escape");
+  await expect(page.locator("[data-hit]")).toHaveCount(0);
+  await page.waitForTimeout(1000);
+
+  const PAUSED = 2;
+
+  expect(await page.evaluate(() => globalThis.fakePlayer?.getPlayerState())).toBe(PAUSED);
+});
