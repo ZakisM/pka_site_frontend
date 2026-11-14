@@ -62,3 +62,39 @@ test("the header's (i) opens About & privacy, with YouTube's and Google's terms"
     "https://www.google.com/policies/privacy",
   );
 });
+
+// A refetch that fails keeps the episodes it already had: React Query holds on
+// to them, and the archive on screen is still right.
+test("a failed refetch leaves the archive on screen", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+
+  const cards = page.locator("a[href^='/watch/']:not([href$='random-event'])");
+
+  await expect(cards.first()).toHaveAttribute("href", "/watch/30");
+
+  // The list goes stale, the API goes down, and home is opened again.
+  let failed = 0;
+
+  await page.route("**/api/v1/episodes", async (route) => {
+    failed += 1;
+    await route.fulfill({ status: 503, body: "" });
+  });
+  await page.clock.fastForward("10:00");
+  await page.getByRole("link", { name: "About & privacy" }).click();
+  await expect(page).toHaveURL("/about");
+  await page.getByRole("link", { name: "PKA Index home" }).click();
+
+  // The refetch and React Query's three retries all fail.
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(5000);
+
+      return failed;
+    })
+    .toBeGreaterThanOrEqual(4);
+  await page.clock.runFor(5000);
+
+  await expect(page.getByRole("heading", { name: "Something went wrong" })).toBeHidden();
+  await expect(cards.first()).toHaveAttribute("href", "/watch/30");
+});
