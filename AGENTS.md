@@ -31,6 +31,8 @@ Add or upgrade dependencies with `vp add` and `vp update`; pnpm refuses any rele
 
 Browser tests run with `vp run test:e2e`: Playwright drives the production build in Chromium at desktop and phone sizes (`e2e/*.e2e.ts`, typechecked with the rest by `vp check`; run `vp exec playwright install chromium` once first). The API and YouTube are faked inside each test (`e2e/archive.ts`, `e2e/fixtures.ts`), so nothing else needs to be running and no request leaves the machine. A bug in how the app behaves, rather than what it computes, gets a browser test, and that test must fail with the fix removed before it counts.
 
+The site's security headers, Content-Security-Policy included, live in `security-headers.conf`: nginx includes it in every `location`, and `vp preview` sends the same headers, so the browser tests run under the policy and fail on anything it blocks. Anything new the page loads from elsewhere goes in the policy first.
+
 **Measure performance against `vp run serve`, never `vp dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
 ## Coding Style & Naming Conventions
