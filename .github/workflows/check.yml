@@ -81,6 +81,8 @@ jobs:
         run: docker build --tag pka-index-frontend .
       - name: Check nginx accepts its config
         run: docker run --rm pka-index-frontend nginx -t
+      - name: Check the image doesn't run as root
+        run: test "$(docker run --rm pka-index-frontend id -u)" != 0
       # A location that sets add_header of its own drops the server's, so the
       # security headers are checked on a response from each one: the app
       # shell, a route it falls back to, an asset, an icon and a missing asset.
