@@ -191,15 +191,19 @@ const pageOf = (url: string) => new URL(url).searchParams.get("page");
 const loadMoreFailed = (page: Page) => page.getByText("Couldn’t load more results.");
 
 // Scrolls to the end of the results, running the fake clock so React Query's
-// retries play out, until `done` holds.
+// retries play out, until `done` holds. Each round scrolls and runs the clock,
+// so a loaded machine gets fewer rounds in a second: given longer than usual.
 const scrollUntil = async (page: Page, done: () => Promise<boolean>) => {
   await expect
-    .poll(async () => {
-      await page.locator("[data-hit]").last().scrollIntoViewIfNeeded();
-      await page.clock.runFor(5000);
+    .poll(
+      async () => {
+        await page.locator("[data-hit]").last().scrollIntoViewIfNeeded();
+        await page.clock.runFor(5000);
 
-      return done();
-    })
+        return done();
+      },
+      { timeout: 15_000 },
+    )
     .toBe(true);
 };
 
