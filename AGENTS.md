@@ -23,11 +23,15 @@ Feature folders own their own state and hooks; anything imported by two features
 
 ## Build, Test, and Development Commands
 
-Install with `bun install`. `bun run dev` starts Vite on port 5678, `bun run serve` gives a production-like preview. Check types with `bun run typecheck` (tsc, TypeScript 7), lint with `bun run lint` (oxlint, type-aware via tsgolint) format with `bun run format` (oxfmt, 120 columns) and test with `bun run test` (Bun's runner; tests sit beside their source as `*.test.ts`, typechecked by `tsconfig.test.json`).
+The toolchain is [Vite+](https://viteplus.dev/guide/): one `vp` command, configured by `vite.config.ts` alone — its `lint`, `fmt` and `test` blocks are the Oxlint, Oxfmt and Vitest config, so never add an `.oxlintrc.json`, `.oxfmtrc.json` or `vitest.config.ts`. It runs on the Node in `.node-version` with the pnpm in `package.json`'s `packageManager`.
 
-Browser tests run with `bun run test:e2e`: Playwright drives the production build in Chromium at desktop and phone sizes (`e2e/*.e2e.ts`, typechecked by `tsconfig.e2e.json`; run `bunx playwright install chromium` once first). The API and YouTube are faked inside each test (`e2e/archive.ts`, `e2e/fixtures.ts`), so nothing else needs to be running and no request leaves the machine. A bug in how the app behaves, rather than what it computes, gets a browser test, and that test must fail with the fix removed before it counts.
+Install with `vp install`. `vp dev` starts Vite on port 5678, `vp run serve` gives a production-like preview. `vp check` checks formatting (oxfmt, 120 columns), lints (oxlint, type-aware) and typechecks (tsgolint, TypeScript 7) in one pass; `vp check --fix` formats and fixes what it can. Test with `vp test` (Vitest; tests sit beside their source as `*.test.ts` and import from `vite-plus/test`). Import Vite's own APIs from `vite-plus`, not `vite`.
 
-**Measure performance against `bun run serve`, never `dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
+Add or upgrade dependencies with `vp add` and `vp update`; pnpm refuses any release under three days old (`pnpm-workspace.yaml`). Upgrade Vite+ itself with `vp migrate`, which moves the versions it pins together.
+
+Browser tests run with `vp run test:e2e`: Playwright drives the production build in Chromium at desktop and phone sizes (`e2e/*.e2e.ts`, typechecked with the rest by `vp check`; run `vp exec playwright install chromium` once first). The API and YouTube are faked inside each test (`e2e/archive.ts`, `e2e/fixtures.ts`), so nothing else needs to be running and no request leaves the machine. A bug in how the app behaves, rather than what it computes, gets a browser test, and that test must fail with the fix removed before it counts.
+
+**Measure performance against `vp run serve`, never `vp dev`.** React's development build instruments prop diffs, which makes large lists (search holds ~35k rows) look far slower than they ship.
 
 ## Coding Style & Naming Conventions
 
@@ -44,8 +48,8 @@ Breakpoints are the custom `desktop:`/`mobile:` variants, not Tailwind's widths:
 
 ### Lint
 
-oxlint runs every rule category at error, with the React, jsx-a11y, import and promise plugins and type-aware TypeScript rules; `.oxlintrc.json` turns off the few that contradict the codebase's conventions. Fix what it reports. When a rule is wrong for one line — say, an effect dependency that only exists to re-run it — suppress that rule on that line and say why in the comment above; unused suppressions fail the lint.
+oxlint runs every rule category at error, with the React, jsx-a11y, import and promise plugins and type-aware TypeScript rules; the `lint` block in `vite.config.ts` turns off the few that contradict the codebase's conventions. Fix what it reports. When a rule is wrong for one line — say, an effect dependency that only exists to re-run it — suppress that rule on that line and say why in the comment above; unused suppressions fail the lint.
 
 ## Commit & Pull Request Guidelines
 
-Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs typecheck, lint, a format check, tests, build and the browser tests on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues. Never link an AI coding session (a `claude.ai/code/session_…` URL or a `Claude-Session:` trailer) in commit messages, PR descriptions or comments: the repository is public.
+Commits use short, imperative subjects (e.g. "Fix spinner") scoped to a single concern. CI runs `vp check`, the tests, the build, the browser tests and a Docker image build on every PR; run them locally before pushing, attach screenshots for UI diffs, and cross-link relevant issues. Never link an AI coding session (a `claude.ai/code/session_…` URL or a `Claude-Session:` trailer) in commit messages, PR descriptions or comments: the repository is public.

@@ -1,16 +1,18 @@
-FROM oven/bun:1 AS build
+# The Vite+ toolchain image. `vp` reads .node-version and package.json's
+# packageManager, so the image is built with the same Node and pnpm as CI.
+FROM ghcr.io/voidzero-dev/vite-plus:1 AS build
 
-WORKDIR /pka_site_frontend
+# Owned by the image's non-root `vp` user, as everything copied in must be.
+WORKDIR /app
 
-COPY package.json .
-COPY bun.lock .
-COPY index.html .
-COPY vite.config.ts .
-COPY /public ./public
-COPY /src ./src
+# Dependencies first: this layer is reused until one of these files changes.
+COPY --chown=vp:vp package.json pnpm-lock.yaml pnpm-workspace.yaml .node-version ./
+RUN vp install --frozen-lockfile
 
-RUN bun install --frozen-lockfile
-RUN bun run build
+COPY --chown=vp:vp index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY --chown=vp:vp public ./public
+COPY --chown=vp:vp src ./src
+RUN vp build
 
 FROM nginx:stable-alpine
 
@@ -19,4 +21,4 @@ FROM nginx:stable-alpine
 RUN apk upgrade --no-cache
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /pka_site_frontend/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html

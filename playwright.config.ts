@@ -10,7 +10,7 @@ const CI = Boolean(process.env.CI);
  */
 export default defineConfig({
   testDir: "./e2e",
-  // Not *.test.ts, so `bun test` (the unit tests) never picks these up.
+  // Not *.test.ts, so `vp test` (the unit tests) never picks these up.
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,
   forbidOnly: CI,
@@ -36,7 +36,7 @@ export default defineConfig({
   ],
   webServer: {
     // The production build, as it ships: never the dev server.
-    command: `bunx vite build && bunx vite preview --port ${PORT} --strictPort`,
+    command: `vp build && vp preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !CI,
     timeout: 120_000,

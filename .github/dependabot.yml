@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # A release has to be a few days old first, so one that is pulled for being
+    # broken or malicious never reaches a pull request.
+    cooldown:
+      default-days: 3
+    groups:
+      # Everything in one pull request a week; majors each get their own.
+      dependencies:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    ignore:
+      # Vite+ pins Vite, Vitest, Oxlint and Oxfmt to match each other: upgrade
+      # it with `vp migrate`, which moves them together.
+      - dependency-name: vite-plus
+      - dependency-name: vite
+      - dependency-name: "@voidzero-dev/*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

@@ -1,2 +1,1 @@
-bun.lock -diff
-Cargo.lock -diff
+pnpm-lock.yaml -diff
