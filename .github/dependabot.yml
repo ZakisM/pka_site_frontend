@@ -3,13 +3,14 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
     # A release has to be a few days old first, so one that is pulled for being
     # broken or malicious never reaches a pull request.
     cooldown:
       default-days: 3
     groups:
-      # Everything in one pull request a week; majors each get their own.
+      # At most one pull request a day for minor and patch updates; majors each
+      # get their own, and aren't merged automatically (dependabot-auto-merge.yml).
       dependencies:
         patterns: ["*"]
         update-types: [minor, patch]
@@ -23,7 +24,10 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
+    cooldown:
+      default-days: 3
     groups:
       actions:
         patterns: ["*"]
+        update-types: [minor, patch]
