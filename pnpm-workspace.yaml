@@ -1,6 +1,6 @@
-# Nothing published in the last three days gets installed, so a release pulled
+# Nothing published in the last seven days gets installed, so a release pulled
 # for being broken or malicious never lands here. Minutes.
-minimumReleaseAge: 4320
+minimumReleaseAge: 10080
 
 # Vite+ ships its own build of Vite. These point every plugin that asks for
 # `vite` at it; `vp migrate` moves the two versions together on an upgrade.
