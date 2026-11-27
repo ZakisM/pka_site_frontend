@@ -27,7 +27,7 @@ The toolchain is [Vite+](https://viteplus.dev/guide/): one `vp` command, configu
 
 Install with `vp install`. `vp dev` starts Vite on port 5678, `vp run serve` gives a production-like preview. `vp check` checks formatting (oxfmt, 120 columns), lints (oxlint, type-aware) and typechecks (tsgolint, TypeScript 7) in one pass; `vp check --fix` formats and fixes what it can. Test with `vp test` (Vitest; tests sit beside their source as `*.test.ts` and import from `vite-plus/test`). Import Vite's own APIs from `vite-plus`, not `vite`.
 
-Add or upgrade dependencies with `vp add` and `vp update`; pnpm refuses any release under three days old (`pnpm-workspace.yaml`). Upgrade Vite+ itself with `vp migrate`, which moves the versions it pins together.
+Add or upgrade dependencies with `vp add` and `vp update`; pnpm refuses any release under seven days old (`pnpm-workspace.yaml`). Upgrade Vite+ itself with `vp migrate`, which moves the versions it pins together.
 
 Browser tests run with `vp run test:e2e`: Playwright drives the production build in Chromium at desktop and phone sizes (`e2e/*.e2e.ts`, typechecked with the rest by `vp check`; run `vp exec playwright install chromium` once first). The API and YouTube are faked inside each test (`e2e/archive.ts`, `e2e/fixtures.ts`), so nothing else needs to be running and no request leaves the machine. A bug in how the app behaves, rather than what it computes, gets a browser test, and that test must fail with the fix removed before it counts.
 
