@@ -25,7 +25,7 @@ Feature folders own their own state and hooks; anything imported by two features
 
 The toolchain is [Vite+](https://viteplus.dev/guide/): one `vp` command, configured by `vite.config.ts` alone — its `lint`, `fmt` and `test` blocks are the Oxlint, Oxfmt and Vitest config, so never add an `.oxlintrc.json`, `.oxfmtrc.json` or `vitest.config.ts`. It runs on the Node in `.node-version` with the pnpm in `package.json`'s `packageManager`.
 
-Install with `vp install`. `vp dev` starts Vite on port 5678, `vp run serve` gives a production-like preview. `vp check` checks formatting (oxfmt, 120 columns), lints (oxlint, type-aware) and typechecks (tsgolint, TypeScript 7) in one pass; `vp check --fix` formats and fixes what it can. Test with `vp test` (Vitest; tests sit beside their source as `*.test.ts` and import from `vite-plus/test`). Import Vite's own APIs from `vite-plus`, not `vite`.
+Install with `vp install`. `vp dev` starts Vite on port 5678, `vp run serve` gives a production-like preview. `vp check` checks formatting (oxfmt, 120 columns), lints (oxlint, type-aware) and typechecks (tsrs, TypeScript 7) in one pass; `vp check --fix` formats and fixes what it can. Test with `vp test` (Vitest; tests sit beside their source as `*.test.ts` and import from `vite-plus/test`). Import Vite's own APIs from `vite-plus`, not `vite`.
 
 Add or upgrade dependencies with `vp add` and `vp update`; pnpm refuses any release under seven days old (`pnpm-workspace.yaml`). Upgrade Vite+ itself with `vp migrate`, which moves the versions it pins together.
 
